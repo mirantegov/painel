@@ -70,24 +70,19 @@ import {
   AlertCircleIcon,
   CheckmarkCircle02Icon,
   InformationCircleIcon,
-  LightBulbIcon,
+  BulbIcon,
   Target01Icon,
-  TrendUp01Icon,
-  TrendDown01Icon,
   ChartLineData02Icon,
-  PieChartIcon,
-  UserMultiple02Icon,
-  LocationCity01Icon,
-  Hospital01Icon,
-  GraduateMaleIcon,
-  RoadLocation01Icon,
+  PieChart02Icon,
+  UserMultipleIcon,
+  Building04Icon,
+  GraduationScrollIcon,
   HeartCheckIcon,
-  Leaf01Icon,
-  ShieldCheckIcon,
   Clock01Icon,
-  Flag02Icon,
+  Flag01Icon,
   StarIcon,
   Alert02Icon,
+  SecurityCheckIcon,
 } from "@hugeicons/core-free-icons"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -962,7 +957,7 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={TrendUp01Icon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} className="size-5" />
               Evolucao Historica (5 anos)
             </CardTitle>
             <CardDescription>Comparativo da execucao orcamentaria anual</CardDescription>
@@ -994,7 +989,7 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={PieChartIcon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon icon={PieChart02Icon} strokeWidth={2} className="size-5" />
               Despesa por Categoria Economica
             </CardTitle>
             <CardDescription>Distribuicao por natureza da despesa</CardDescription>
@@ -1032,7 +1027,7 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={ShieldCheckIcon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon icon={SecurityCheckIcon} strokeWidth={2} className="size-5" />
               Despesas por Modalidade de Licitacao
             </CardTitle>
             <CardDescription>Quantidade e valores por modalidade</CardDescription>
@@ -1069,7 +1064,7 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={UserMultiple02Icon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon icon={UserMultipleIcon} strokeWidth={2} className="size-5" />
               Principais Fornecedores
             </CardTitle>
             <CardDescription>Top 5 fornecedores por valor contratado</CardDescription>
@@ -1117,7 +1112,7 @@ export function DespesaMunicipal() {
                   <div className="flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
                       <HugeiconsIcon 
-                        icon={meta.ods === "ODS 3" ? HeartCheckIcon : meta.ods === "ODS 4" ? GraduateMaleIcon : meta.ods === "ODS 11" ? LocationCity01Icon : StarIcon} 
+                        icon={meta.ods === "ODS 3" ? HeartCheckIcon : meta.ods === "ODS 4" ? GraduationScrollIcon : meta.ods === "ODS 11" ? Building04Icon : StarIcon} 
                         strokeWidth={2} 
                         className="size-5 text-primary" 
                       />
@@ -1184,7 +1179,7 @@ export function DespesaMunicipal() {
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
-              <HugeiconsIcon icon={LightBulbIcon} strokeWidth={2} className="size-5 text-primary" />
+              <HugeiconsIcon icon={BulbIcon} strokeWidth={2} className="size-5 text-primary" />
             </div>
             <div>
               <CardTitle>Analise Inteligente da Execucao Orcamentaria</CardTitle>
@@ -1212,7 +1207,7 @@ export function DespesaMunicipal() {
             <AccordionItem value="destaques">
               <AccordionTrigger>
                 <div className="flex items-center gap-2">
-                  <HugeiconsIcon icon={Flag02Icon} strokeWidth={2} className="size-4 text-green-600" />
+                  <HugeiconsIcon icon={Flag01Icon} strokeWidth={2} className="size-4 text-green-600" />
                   <span>Pontos de Destaque Positivo</span>
                 </div>
               </AccordionTrigger>
@@ -1287,7 +1282,7 @@ export function DespesaMunicipal() {
             <AccordionItem value="recomendacoes">
               <AccordionTrigger>
                 <div className="flex items-center gap-2">
-                  <HugeiconsIcon icon={LightBulbIcon} strokeWidth={2} className="size-4 text-blue-600" />
+                  <HugeiconsIcon icon={BulbIcon} strokeWidth={2} className="size-4 text-blue-600" />
                   <span>Recomendacoes Estrategicas</span>
                 </div>
               </AccordionTrigger>
