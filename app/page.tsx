@@ -4,10 +4,11 @@ import { Demo } from "@/components/demo"
 import { DespesaMunicipal } from "@/components/despesa-municipal"
 import { ReceitaMunicipal } from "@/components/receita-municipal"
 import { FinanceiroMunicipal } from "@/components/financeiro-municipal"
+import { ComprasMunicipais } from "@/components/compras-municipais"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { GridViewIcon, Analytics01Icon, MoneyAdd01Icon, BankIcon } from "@hugeicons/core-free-icons"
+import { GridViewIcon, Analytics01Icon, MoneyAdd01Icon, BankIcon, ShoppingCartIcon } from "@hugeicons/core-free-icons"
 
 export default function Page() {
   return (
@@ -43,6 +44,10 @@ export default function Page() {
               <HugeiconsIcon icon={BankIcon} strokeWidth={2} className="size-4" />
               Financeiro
             </TabsTrigger>
+            <TabsTrigger value="compras" className="gap-2">
+              <HugeiconsIcon icon={ShoppingCartIcon} strokeWidth={2} className="size-4" />
+              Compras
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="demo" className="mt-6">
@@ -59,6 +64,10 @@ export default function Page() {
           
           <TabsContent value="financeiro" className="mt-6">
             <FinanceiroMunicipal />
+          </TabsContent>
+          
+          <TabsContent value="compras" className="mt-6">
+            <ComprasMunicipais />
           </TabsContent>
         </Tabs>
       </div>
