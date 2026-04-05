@@ -90,9 +90,9 @@ import {
   FolderOpenIcon,
   StarIcon,
   HeartAddIcon,
-  BoldIcon,
-  ItalicIcon,
-  UnderlineIcon,
+  TextBoldIcon,
+  TextItalicIcon,
+  TextUnderlineIcon,
   TextAlignLeftIcon,
   TextAlignCenterIcon,
   TextAlignRightIcon,
@@ -429,13 +429,13 @@ export function Demo() {
               <p className="mb-3 text-sm font-medium text-muted-foreground">Single Toggle</p>
               <div className="flex flex-wrap gap-2">
                 <Toggle aria-label="Toggle bold">
-                  <HugeiconsIcon icon={BoldIcon} strokeWidth={2} />
+                  <HugeiconsIcon icon={TextBoldIcon} strokeWidth={2} />
                 </Toggle>
                 <Toggle variant="outline" aria-label="Toggle italic">
-                  <HugeiconsIcon icon={ItalicIcon} strokeWidth={2} />
+                  <HugeiconsIcon icon={TextItalicIcon} strokeWidth={2} />
                 </Toggle>
                 <Toggle aria-label="Toggle underline" defaultPressed>
-                  <HugeiconsIcon icon={UnderlineIcon} strokeWidth={2} />
+                  <HugeiconsIcon icon={TextUnderlineIcon} strokeWidth={2} />
                 </Toggle>
               </div>
             </div>
@@ -461,13 +461,13 @@ export function Demo() {
               <p className="mb-3 text-sm font-medium text-muted-foreground">Toggle Group (Multiple)</p>
               <ToggleGroup type="multiple" defaultValue={["bold", "italic"]}>
                 <ToggleGroupItem value="bold" aria-label="Toggle bold">
-                  <HugeiconsIcon icon={BoldIcon} strokeWidth={2} />
+                  <HugeiconsIcon icon={TextBoldIcon} strokeWidth={2} />
                 </ToggleGroupItem>
                 <ToggleGroupItem value="italic" aria-label="Toggle italic">
-                  <HugeiconsIcon icon={ItalicIcon} strokeWidth={2} />
+                  <HugeiconsIcon icon={TextItalicIcon} strokeWidth={2} />
                 </ToggleGroupItem>
                 <ToggleGroupItem value="underline" aria-label="Toggle underline">
-                  <HugeiconsIcon icon={UnderlineIcon} strokeWidth={2} />
+                  <HugeiconsIcon icon={TextUnderlineIcon} strokeWidth={2} />
                 </ToggleGroupItem>
               </ToggleGroup>
             </div>
