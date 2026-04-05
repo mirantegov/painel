@@ -84,7 +84,7 @@ import {
   CreditCardIcon,
   CoinsSwapIcon,
   Calculator01Icon,
-  FileCheckIcon,
+  FolderCheckIcon,
   UserMultipleIcon,
   Coins01Icon,
   MoneyExchange01Icon,
@@ -679,7 +679,7 @@ export function FinanceiroMunicipal() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <HugeiconsIcon icon={FileCheckIcon} strokeWidth={2} className="size-5" />
+                <HugeiconsIcon icon={FolderCheckIcon} strokeWidth={2} className="size-5" />
                 Conciliacoes Bancarias
               </CardTitle>
               <CardDescription>Status das conciliacoes do periodo</CardDescription>
