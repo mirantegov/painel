@@ -31,7 +31,7 @@ const TAB_ORDER = [
   "demo",
 ]
 const SCROLL_DELAY_MS = 5000
-const SCROLL_SPEED_PX = 1.5
+const SCROLL_SPEED_PX = 0.75
 
 export default function Page() {
   const router = useRouter()
@@ -63,7 +63,9 @@ export default function Page() {
       return
     }
 
-    window.scrollTo(0, 0)
+    const getScrollEl = () => document.scrollingElement ?? document.documentElement
+    getScrollEl().scrollTop = 0
+    let accumulator = 0
 
     const goToNextTab = () => {
       setActiveTab((prev) => {
@@ -73,18 +75,20 @@ export default function Page() {
     }
 
     const scrollStep = () => {
-      const { scrollHeight } = document.documentElement
-      const clientHeight = window.innerHeight
-      const prevScrollY = window.scrollY
+      const el = getScrollEl()
+      const maxScroll = el.scrollHeight - el.clientHeight
+      const before = el.scrollTop
 
-      if (prevScrollY > 0 && prevScrollY + clientHeight >= scrollHeight - 10) {
+      if (before > 0 && before >= maxScroll - 10) {
         goToNextTab()
         return
       }
 
-      window.scrollBy(0, SCROLL_SPEED_PX)
+      accumulator += SCROLL_SPEED_PX
+      const target = Math.floor(accumulator)
+      el.scrollTop = target
 
-      if (window.scrollY === prevScrollY) {
+      if (el.scrollTop === before && target > before) {
         scrollTimerRef.current = setTimeout(() => {
           goToNextTab()
         }, 7000)
