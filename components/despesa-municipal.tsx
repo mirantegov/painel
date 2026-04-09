@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import * as React from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
   TableFooter,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
 import {
   ChartContainer,
   ChartTooltip,
@@ -28,21 +28,21 @@ import {
   ChartLegend,
   ChartLegendContent,
   type ChartConfig,
-} from '@/components/ui/chart'
+} from "@/components/ui/chart";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import {
   Area,
   AreaChart,
@@ -58,8 +58,8 @@ import {
   XAxis,
   YAxis,
   Cell,
-} from "recharts"
-import { HugeiconsIcon } from "@hugeicons/react"
+} from "recharts";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowUp01Icon,
   ArrowDown01Icon,
@@ -89,135 +89,428 @@ import {
   StarIcon,
   Alert02Icon,
   SecurityCheckIcon,
-} from "@hugeicons/core-free-icons"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+} from "@hugeicons/core-free-icons";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { KpiCard } from "@/components/ui/kpi-card";
 
 // Dados fictícios para demonstração
 const dadosÓrgãos = [
-  { 
-    codigo: "01", 
-    nome: "Gabinete do Prefeito", 
-    atualizada: 2850000, 
-    empenhada: 2234500, 
-    aEmpenhar: 615500, 
-    pago: 1890000, 
-    aPagar: 344500 
+  {
+    codigo: "01",
+    nome: "Gabinete do Prefeito",
+    atualizada: 2850000,
+    empenhada: 2234500,
+    aEmpenhar: 615500,
+    pago: 1890000,
+    aPagar: 344500,
   },
-  { 
-    codigo: "02", 
-    nome: "Secretaria de Administração", 
-    atualizada: 5420000, 
-    empenhada: 4890000, 
-    aEmpenhar: 530000, 
-    pago: 4120000, 
-    aPagar: 770000 
+  {
+    codigo: "02",
+    nome: "Secretaria de Administração",
+    atualizada: 5420000,
+    empenhada: 4890000,
+    aEmpenhar: 530000,
+    pago: 4120000,
+    aPagar: 770000,
   },
-  { 
-    codigo: "03", 
-    nome: "Secretaria de Fazenda", 
-    atualizada: 3180000, 
-    empenhada: 2950000, 
-    aEmpenhar: 230000, 
-    pago: 2680000, 
-    aPagar: 270000 
+  {
+    codigo: "03",
+    nome: "Secretaria de Fazenda",
+    atualizada: 3180000,
+    empenhada: 2950000,
+    aEmpenhar: 230000,
+    pago: 2680000,
+    aPagar: 270000,
   },
-  { 
-    codigo: "04", 
-    nome: "Secretaria de Educação", 
-    atualizada: 45600000, 
-    empenhada: 42300000, 
-    aEmpenhar: 3300000, 
-    pago: 38900000, 
-    aPagar: 3400000 
+  {
+    codigo: "04",
+    nome: "Secretaria de Educação",
+    atualizada: 45600000,
+    empenhada: 42300000,
+    aEmpenhar: 3300000,
+    pago: 38900000,
+    aPagar: 3400000,
   },
-  { 
-    codigo: "05", 
-    nome: "Secretaria de Saúde", 
-    atualizada: 52400000, 
-    empenhada: 49800000, 
-    aEmpenhar: 2600000, 
-    pago: 46200000, 
-    aPagar: 3600000 
+  {
+    codigo: "05",
+    nome: "Secretaria de Saúde",
+    atualizada: 52400000,
+    empenhada: 49800000,
+    aEmpenhar: 2600000,
+    pago: 46200000,
+    aPagar: 3600000,
   },
-  { 
-    codigo: "06", 
-    nome: "Secretaria de Infraestrutura", 
-    atualizada: 18900000, 
-    empenhada: 16200000, 
-    aEmpenhar: 2700000, 
-    pago: 13500000, 
-    aPagar: 2700000 
+  {
+    codigo: "06",
+    nome: "Secretaria de Infraestrutura",
+    atualizada: 18900000,
+    empenhada: 16200000,
+    aEmpenhar: 2700000,
+    pago: 13500000,
+    aPagar: 2700000,
   },
-  { 
-    codigo: "07", 
-    nome: "Secretaria de Assistência Social", 
-    atualizada: 8750000, 
-    empenhada: 7890000, 
-    aEmpenhar: 860000, 
-    pago: 6950000, 
-    aPagar: 940000 
+  {
+    codigo: "07",
+    nome: "Secretaria de Assistência Social",
+    atualizada: 8750000,
+    empenhada: 7890000,
+    aEmpenhar: 860000,
+    pago: 6950000,
+    aPagar: 940000,
   },
-  { 
-    codigo: "08", 
-    nome: "Secretaria de Meio Ambiente", 
-    atualizada: 2340000, 
-    empenhada: 1980000, 
-    aEmpenhar: 360000, 
-    pago: 1720000, 
-    aPagar: 260000 
+  {
+    codigo: "08",
+    nome: "Secretaria de Meio Ambiente",
+    atualizada: 2340000,
+    empenhada: 1980000,
+    aEmpenhar: 360000,
+    pago: 1720000,
+    aPagar: 260000,
   },
-]
+];
 
 const dadosUnidades = [
-  { codigo: "04.01", nome: "Gabinete do Secretário de Educação", atualizada: 1200000, empenhada: 1100000, aEmpenhar: 100000, pago: 980000, aPagar: 120000 },
-  { codigo: "04.02", nome: "Departamento de Ensino Fundamental", atualizada: 18500000, empenhada: 17200000, aEmpenhar: 1300000, pago: 15800000, aPagar: 1400000 },
-  { codigo: "04.03", nome: "Departamento de Ensino Infantil", atualizada: 12400000, empenhada: 11600000, aEmpenhar: 800000, pago: 10700000, aPagar: 900000 },
-  { codigo: "04.04", nome: "Departamento de Merenda Escolar", atualizada: 8900000, empenhada: 8200000, aEmpenhar: 700000, pago: 7500000, aPagar: 700000 },
-  { codigo: "04.05", nome: "Departamento de Transporte Escolar", atualizada: 4600000, empenhada: 4200000, aEmpenhar: 400000, pago: 3920000, aPagar: 280000 },
-]
+  {
+    codigo: "04.01",
+    nome: "Gabinete do Secretário de Educação",
+    atualizada: 1200000,
+    empenhada: 1100000,
+    aEmpenhar: 100000,
+    pago: 980000,
+    aPagar: 120000,
+  },
+  {
+    codigo: "04.02",
+    nome: "Departamento de Ensino Fundamental",
+    atualizada: 18500000,
+    empenhada: 17200000,
+    aEmpenhar: 1300000,
+    pago: 15800000,
+    aPagar: 1400000,
+  },
+  {
+    codigo: "04.03",
+    nome: "Departamento de Ensino Infantil",
+    atualizada: 12400000,
+    empenhada: 11600000,
+    aEmpenhar: 800000,
+    pago: 10700000,
+    aPagar: 900000,
+  },
+  {
+    codigo: "04.04",
+    nome: "Departamento de Merenda Escolar",
+    atualizada: 8900000,
+    empenhada: 8200000,
+    aEmpenhar: 700000,
+    pago: 7500000,
+    aPagar: 700000,
+  },
+  {
+    codigo: "04.05",
+    nome: "Departamento de Transporte Escolar",
+    atualizada: 4600000,
+    empenhada: 4200000,
+    aEmpenhar: 400000,
+    pago: 3920000,
+    aPagar: 280000,
+  },
+];
 
 const dadosFuncaoSubfuncao = [
-  { funcao: "12", subfuncao: "361", nome: "Educação / Ensino Fundamental", atualizada: 32000000, empenhada: 29500000, aEmpenhar: 2500000, pago: 27200000, aPagar: 2300000 },
-  { funcao: "12", subfuncao: "365", nome: "Educação / Ensino Infantil", atualizada: 13600000, empenhada: 12800000, aEmpenhar: 800000, pago: 11700000, aPagar: 1100000 },
-  { funcao: "10", subfuncao: "301", nome: "Saúde / Atenção Básica", atualizada: 28500000, empenhada: 27100000, aEmpenhar: 1400000, pago: 25200000, aPagar: 1900000 },
-  { funcao: "10", subfuncao: "302", nome: "Saúde / Assistência Hospitalar", atualizada: 23900000, empenhada: 22700000, aEmpenhar: 1200000, pago: 21000000, aPagar: 1700000 },
-  { funcao: "08", subfuncao: "244", nome: "Assistência Social / Assistência Comunitária", atualizada: 8750000, empenhada: 7890000, aEmpenhar: 860000, pago: 6950000, aPagar: 940000 },
-  { funcao: "15", subfuncao: "451", nome: "Urbanismo / Infraestrutura Urbana", atualizada: 14200000, empenhada: 12100000, aEmpenhar: 2100000, pago: 10200000, aPagar: 1900000 },
-  { funcao: "04", subfuncao: "122", nome: "Administração / Administração Geral", atualizada: 8270000, empenhada: 7840000, aEmpenhar: 430000, pago: 6800000, aPagar: 1040000 },
-]
+  {
+    funcao: "12",
+    subfuncao: "361",
+    nome: "Educação / Ensino Fundamental",
+    atualizada: 32000000,
+    empenhada: 29500000,
+    aEmpenhar: 2500000,
+    pago: 27200000,
+    aPagar: 2300000,
+  },
+  {
+    funcao: "12",
+    subfuncao: "365",
+    nome: "Educação / Ensino Infantil",
+    atualizada: 13600000,
+    empenhada: 12800000,
+    aEmpenhar: 800000,
+    pago: 11700000,
+    aPagar: 1100000,
+  },
+  {
+    funcao: "10",
+    subfuncao: "301",
+    nome: "Saúde / Atenção Básica",
+    atualizada: 28500000,
+    empenhada: 27100000,
+    aEmpenhar: 1400000,
+    pago: 25200000,
+    aPagar: 1900000,
+  },
+  {
+    funcao: "10",
+    subfuncao: "302",
+    nome: "Saúde / Assistência Hospitalar",
+    atualizada: 23900000,
+    empenhada: 22700000,
+    aEmpenhar: 1200000,
+    pago: 21000000,
+    aPagar: 1700000,
+  },
+  {
+    funcao: "08",
+    subfuncao: "244",
+    nome: "Assistência Social / Assistência Comunitária",
+    atualizada: 8750000,
+    empenhada: 7890000,
+    aEmpenhar: 860000,
+    pago: 6950000,
+    aPagar: 940000,
+  },
+  {
+    funcao: "15",
+    subfuncao: "451",
+    nome: "Urbanismo / Infraestrutura Urbana",
+    atualizada: 14200000,
+    empenhada: 12100000,
+    aEmpenhar: 2100000,
+    pago: 10200000,
+    aPagar: 1900000,
+  },
+  {
+    funcao: "04",
+    subfuncao: "122",
+    nome: "Administração / Administração Geral",
+    atualizada: 8270000,
+    empenhada: 7840000,
+    aEmpenhar: 430000,
+    pago: 6800000,
+    aPagar: 1040000,
+  },
+];
 
 const dadosProgramas = [
-  { codigo: "0001", nome: "Gestão e Manutenção Administrativa", atualizada: 12500000, empenhada: 11800000, aEmpenhar: 700000, pago: 10500000, aPagar: 1300000 },
-  { codigo: "0010", nome: "Educação de Qualidade para Todos", atualizada: 45600000, empenhada: 42300000, aEmpenhar: 3300000, pago: 38900000, aPagar: 3400000 },
-  { codigo: "0020", nome: "Saúde para a Comunidade", atualizada: 52400000, empenhada: 49800000, aEmpenhar: 2600000, pago: 46200000, aPagar: 3600000 },
-  { codigo: "0030", nome: "Assistência Social Integral", atualizada: 8750000, empenhada: 7890000, aEmpenhar: 860000, pago: 6950000, aPagar: 940000 },
-  { codigo: "0040", nome: "Cidade Sustentável", atualizada: 18900000, empenhada: 16200000, aEmpenhar: 2700000, pago: 13500000, aPagar: 2700000 },
-  { codigo: "0050", nome: "Meio Ambiente Preservado", atualizada: 2340000, empenhada: 1980000, aEmpenhar: 360000, pago: 1720000, aPagar: 260000 },
-]
+  {
+    codigo: "0001",
+    nome: "Gestão e Manutenção Administrativa",
+    atualizada: 12500000,
+    empenhada: 11800000,
+    aEmpenhar: 700000,
+    pago: 10500000,
+    aPagar: 1300000,
+  },
+  {
+    codigo: "0010",
+    nome: "Educação de Qualidade para Todos",
+    atualizada: 45600000,
+    empenhada: 42300000,
+    aEmpenhar: 3300000,
+    pago: 38900000,
+    aPagar: 3400000,
+  },
+  {
+    codigo: "0020",
+    nome: "Saúde para a Comunidade",
+    atualizada: 52400000,
+    empenhada: 49800000,
+    aEmpenhar: 2600000,
+    pago: 46200000,
+    aPagar: 3600000,
+  },
+  {
+    codigo: "0030",
+    nome: "Assistência Social Integral",
+    atualizada: 8750000,
+    empenhada: 7890000,
+    aEmpenhar: 860000,
+    pago: 6950000,
+    aPagar: 940000,
+  },
+  {
+    codigo: "0040",
+    nome: "Cidade Sustentável",
+    atualizada: 18900000,
+    empenhada: 16200000,
+    aEmpenhar: 2700000,
+    pago: 13500000,
+    aPagar: 2700000,
+  },
+  {
+    codigo: "0050",
+    nome: "Meio Ambiente Preservado",
+    atualizada: 2340000,
+    empenhada: 1980000,
+    aEmpenhar: 360000,
+    pago: 1720000,
+    aPagar: 260000,
+  },
+];
 
 const dadosAcoes = [
-  { codigo: "2001", tipo: "Atividade", nome: "Manutenção das Atividades Administrativas", atualizada: 8500000, empenhada: 8100000, aEmpenhar: 400000, pago: 7200000, aPagar: 900000 },
-  { codigo: "2010", tipo: "Atividade", nome: "Manutenção do Ensino Fundamental", atualizada: 28000000, empenhada: 26200000, aEmpenhar: 1800000, pago: 24100000, aPagar: 2100000 },
-  { codigo: "2011", tipo: "Atividade", nome: "Manutenção do Ensino Infantil", atualizada: 12400000, empenhada: 11600000, aEmpenhar: 800000, pago: 10700000, aPagar: 900000 },
-  { codigo: "1001", tipo: "Projeto", nome: "Construção de Escola Municipal", atualizada: 3200000, empenhada: 2800000, aEmpenhar: 400000, pago: 2400000, aPagar: 400000 },
-  { codigo: "2020", tipo: "Atividade", nome: "Manutenção da Atenção Básica", atualizada: 28500000, empenhada: 27100000, aEmpenhar: 1400000, pago: 25200000, aPagar: 1900000 },
-  { codigo: "2021", tipo: "Atividade", nome: "Manutenção Hospitalar", atualizada: 23900000, empenhada: 22700000, aEmpenhar: 1200000, pago: 21000000, aPagar: 1700000 },
-  { codigo: "1010", tipo: "Projeto", nome: "Ampliação da UBS Central", atualizada: 1800000, empenhada: 1500000, aEmpenhar: 300000, pago: 1200000, aPagar: 300000 },
-  { codigo: "2030", tipo: "Atividade", nome: "Pavimentação de Vias Urbanas", atualizada: 8500000, empenhada: 7200000, aEmpenhar: 1300000, pago: 5800000, aPagar: 1400000 },
-]
+  {
+    codigo: "2001",
+    tipo: "Atividade",
+    nome: "Manutenção das Atividades Administrativas",
+    atualizada: 8500000,
+    empenhada: 8100000,
+    aEmpenhar: 400000,
+    pago: 7200000,
+    aPagar: 900000,
+  },
+  {
+    codigo: "2010",
+    tipo: "Atividade",
+    nome: "Manutenção do Ensino Fundamental",
+    atualizada: 28000000,
+    empenhada: 26200000,
+    aEmpenhar: 1800000,
+    pago: 24100000,
+    aPagar: 2100000,
+  },
+  {
+    codigo: "2011",
+    tipo: "Atividade",
+    nome: "Manutenção do Ensino Infantil",
+    atualizada: 12400000,
+    empenhada: 11600000,
+    aEmpenhar: 800000,
+    pago: 10700000,
+    aPagar: 900000,
+  },
+  {
+    codigo: "1001",
+    tipo: "Projeto",
+    nome: "Construção de Escola Municipal",
+    atualizada: 3200000,
+    empenhada: 2800000,
+    aEmpenhar: 400000,
+    pago: 2400000,
+    aPagar: 400000,
+  },
+  {
+    codigo: "2020",
+    tipo: "Atividade",
+    nome: "Manutenção da Atenção Básica",
+    atualizada: 28500000,
+    empenhada: 27100000,
+    aEmpenhar: 1400000,
+    pago: 25200000,
+    aPagar: 1900000,
+  },
+  {
+    codigo: "2021",
+    tipo: "Atividade",
+    nome: "Manutenção Hospitalar",
+    atualizada: 23900000,
+    empenhada: 22700000,
+    aEmpenhar: 1200000,
+    pago: 21000000,
+    aPagar: 1700000,
+  },
+  {
+    codigo: "1010",
+    tipo: "Projeto",
+    nome: "Ampliação da UBS Central",
+    atualizada: 1800000,
+    empenhada: 1500000,
+    aEmpenhar: 300000,
+    pago: 1200000,
+    aPagar: 300000,
+  },
+  {
+    codigo: "2030",
+    tipo: "Atividade",
+    nome: "Pavimentação de Vias Urbanas",
+    atualizada: 8500000,
+    empenhada: 7200000,
+    aEmpenhar: 1300000,
+    pago: 5800000,
+    aPagar: 1400000,
+  },
+];
 
 const dadosSecretarias = [
-  { nome: "Secretaria de Educação", sigla: "SEMED", atualizada: 45600000, empenhada: 42300000, aEmpenhar: 3300000, pago: 38900000, aPagar: 3400000 },
-  { nome: "Secretaria de Saúde", sigla: "SEMSA", atualizada: 52400000, empenhada: 49800000, aEmpenhar: 2600000, pago: 46200000, aPagar: 3600000 },
-  { nome: "Secretaria de Infraestrutura", sigla: "SEMINF", atualizada: 18900000, empenhada: 16200000, aEmpenhar: 2700000, pago: 13500000, aPagar: 2700000 },
-  { nome: "Secretaria de Assistência Social", sigla: "SEMAS", atualizada: 8750000, empenhada: 7890000, aEmpenhar: 860000, pago: 6950000, aPagar: 940000 },
-  { nome: "Secretaria de Administração", sigla: "SEMAD", atualizada: 5420000, empenhada: 4890000, aEmpenhar: 530000, pago: 4120000, aPagar: 770000 },
-  { nome: "Secretaria de Fazenda", sigla: "SEMFAZ", atualizada: 3180000, empenhada: 2950000, aEmpenhar: 230000, pago: 2680000, aPagar: 270000 },
-  { nome: "Gabinete do Prefeito", sigla: "GAB", atualizada: 2850000, empenhada: 2234500, aEmpenhar: 615500, pago: 1890000, aPagar: 344500 },
-  { nome: "Secretaria de Meio Ambiente", sigla: "SEMMA", atualizada: 2340000, empenhada: 1980000, aEmpenhar: 360000, pago: 1720000, aPagar: 260000 },
-]
+  {
+    nome: "Secretaria de Educação",
+    sigla: "SEMED",
+    atualizada: 45600000,
+    empenhada: 42300000,
+    aEmpenhar: 3300000,
+    pago: 38900000,
+    aPagar: 3400000,
+  },
+  {
+    nome: "Secretaria de Saúde",
+    sigla: "SEMSA",
+    atualizada: 52400000,
+    empenhada: 49800000,
+    aEmpenhar: 2600000,
+    pago: 46200000,
+    aPagar: 3600000,
+  },
+  {
+    nome: "Secretaria de Infraestrutura",
+    sigla: "SEMINF",
+    atualizada: 18900000,
+    empenhada: 16200000,
+    aEmpenhar: 2700000,
+    pago: 13500000,
+    aPagar: 2700000,
+  },
+  {
+    nome: "Secretaria de Assistência Social",
+    sigla: "SEMAS",
+    atualizada: 8750000,
+    empenhada: 7890000,
+    aEmpenhar: 860000,
+    pago: 6950000,
+    aPagar: 940000,
+  },
+  {
+    nome: "Secretaria de Administração",
+    sigla: "SEMAD",
+    atualizada: 5420000,
+    empenhada: 4890000,
+    aEmpenhar: 530000,
+    pago: 4120000,
+    aPagar: 770000,
+  },
+  {
+    nome: "Secretaria de Fazenda",
+    sigla: "SEMFAZ",
+    atualizada: 3180000,
+    empenhada: 2950000,
+    aEmpenhar: 230000,
+    pago: 2680000,
+    aPagar: 270000,
+  },
+  {
+    nome: "Gabinete do Prefeito",
+    sigla: "GAB",
+    atualizada: 2850000,
+    empenhada: 2234500,
+    aEmpenhar: 615500,
+    pago: 1890000,
+    aPagar: 344500,
+  },
+  {
+    nome: "Secretaria de Meio Ambiente",
+    sigla: "SEMMA",
+    atualizada: 2340000,
+    empenhada: 1980000,
+    aEmpenhar: 360000,
+    pago: 1720000,
+    aPagar: 260000,
+  },
+];
 
 // Dados para evolução mensal
 const evolucaoMensal = [
@@ -233,7 +526,7 @@ const evolucaoMensal = [
   { mes: "Out", empenhado: 13600000, pago: 12800000 },
   { mes: "Nov", empenhado: 14500000, pago: 13200000 },
   { mes: "Dez", empenhado: 4644500, pago: 3560000 },
-]
+];
 
 // Totais gerais
 const totais = {
@@ -242,7 +535,7 @@ const totais = {
   aEmpenhar: 11195500,
   pago: 115960000,
   aPagar: 12284500,
-}
+};
 
 // Dados para comparativo anual
 const comparativoAnual = [
@@ -251,16 +544,20 @@ const comparativoAnual = [
   { ano: "2022", atualizada: 121300000, empenhada: 112500000, pago: 103200000 },
   { ano: "2023", atualizada: 132800000, empenhada: 122100000, pago: 112800000 },
   { ano: "2024", atualizada: 139440000, empenhada: 128244500, pago: 115960000 },
-]
+];
 
 // Dados para treemap de despesas
 const treemapData = [
   { name: "Pessoal e Encargos", value: 68500000, fill: "var(--chart-1)" },
-  { name: "Outras Despesas Correntes", value: 42300000, fill: "var(--chart-2)" },
+  {
+    name: "Outras Despesas Correntes",
+    value: 42300000,
+    fill: "var(--chart-2)",
+  },
   { name: "Investimentos", value: 14200000, fill: "var(--chart-3)" },
   { name: "Inversoes Financeiras", value: 2100000, fill: "var(--chart-4)" },
   { name: "Amortização da Dívida", value: 1144500, fill: "var(--chart-5)" },
-]
+];
 
 // Dados de empenhos por modalidade
 const modalidadeLicitacao = [
@@ -270,55 +567,163 @@ const modalidadeLicitacao = [
   { modalidade: "Inexigibilidade", quantidade: 89, valor: 18900000 },
   { modalidade: "Tomada de Precos", quantidade: 12, valor: 8200000 },
   { modalidade: "Concorrencia", quantidade: 5, valor: 34644500 },
-]
+];
 
 // Dados de fornecedores principais
 const topFornecedores = [
-  { nome: "Construtora Silva & Associados", cnpj: "12.345.678/0001-90", valor: 18500000, percentual: 14.4 },
-  { nome: "Distribuidora de Medicamentos ABC", cnpj: "23.456.789/0001-01", valor: 12800000, percentual: 10.0 },
-  { nome: "Merenda Escolar Ltda", cnpj: "34.567.890/0001-12", valor: 8900000, percentual: 6.9 },
-  { nome: "Transporte Urbano SA", cnpj: "45.678.901/0001-23", valor: 7200000, percentual: 5.6 },
-  { nome: "Tecnologia Municipal Ltda", cnpj: "56.789.012/0001-34", valor: 5400000, percentual: 4.2 },
-]
+  {
+    nome: "Construtora Silva & Associados",
+    cnpj: "12.345.678/0001-90",
+    valor: 18500000,
+    percentual: 14.4,
+  },
+  {
+    nome: "Distribuidora de Medicamentos ABC",
+    cnpj: "23.456.789/0001-01",
+    valor: 12800000,
+    percentual: 10.0,
+  },
+  {
+    nome: "Merenda Escolar Ltda",
+    cnpj: "34.567.890/0001-12",
+    valor: 8900000,
+    percentual: 6.9,
+  },
+  {
+    nome: "Transporte Urbano SA",
+    cnpj: "45.678.901/0001-23",
+    valor: 7200000,
+    percentual: 5.6,
+  },
+  {
+    nome: "Tecnologia Municipal Ltda",
+    cnpj: "56.789.012/0001-34",
+    valor: 5400000,
+    percentual: 4.2,
+  },
+];
 
 // Metas e indicadores
 const metasExecucao = [
-  { indicador: "Taxa de Execução", meta: 95, realizado: 91, unidade: "%", status: "atencao", descricao: "Meta de execução orçamentária" },
-  { indicador: "Despesa com Pessoal", meta: 45, realizado: 42, unidade: "%", status: "atingido", descricao: "% da receita corrente liquida" },
-  { indicador: "Restos a Pagar", meta: 8000000, realizado: 6500000, unidade: "R$", status: "atingido", descricao: "Meta de restos a pagar controlada" },
-  { indicador: "Contratacoes Diretas", meta: 15, realizado: 18, unidade: "%", status: "atencao", descricao: "% maximo permitido (superado)" },
-  { indicador: "Investimentos", meta: 20, realizado: 22, unidade: "%", status: "atingido", descricao: "% aplicado em obras e equipamentos" },
-  { indicador: "Despesas Capital", meta: 45000000, realizado: 48000000, unidade: "R$", status: "atingido", descricao: "Meta anual superada" },
-]
+  {
+    indicador: "Taxa de Execução",
+    meta: 95,
+    realizado: 91,
+    unidade: "%",
+    status: "atencao",
+    descricao: "Meta de execução orçamentária",
+  },
+  {
+    indicador: "Despesa com Pessoal",
+    meta: 45,
+    realizado: 42,
+    unidade: "%",
+    status: "atingido",
+    descricao: "% da receita corrente liquida",
+  },
+  {
+    indicador: "Restos a Pagar",
+    meta: 8000000,
+    realizado: 6500000,
+    unidade: "R$",
+    status: "atingido",
+    descricao: "Meta de restos a pagar controlada",
+  },
+  {
+    indicador: "Contratacoes Diretas",
+    meta: 15,
+    realizado: 18,
+    unidade: "%",
+    status: "atencao",
+    descricao: "% maximo permitido (superado)",
+  },
+  {
+    indicador: "Investimentos",
+    meta: 20,
+    realizado: 22,
+    unidade: "%",
+    status: "atingido",
+    descricao: "% aplicado em obras e equipamentos",
+  },
+  {
+    indicador: "Despesas Capital",
+    meta: 45000000,
+    realizado: 48000000,
+    unidade: "R$",
+    status: "atingido",
+    descricao: "Meta anual superada",
+  },
+];
 
 const metasODS = [
-  { ods: "ODS 3", titulo: "Saude e Bem-estar", meta: 52400000, realizado: 49800000, percentual: 95 },
-  { ods: "ODS 4", titulo: "Educação de Qualidade", meta: 45600000, realizado: 42300000, percentual: 93 },
-  { ods: "ODS 11", titulo: "Cidades Sustentáveis", meta: 18900000, realizado: 16200000, percentual: 86 },
-  { ods: "ODS 1", titulo: "Erradicação da Pobreza", meta: 8750000, realizado: 7890000, percentual: 90 },
-]
+  {
+    ods: "ODS 3",
+    titulo: "Saude e Bem-estar",
+    meta: 52400000,
+    realizado: 49800000,
+    percentual: 95,
+  },
+  {
+    ods: "ODS 4",
+    titulo: "Educação de Qualidade",
+    meta: 45600000,
+    realizado: 42300000,
+    percentual: 93,
+  },
+  {
+    ods: "ODS 11",
+    titulo: "Cidades Sustentáveis",
+    meta: 18900000,
+    realizado: 16200000,
+    percentual: 86,
+  },
+  {
+    ods: "ODS 1",
+    titulo: "Erradicação da Pobreza",
+    meta: 8750000,
+    realizado: 7890000,
+    percentual: 90,
+  },
+];
 
 // Rigidez Orçamentária
 const rigidezOrcamentaria = [
   { categoria: "Pessoal e Encargos", valor: 68500000, tipo: "obrigatoria" },
   { categoria: "Servico da Divida", valor: 1144500, tipo: "obrigatoria" },
   { categoria: "Precatorios", valor: 2100000, tipo: "obrigatoria" },
-  { categoria: "Transferencias Constitucionais", valor: 8200000, tipo: "obrigatoria" },
-  { categoria: "Outras Despesas Correntes", valor: 42300000, tipo: "discricionaria" },
+  {
+    categoria: "Transferencias Constitucionais",
+    valor: 8200000,
+    tipo: "obrigatoria",
+  },
+  {
+    categoria: "Outras Despesas Correntes",
+    valor: 42300000,
+    tipo: "discricionaria",
+  },
   { categoria: "Investimentos", valor: 14200000, tipo: "discricionaria" },
   { categoria: "Outras de Capital", valor: 3000000, tipo: "discricionaria" },
-]
+];
 
-const totalObrigatoria = rigidezOrcamentaria.filter(r => r.tipo === "obrigatoria").reduce((acc, r) => acc + r.valor, 0)
-const totalDiscricionaria = rigidezOrcamentaria.filter(r => r.tipo === "discricionaria").reduce((acc, r) => acc + r.valor, 0)
-const percentualRigidez = ((totalObrigatoria / totais.empenhada) * 100).toFixed(1)
+const totalObrigatoria = rigidezOrcamentaria
+  .filter((r) => r.tipo === "obrigatoria")
+  .reduce((acc, r) => acc + r.valor, 0);
+const totalDiscricionaria = rigidezOrcamentaria
+  .filter((r) => r.tipo === "discricionaria")
+  .reduce((acc, r) => acc + r.valor, 0);
+const percentualRigidez = ((totalObrigatoria / totais.empenhada) * 100).toFixed(
+  1,
+);
 
 // Limite de Pessoal - Lei de Responsabilidade Fiscal (LRF)
-const receitaCorrenteLiquida = 210500000
-const despesaPessoalTotal = 68500000
-const percentualPessoalRCL = ((despesaPessoalTotal / receitaCorrenteLiquida) * 100).toFixed(1)
-const limitePrudencial = 51.3 // 95% do limite maximo
-const limiteMaximo = 54.0 // Limite maximo para Executivo
+const receitaCorrenteLiquida = 210500000;
+const despesaPessoalTotal = 68500000;
+const percentualPessoalRCL = (
+  (despesaPessoalTotal / receitaCorrenteLiquida) *
+  100
+).toFixed(1);
+const limitePrudencial = 51.3; // 95% do limite maximo
+const limiteMaximo = 54.0; // Limite maximo para Executivo
 
 const evolucaoPessoalRCL = [
   { periodo: "1o Quad 2023", pessoal: 30.8 },
@@ -327,111 +732,284 @@ const evolucaoPessoalRCL = [
   { periodo: "1o Quad 2024", pessoal: 31.9 },
   { periodo: "2o Quad 2024", pessoal: 32.5 },
   { periodo: "3o Quad 2024", pessoal: Number(percentualPessoalRCL) },
-]
+];
 
 // Despesa Corrente vs Capital
 const despesaCorrenteCapital = [
-  { tipo: "Despesas Correntes", valor: 112044500, percentual: 87.4, subcategorias: [
-    { nome: "Pessoal e Encargos", valor: 68500000 },
-    { nome: "Juros e Encargos da Divida", valor: 1144500 },
-    { nome: "Outras Despesas Correntes", valor: 42400000 },
-  ]},
-  { tipo: "Despesas de Capital", valor: 16200000, percentual: 12.6, subcategorias: [
-    { nome: "Investimentos", valor: 14200000 },
-    { nome: "Inversoes Financeiras", valor: 500000 },
-    { nome: "Amortização da Dívida", valor: 1500000 },
-  ]},
-]
+  {
+    tipo: "Despesas Correntes",
+    valor: 112044500,
+    percentual: 87.4,
+    subcategorias: [
+      { nome: "Pessoal e Encargos", valor: 68500000 },
+      { nome: "Juros e Encargos da Divida", valor: 1144500 },
+      { nome: "Outras Despesas Correntes", valor: 42400000 },
+    ],
+  },
+  {
+    tipo: "Despesas de Capital",
+    valor: 16200000,
+    percentual: 12.6,
+    subcategorias: [
+      { nome: "Investimentos", valor: 14200000 },
+      { nome: "Inversoes Financeiras", valor: 500000 },
+      { nome: "Amortização da Dívida", valor: 1500000 },
+    ],
+  },
+];
 
 const despesaCorrenteCapitalChart = [
   { nome: "Correntes", valor: 112044500, fill: "var(--chart-1)" },
   { nome: "Capital", valor: 16200000, fill: "var(--chart-3)" },
-]
+];
 
 // Restos a Pagar - Aging
 const restosAPagarAging = [
-  { faixa: "Ate 30 dias", processados: 4200000, naoProcessados: 1800000, total: 6000000, risco: "baixo" },
-  { faixa: "31-60 dias", processados: 2100000, naoProcessados: 950000, total: 3050000, risco: "baixo" },
-  { faixa: "61-90 dias", processados: 890000, naoProcessados: 420000, total: 1310000, risco: "medio" },
-  { faixa: "91-180 dias", processados: 650000, naoProcessados: 380000, total: 1030000, risco: "alto" },
-  { faixa: "Acima de 180 dias", processados: 520000, naoProcessados: 374500, total: 894500, risco: "critico" },
-]
+  {
+    faixa: "Ate 30 dias",
+    processados: 4200000,
+    naoProcessados: 1800000,
+    total: 6000000,
+    risco: "baixo",
+  },
+  {
+    faixa: "31-60 dias",
+    processados: 2100000,
+    naoProcessados: 950000,
+    total: 3050000,
+    risco: "baixo",
+  },
+  {
+    faixa: "61-90 dias",
+    processados: 890000,
+    naoProcessados: 420000,
+    total: 1310000,
+    risco: "medio",
+  },
+  {
+    faixa: "91-180 dias",
+    processados: 650000,
+    naoProcessados: 380000,
+    total: 1030000,
+    risco: "alto",
+  },
+  {
+    faixa: "Acima de 180 dias",
+    processados: 520000,
+    naoProcessados: 374500,
+    total: 894500,
+    risco: "critico",
+  },
+];
 
-const totalRestosProcessados = restosAPagarAging.reduce((acc, r) => acc + r.processados, 0)
-const totalRestosNaoProcessados = restosAPagarAging.reduce((acc, r) => acc + r.naoProcessados, 0)
-const totalRestosGeral = restosAPagarAging.reduce((acc, r) => acc + r.total, 0)
+const totalRestosProcessados = restosAPagarAging.reduce(
+  (acc, r) => acc + r.processados,
+  0,
+);
+const totalRestosNaoProcessados = restosAPagarAging.reduce(
+  (acc, r) => acc + r.naoProcessados,
+  0,
+);
+const totalRestosGeral = restosAPagarAging.reduce((acc, r) => acc + r.total, 0);
 
 // Projecao de Execucao por Secretaria
 const projecaoExecucao = [
-  { secretaria: "SEMSA", atual: 95, projetado: 97, meta: 95, status: "atingido" },
-  { secretaria: "SEMED", atual: 93, projetado: 95, meta: 95, status: "atencao" },
-  { secretaria: "SEMINF", atual: 86, projetado: 90, meta: 95, status: "critico" },
-  { secretaria: "SEMAS", atual: 90, projetado: 93, meta: 95, status: "atencao" },
-  { secretaria: "SEMAD", atual: 90, projetado: 94, meta: 95, status: "atencao" },
-  { secretaria: "SEMFAZ", atual: 93, projetado: 96, meta: 95, status: "atingido" },
+  {
+    secretaria: "SEMSA",
+    atual: 95,
+    projetado: 97,
+    meta: 95,
+    status: "atingido",
+  },
+  {
+    secretaria: "SEMED",
+    atual: 93,
+    projetado: 95,
+    meta: 95,
+    status: "atencao",
+  },
+  {
+    secretaria: "SEMINF",
+    atual: 86,
+    projetado: 90,
+    meta: 95,
+    status: "critico",
+  },
+  {
+    secretaria: "SEMAS",
+    atual: 90,
+    projetado: 93,
+    meta: 95,
+    status: "atencao",
+  },
+  {
+    secretaria: "SEMAD",
+    atual: 90,
+    projetado: 94,
+    meta: 95,
+    status: "atencao",
+  },
+  {
+    secretaria: "SEMFAZ",
+    atual: 93,
+    projetado: 96,
+    meta: 95,
+    status: "atingido",
+  },
   { secretaria: "GAB", atual: 78, projetado: 85, meta: 95, status: "critico" },
-  { secretaria: "SEMMA", atual: 85, projetado: 91, meta: 95, status: "atencao" },
-]
+  {
+    secretaria: "SEMMA",
+    atual: 85,
+    projetado: 91,
+    meta: 95,
+    status: "atencao",
+  },
+];
 
 // Benchmark Municipal
 const benchmarkDespesa = [
-  { municipio: "Município Atual", execucao: 92, pessoalRCL: Number(percentualPessoalRCL), investimento: 12.6, restosAPagar: 9.6, destaque: true },
-  { municipio: "Município A (Similar)", execucao: 89, pessoalRCL: 38.2, investimento: 10.1, restosAPagar: 14.2, destaque: false },
-  { municipio: "Município B (Similar)", execucao: 94, pessoalRCL: 35.5, investimento: 14.8, restosAPagar: 7.8, destaque: false },
-  { municipio: "Município C (Similar)", execucao: 86, pessoalRCL: 42.1, investimento: 8.5, restosAPagar: 18.5, destaque: false },
-  { municipio: "Média Regional", execucao: 90, pessoalRCL: 37.8, investimento: 11.5, restosAPagar: 12.5, destaque: false },
-]
+  {
+    municipio: "Município Atual",
+    execucao: 92,
+    pessoalRCL: Number(percentualPessoalRCL),
+    investimento: 12.6,
+    restosAPagar: 9.6,
+    destaque: true,
+  },
+  {
+    municipio: "Município A (Similar)",
+    execucao: 89,
+    pessoalRCL: 38.2,
+    investimento: 10.1,
+    restosAPagar: 14.2,
+    destaque: false,
+  },
+  {
+    municipio: "Município B (Similar)",
+    execucao: 94,
+    pessoalRCL: 35.5,
+    investimento: 14.8,
+    restosAPagar: 7.8,
+    destaque: false,
+  },
+  {
+    municipio: "Município C (Similar)",
+    execucao: 86,
+    pessoalRCL: 42.1,
+    investimento: 8.5,
+    restosAPagar: 18.5,
+    destaque: false,
+  },
+  {
+    municipio: "Média Regional",
+    execucao: 90,
+    pessoalRCL: 37.8,
+    investimento: 11.5,
+    restosAPagar: 12.5,
+    destaque: false,
+  },
+];
 
 // Alertas e recomendacoes
 const alertasGestao = [
-  { tipo: "warning", titulo: "Baixa Execução em Infraestrutura", descricao: "A Secretaria de Infraestrutura apresenta execução de apenas 86% do orçamento, abaixo da média municipal.", orgao: "SEMINF" },
-  { tipo: "info", titulo: "Aumento de Restos a Pagar", descricao: "Observado aumento de 8% nos restos a pagar em relação ao mês anterior na área de saúde.", orgao: "SEMSA" },
-  { tipo: "success", titulo: "Meta de Educação Atingida", descricao: "A Secretaria de Educação atingiu 93% da meta de execução orçamentária prevista para o periodo.", orgao: "SEMED" },
-]
+  {
+    tipo: "warning",
+    titulo: "Baixa Execução em Infraestrutura",
+    descricao:
+      "A Secretaria de Infraestrutura apresenta execução de apenas 86% do orçamento, abaixo da média municipal.",
+    orgao: "SEMINF",
+  },
+  {
+    tipo: "info",
+    titulo: "Aumento de Restos a Pagar",
+    descricao:
+      "Observado aumento de 8% nos restos a pagar em relação ao mês anterior na área de saúde.",
+    orgao: "SEMSA",
+  },
+  {
+    tipo: "success",
+    titulo: "Meta de Educação Atingida",
+    descricao:
+      "A Secretaria de Educação atingiu 93% da meta de execução orçamentária prevista para o periodo.",
+    orgao: "SEMED",
+  },
+];
 
 // Timeline de eventos
 const eventosRecentes = [
-  { data: "28/11/2024", evento: "Empenho de R$ 2.5M para merenda escolar", tipo: "empenho", secretaria: "SEMED" },
-  { data: "25/11/2024", evento: "Pagamento de R$ 1.8M para obras de pavimentacao", tipo: "pagamento", secretaria: "SEMINF" },
-  { data: "22/11/2024", evento: "Abertura de licitação para aquisição de medicamentos", tipo: "licitacao", secretaria: "SEMSA" },
-  { data: "20/11/2024", evento: "Liquidação de R$ 3.2M em contratos diversos", tipo: "liquidacao", secretaria: "SEMAD" },
-  { data: "18/11/2024", evento: "Suplementação orçamentária de R$ 1,5M", tipo: "credito", secretaria: "SEMFAZ" },
-]
+  {
+    data: "28/11/2024",
+    evento: "Empenho de R$ 2.5M para merenda escolar",
+    tipo: "empenho",
+    secretaria: "SEMED",
+  },
+  {
+    data: "25/11/2024",
+    evento: "Pagamento de R$ 1.8M para obras de pavimentacao",
+    tipo: "pagamento",
+    secretaria: "SEMINF",
+  },
+  {
+    data: "22/11/2024",
+    evento: "Abertura de licitação para aquisição de medicamentos",
+    tipo: "licitacao",
+    secretaria: "SEMSA",
+  },
+  {
+    data: "20/11/2024",
+    evento: "Liquidação de R$ 3.2M em contratos diversos",
+    tipo: "liquidacao",
+    secretaria: "SEMAD",
+  },
+  {
+    data: "18/11/2024",
+    evento: "Suplementação orçamentária de R$ 1,5M",
+    tipo: "credito",
+    secretaria: "SEMFAZ",
+  },
+];
 
 // Função para formatar valores em reais
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(value)
+  }).format(value);
 }
 
 // Função para formatar valores em milhões
 function formatMillions(value: number): string {
-  return `R$ ${(value / 1000000).toFixed(1)}M`
+  return `R$ ${(value / 1000000).toFixed(1)}M`;
 }
 
 // Função para calcular percentual
 function calcPercent(value: number, total: number): number {
-  return Math.round((value / total) * 100)
+  return Math.round((value / total) * 100);
 }
 
 export function DespesaMunicipal() {
-  const [periodoSelecionado, setPeriodoSelecionado] = React.useState("2024")
-  const [viewMode, setViewMode] = React.useState("orgao")
+  const [periodoSelecionado, setPeriodoSelecionado] = React.useState("2024");
+  const [viewMode, setViewMode] = React.useState("orgao");
 
   return (
     <div className="space-y-8">
       {/* Header com filtros */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Despesa Municipal</h2>
-          <p className="text-muted-foreground">Execução orçamentária do município</p>
+          <h2 className="text-2xl font-bold text-foreground">
+            Despesa Municipal
+          </h2>
+          <p className="text-muted-foreground">
+            Execução orçamentária do município
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Select value={periodoSelecionado} onValueChange={setPeriodoSelecionado}>
+          <Select
+            value={periodoSelecionado}
+            onValueChange={setPeriodoSelecionado}
+          >
             <SelectTrigger className="w-32">
               <SelectValue placeholder="Periodo" />
             </SelectTrigger>
@@ -442,100 +1020,108 @@ export function DespesaMunicipal() {
             </SelectContent>
           </Select>
           <Button variant="outline" size="sm">
-            <HugeiconsIcon icon={FilterIcon} strokeWidth={2} className="mr-2 size-4" />
+            <HugeiconsIcon
+              icon={FilterIcon}
+              strokeWidth={2}
+              className="mr-2 size-4"
+            />
             Filtros
           </Button>
           <Button variant="outline" size="sm">
-            <HugeiconsIcon icon={Download01Icon} strokeWidth={2} className="mr-2 size-4" />
+            <HugeiconsIcon
+              icon={Download01Icon}
+              strokeWidth={2}
+              className="mr-2 size-4"
+            />
             Exportar
           </Button>
           <Button variant="outline" size="icon" className="size-8">
-            <HugeiconsIcon icon={RefreshIcon} strokeWidth={2} className="size-4" />
+            <HugeiconsIcon
+              icon={RefreshIcon}
+              strokeWidth={2}
+              className="size-4"
+            />
           </Button>
         </div>
       </div>
 
       {/* KPIs Principais */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <Card className="border-l-4 border-l-blue-500">
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2">
-              <HugeiconsIcon icon={Wallet01Icon} strokeWidth={2} className="size-4" />
-              Despesa Atualizada
-            </CardDescription>
-            <CardTitle className="text-2xl">{formatCurrency(totais.atualizada)}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <span>Orçamento atualizado do exercício</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-green-500">
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2">
-              <HugeiconsIcon icon={Invoice01Icon} strokeWidth={2} className="size-4" />
-              Despesa Empenhada
-            </CardDescription>
-            <CardTitle className="text-2xl">{formatCurrency(totais.empenhada)}</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <KpiCard
+          title="Despesa Atualizada"
+          icon={Wallet01Icon}
+          value={formatCurrency(totais.atualizada)}
+          borderColor="border-l-blue-500"
+          footer={
+            <p className="text-xs text-muted-foreground">
+              Orçamento atualizado do exercício
+            </p>
+          }
+        />
+        <KpiCard
+          title="Despesa Empenhada"
+          icon={Invoice01Icon}
+          value={formatCurrency(totais.empenhada)}
+          borderColor="border-l-green-500"
+          footer={
             <div className="flex items-center gap-2">
-              <Progress value={calcPercent(totais.empenhada, totais.atualizada)} className="h-2 flex-1" />
-              <span className="text-xs font-medium">{calcPercent(totais.empenhada, totais.atualizada)}%</span>
+              <Progress
+                value={calcPercent(totais.empenhada, totais.atualizada)}
+                className="h-2 flex-1"
+              />
+              <span className="text-xs font-medium">
+                {calcPercent(totais.empenhada, totais.atualizada)}%
+              </span>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-amber-500">
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2">
-              <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} className="size-4" />
-              A Empenhar
-            </CardDescription>
-            <CardTitle className="text-2xl">{formatCurrency(totais.aEmpenhar)}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <span>{calcPercent(totais.aEmpenhar, totais.atualizada)}% do orçamento disponivel</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-red-500">
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2">
-              <HugeiconsIcon icon={MoneyReceiveSquareIcon} strokeWidth={2} className="size-4" />
-              Pago
-            </CardDescription>
-            <CardTitle className="text-2xl">{formatCurrency(totais.pago)}</CardTitle>
-          </CardHeader>
-          <CardContent>
+          }
+        />
+        <KpiCard
+          title="A Empenhar"
+          icon={Calendar01Icon}
+          value={formatCurrency(totais.aEmpenhar)}
+          borderColor="border-l-amber-500"
+          footer={
+            <p className="text-xs text-muted-foreground">
+              {calcPercent(totais.aEmpenhar, totais.atualizada)}% do orçamento
+              disponivel
+            </p>
+          }
+        />
+        <KpiCard
+          title="Pago"
+          icon={MoneyReceiveSquareIcon}
+          value={formatCurrency(totais.pago)}
+          borderColor="border-l-red-500"
+          footer={
             <div className="flex items-center gap-2">
-              <Progress value={calcPercent(totais.pago, totais.empenhada)} className="h-2 flex-1" />
-              <span className="text-xs font-medium">{calcPercent(totais.pago, totais.empenhada)}%</span>
+              <Progress
+                value={calcPercent(totais.pago, totais.empenhada)}
+                className="h-2 flex-1"
+              />
+              <span className="text-xs font-medium">
+                {calcPercent(totais.pago, totais.empenhada)}%
+              </span>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-orange-500">
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2">
-              <HugeiconsIcon icon={Building06Icon} strokeWidth={2} className="size-4" />
-              A Pagar
-            </CardDescription>
-            <CardTitle className="text-2xl">{formatCurrency(totais.aPagar)}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-1 text-xs">
-              <Badge variant="outline" className="text-amber-600">
-                <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} className="size-3" />
+          }
+        />
+        <KpiCard
+          title="A Pagar"
+          icon={Building06Icon}
+          value={formatCurrency(totais.aPagar)}
+          borderColor="border-l-orange-500"
+          footer={
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <HugeiconsIcon
+                icon={ArrowUp01Icon}
+                strokeWidth={2}
+                className="size-3 text-amber-600"
+              />
+              <span className="text-amber-600">
                 {calcPercent(totais.aPagar, totais.empenhada)}% pendente
-              </Badge>
+              </span>
             </div>
-          </CardContent>
-        </Card>
+          }
+        />
       </div>
 
       {/* Graficos de Visao Geral */}
@@ -548,19 +1134,51 @@ export function DespesaMunicipal() {
           </CardHeader>
           <CardContent>
             <ChartContainer
-              config={{
-                empenhado: { label: "Empenhado", color: "var(--chart-1)" },
-                pago: { label: "Pago", color: "var(--chart-2)" },
-              } satisfies ChartConfig}
+              config={
+                {
+                  empenhado: { label: "Empenhado", color: "var(--chart-1)" },
+                  pago: { label: "Pago", color: "var(--chart-2)" },
+                } satisfies ChartConfig
+              }
               className="h-[280px] w-full"
             >
               <AreaChart data={evolucaoMensal} margin={{ left: 0, right: 12 }}>
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="mes" tickLine={false} axisLine={false} tickMargin={8} />
-                <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} />
-                <ChartTooltip content={<ChartTooltipContent formatter={(value) => formatCurrency(Number(value))} />} />
-                <Area type="monotone" dataKey="empenhado" fill="var(--color-empenhado)" fillOpacity={0.3} stroke="var(--color-empenhado)" strokeWidth={2} />
-                <Area type="monotone" dataKey="pago" fill="var(--color-pago)" fillOpacity={0.3} stroke="var(--color-pago)" strokeWidth={2} />
+                <XAxis
+                  dataKey="mes"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`}
+                />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value) => formatCurrency(Number(value))}
+                    />
+                  }
+                />
+                <Area
+                  type="monotone"
+                  dataKey="empenhado"
+                  fill="var(--color-empenhado)"
+                  fillOpacity={0.3}
+                  stroke="var(--color-empenhado)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="pago"
+                  fill="var(--color-pago)"
+                  fillOpacity={0.3}
+                  stroke="var(--color-pago)"
+                  strokeWidth={2}
+                />
                 <ChartLegend content={<ChartLegendContent />} />
               </AreaChart>
             </ChartContainer>
@@ -575,24 +1193,56 @@ export function DespesaMunicipal() {
           </CardHeader>
           <CardContent>
             <ChartContainer
-              config={{
-                SEMSA: { label: "Saude", color: "var(--chart-1)" },
-                SEMED: { label: "Educacao", color: "var(--chart-2)" },
-                SEMINF: { label: "Infraestrutura", color: "var(--chart-3)" },
-                SEMAS: { label: "Assistencia Social", color: "var(--chart-4)" },
-                outros: { label: "Outros", color: "var(--chart-5)" },
-              } satisfies ChartConfig}
+              config={
+                {
+                  SEMSA: { label: "Saude", color: "var(--chart-1)" },
+                  SEMED: { label: "Educacao", color: "var(--chart-2)" },
+                  SEMINF: { label: "Infraestrutura", color: "var(--chart-3)" },
+                  SEMAS: {
+                    label: "Assistencia Social",
+                    color: "var(--chart-4)",
+                  },
+                  outros: { label: "Outros", color: "var(--chart-5)" },
+                } satisfies ChartConfig
+              }
               className="mx-auto aspect-square h-[280px]"
             >
               <PieChart>
-                <ChartTooltip content={<ChartTooltipContent formatter={(value) => formatCurrency(Number(value))} hideLabel />} />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value) => formatCurrency(Number(value))}
+                      hideLabel
+                    />
+                  }
+                />
                 <Pie
                   data={[
-                    { name: "SEMSA", value: 49800000, fill: "var(--color-SEMSA)" },
-                    { name: "SEMED", value: 42300000, fill: "var(--color-SEMED)" },
-                    { name: "SEMINF", value: 16200000, fill: "var(--color-SEMINF)" },
-                    { name: "SEMAS", value: 7890000, fill: "var(--color-SEMAS)" },
-                    { name: "outros", value: 12054500, fill: "var(--color-outros)" },
+                    {
+                      name: "SEMSA",
+                      value: 49800000,
+                      fill: "var(--color-SEMSA)",
+                    },
+                    {
+                      name: "SEMED",
+                      value: 42300000,
+                      fill: "var(--color-SEMED)",
+                    },
+                    {
+                      name: "SEMINF",
+                      value: 16200000,
+                      fill: "var(--color-SEMINF)",
+                    },
+                    {
+                      name: "SEMAS",
+                      value: 7890000,
+                      fill: "var(--color-SEMAS)",
+                    },
+                    {
+                      name: "outros",
+                      value: 12054500,
+                      fill: "var(--color-outros)",
+                    },
                   ]}
                   dataKey="value"
                   nameKey="name"
@@ -624,7 +1274,9 @@ export function DespesaMunicipal() {
           <Card>
             <CardHeader>
               <CardTitle>Execução por Órgão</CardTitle>
-              <CardDescription>Despesa orcamentaria por orgao da administracao</CardDescription>
+              <CardDescription>
+                Despesa orcamentaria por orgao da administracao
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -643,17 +1295,34 @@ export function DespesaMunicipal() {
                 <TableBody>
                   {dadosÓrgãos.map((item) => (
                     <TableRow key={item.codigo}>
-                      <TableCell className="font-mono text-xs">{item.codigo}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {item.codigo}
+                      </TableCell>
                       <TableCell className="font-medium">{item.nome}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.atualizada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.empenhada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm text-muted-foreground">{formatCurrency(item.aEmpenhar)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.pago)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm text-amber-600">{formatCurrency(item.aPagar)}</TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.atualizada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.empenhada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm text-muted-foreground">
+                        {formatCurrency(item.aEmpenhar)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.pago)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm text-amber-600">
+                        {formatCurrency(item.aPagar)}
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Progress value={calcPercent(item.empenhada, item.atualizada)} className="h-2 flex-1" />
-                          <span className="w-10 text-right text-xs">{calcPercent(item.empenhada, item.atualizada)}%</span>
+                          <Progress
+                            value={calcPercent(item.empenhada, item.atualizada)}
+                            className="h-2 flex-1"
+                          />
+                          <span className="w-10 text-right text-xs">
+                            {calcPercent(item.empenhada, item.atualizada)}%
+                          </span>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -661,12 +1330,24 @@ export function DespesaMunicipal() {
                 </TableBody>
                 <TableFooter>
                   <TableRow>
-                    <TableCell colSpan={2} className="font-bold">Total Geral</TableCell>
-                    <TableCell className="text-right font-mono font-bold">{formatCurrency(totais.atualizada)}</TableCell>
-                    <TableCell className="text-right font-mono font-bold">{formatCurrency(totais.empenhada)}</TableCell>
-                    <TableCell className="text-right font-mono font-bold">{formatCurrency(totais.aEmpenhar)}</TableCell>
-                    <TableCell className="text-right font-mono font-bold">{formatCurrency(totais.pago)}</TableCell>
-                    <TableCell className="text-right font-mono font-bold">{formatCurrency(totais.aPagar)}</TableCell>
+                    <TableCell colSpan={2} className="font-bold">
+                      Total Geral
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold">
+                      {formatCurrency(totais.atualizada)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold">
+                      {formatCurrency(totais.empenhada)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold">
+                      {formatCurrency(totais.aEmpenhar)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold">
+                      {formatCurrency(totais.pago)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold">
+                      {formatCurrency(totais.aPagar)}
+                    </TableCell>
                     <TableCell></TableCell>
                   </TableRow>
                 </TableFooter>
@@ -680,7 +1361,9 @@ export function DespesaMunicipal() {
           <Card>
             <CardHeader>
               <CardTitle>Execução por Unidade Orçamentária</CardTitle>
-              <CardDescription>Despesa orcamentaria por unidade (Educacao)</CardDescription>
+              <CardDescription>
+                Despesa orcamentaria por unidade (Educacao)
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -699,17 +1382,34 @@ export function DespesaMunicipal() {
                 <TableBody>
                   {dadosUnidades.map((item) => (
                     <TableRow key={item.codigo}>
-                      <TableCell className="font-mono text-xs">{item.codigo}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {item.codigo}
+                      </TableCell>
                       <TableCell className="font-medium">{item.nome}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.atualizada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.empenhada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm text-muted-foreground">{formatCurrency(item.aEmpenhar)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.pago)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm text-amber-600">{formatCurrency(item.aPagar)}</TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.atualizada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.empenhada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm text-muted-foreground">
+                        {formatCurrency(item.aEmpenhar)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.pago)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm text-amber-600">
+                        {formatCurrency(item.aPagar)}
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Progress value={calcPercent(item.empenhada, item.atualizada)} className="h-2 flex-1" />
-                          <span className="w-10 text-right text-xs">{calcPercent(item.empenhada, item.atualizada)}%</span>
+                          <Progress
+                            value={calcPercent(item.empenhada, item.atualizada)}
+                            className="h-2 flex-1"
+                          />
+                          <span className="w-10 text-right text-xs">
+                            {calcPercent(item.empenhada, item.atualizada)}%
+                          </span>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -725,7 +1425,9 @@ export function DespesaMunicipal() {
           <Card>
             <CardHeader>
               <CardTitle>Execução por Função/Subfunção</CardTitle>
-              <CardDescription>Classificação funcional da despesa</CardDescription>
+              <CardDescription>
+                Classificação funcional da despesa
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -743,16 +1445,31 @@ export function DespesaMunicipal() {
                 <TableBody>
                   {dadosFuncaoSubfuncao.map((item, i) => (
                     <TableRow key={i}>
-                      <TableCell className="font-mono text-xs">{item.funcao}</TableCell>
-                      <TableCell className="font-mono text-xs">{item.subfuncao}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {item.funcao}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {item.subfuncao}
+                      </TableCell>
                       <TableCell className="font-medium">{item.nome}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.atualizada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.empenhada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.pago)}</TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.atualizada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.empenhada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.pago)}
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Progress value={calcPercent(item.empenhada, item.atualizada)} className="h-2 flex-1" />
-                          <span className="w-10 text-right text-xs">{calcPercent(item.empenhada, item.atualizada)}%</span>
+                          <Progress
+                            value={calcPercent(item.empenhada, item.atualizada)}
+                            className="h-2 flex-1"
+                          />
+                          <span className="w-10 text-right text-xs">
+                            {calcPercent(item.empenhada, item.atualizada)}%
+                          </span>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -787,17 +1504,34 @@ export function DespesaMunicipal() {
                 <TableBody>
                   {dadosProgramas.map((item) => (
                     <TableRow key={item.codigo}>
-                      <TableCell className="font-mono text-xs">{item.codigo}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {item.codigo}
+                      </TableCell>
                       <TableCell className="font-medium">{item.nome}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.atualizada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.empenhada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm text-muted-foreground">{formatCurrency(item.aEmpenhar)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.pago)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm text-amber-600">{formatCurrency(item.aPagar)}</TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.atualizada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.empenhada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm text-muted-foreground">
+                        {formatCurrency(item.aEmpenhar)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.pago)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm text-amber-600">
+                        {formatCurrency(item.aPagar)}
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Progress value={calcPercent(item.empenhada, item.atualizada)} className="h-2 flex-1" />
-                          <span className="w-10 text-right text-xs">{calcPercent(item.empenhada, item.atualizada)}%</span>
+                          <Progress
+                            value={calcPercent(item.empenhada, item.atualizada)}
+                            className="h-2 flex-1"
+                          />
+                          <span className="w-10 text-right text-xs">
+                            {calcPercent(item.empenhada, item.atualizada)}%
+                          </span>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -813,7 +1547,9 @@ export function DespesaMunicipal() {
           <Card>
             <CardHeader>
               <CardTitle>Execução por Ação</CardTitle>
-              <CardDescription>Projetos e atividades orcamentarias</CardDescription>
+              <CardDescription>
+                Projetos e atividades orcamentarias
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -831,20 +1567,38 @@ export function DespesaMunicipal() {
                 <TableBody>
                   {dadosAcoes.map((item) => (
                     <TableRow key={item.codigo}>
-                      <TableCell className="font-mono text-xs">{item.codigo}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {item.codigo}
+                      </TableCell>
                       <TableCell>
-                        <Badge variant={item.tipo === "Projeto" ? "default" : "secondary"} className="text-xs">
+                        <Badge
+                          variant={
+                            item.tipo === "Projeto" ? "default" : "secondary"
+                          }
+                          className="text-xs"
+                        >
                           {item.tipo}
                         </Badge>
                       </TableCell>
                       <TableCell className="font-medium">{item.nome}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.atualizada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.empenhada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.pago)}</TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.atualizada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.empenhada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.pago)}
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Progress value={calcPercent(item.empenhada, item.atualizada)} className="h-2 flex-1" />
-                          <span className="w-10 text-right text-xs">{calcPercent(item.empenhada, item.atualizada)}%</span>
+                          <Progress
+                            value={calcPercent(item.empenhada, item.atualizada)}
+                            className="h-2 flex-1"
+                          />
+                          <span className="w-10 text-right text-xs">
+                            {calcPercent(item.empenhada, item.atualizada)}%
+                          </span>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -860,7 +1614,9 @@ export function DespesaMunicipal() {
           <Card>
             <CardHeader>
               <CardTitle>Execução por Secretaria</CardTitle>
-              <CardDescription>Visao consolidada por secretaria</CardDescription>
+              <CardDescription>
+                Visao consolidada por secretaria
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -880,18 +1636,35 @@ export function DespesaMunicipal() {
                   {dadosSecretarias.map((item) => (
                     <TableRow key={item.sigla}>
                       <TableCell>
-                        <Badge variant="outline" className="font-mono text-xs">{item.sigla}</Badge>
+                        <Badge variant="outline" className="font-mono text-xs">
+                          {item.sigla}
+                        </Badge>
                       </TableCell>
                       <TableCell className="font-medium">{item.nome}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.atualizada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.empenhada)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm text-muted-foreground">{formatCurrency(item.aEmpenhar)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(item.pago)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm text-amber-600">{formatCurrency(item.aPagar)}</TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.atualizada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.empenhada)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm text-muted-foreground">
+                        {formatCurrency(item.aEmpenhar)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {formatCurrency(item.pago)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm text-amber-600">
+                        {formatCurrency(item.aPagar)}
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Progress value={calcPercent(item.empenhada, item.atualizada)} className="h-2 flex-1" />
-                          <span className="w-10 text-right text-xs">{calcPercent(item.empenhada, item.atualizada)}%</span>
+                          <Progress
+                            value={calcPercent(item.empenhada, item.atualizada)}
+                            className="h-2 flex-1"
+                          />
+                          <span className="w-10 text-right text-xs">
+                            {calcPercent(item.empenhada, item.atualizada)}%
+                          </span>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -913,14 +1686,16 @@ export function DespesaMunicipal() {
           </CardHeader>
           <CardContent>
             <ChartContainer
-              config={{
-                empenhada: { label: "Empenhada", color: "var(--chart-1)" },
-                pago: { label: "Pago", color: "var(--chart-2)" },
-              } satisfies ChartConfig}
+              config={
+                {
+                  empenhada: { label: "Empenhada", color: "var(--chart-1)" },
+                  pago: { label: "Pago", color: "var(--chart-2)" },
+                } satisfies ChartConfig
+              }
               className="h-[300px] w-full"
             >
               <BarChart
-                data={dadosSecretarias.slice(0, 5).map(s => ({
+                data={dadosSecretarias.slice(0, 5).map((s) => ({
                   sigla: s.sigla,
                   empenhada: s.empenhada,
                   pago: s.pago,
@@ -929,11 +1704,36 @@ export function DespesaMunicipal() {
                 margin={{ left: 60, right: 12 }}
               >
                 <CartesianGrid horizontal={false} />
-                <XAxis type="number" tickLine={false} axisLine={false} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} />
-                <YAxis dataKey="sigla" type="category" tickLine={false} axisLine={false} tickMargin={8} />
-                <ChartTooltip content={<ChartTooltipContent formatter={(value) => formatCurrency(Number(value))} />} />
-                <Bar dataKey="empenhada" fill="var(--color-empenhada)" radius={[0, 4, 4, 0]} />
-                <Bar dataKey="pago" fill="var(--color-pago)" radius={[0, 4, 4, 0]} />
+                <XAxis
+                  type="number"
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`}
+                />
+                <YAxis
+                  dataKey="sigla"
+                  type="category"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value) => formatCurrency(Number(value))}
+                    />
+                  }
+                />
+                <Bar
+                  dataKey="empenhada"
+                  fill="var(--color-empenhada)"
+                  radius={[0, 4, 4, 0]}
+                />
+                <Bar
+                  dataKey="pago"
+                  fill="var(--color-pago)"
+                  radius={[0, 4, 4, 0]}
+                />
                 <ChartLegend content={<ChartLegendContent />} />
               </BarChart>
             </ChartContainer>
@@ -948,21 +1748,27 @@ export function DespesaMunicipal() {
           </CardHeader>
           <CardContent className="space-y-4">
             {dadosÓrgãos
-              .filter(o => calcPercent(o.empenhada, o.atualizada) < 90)
-              .sort((a, b) => calcPercent(a.empenhada, a.atualizada) - calcPercent(b.empenhada, b.atualizada))
+              .filter((o) => calcPercent(o.empenhada, o.atualizada) < 90)
+              .sort(
+                (a, b) =>
+                  calcPercent(a.empenhada, a.atualizada) -
+                  calcPercent(b.empenhada, b.atualizada),
+              )
               .map((item) => (
                 <div key={item.codigo} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="font-mono text-xs">{item.codigo}</Badge>
+                      <Badge variant="outline" className="font-mono text-xs">
+                        {item.codigo}
+                      </Badge>
                       <span className="text-sm font-medium">{item.nome}</span>
                     </div>
                     <span className="text-sm font-medium">
                       {calcPercent(item.empenhada, item.atualizada)}%
                     </span>
                   </div>
-                  <Progress 
-                    value={calcPercent(item.empenhada, item.atualizada)} 
+                  <Progress
+                    value={calcPercent(item.empenhada, item.atualizada)}
                     className="h-2"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
@@ -982,28 +1788,64 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={ArrowUp01Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Evolucao Historica (5 anos)
             </CardTitle>
-            <CardDescription>Comparativo da execução orçamentária anual</CardDescription>
+            <CardDescription>
+              Comparativo da execução orçamentária anual
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
-              config={{
-                atualizada: { label: "Orçamento", color: "var(--chart-3)" },
-                empenhada: { label: "Empenhado", color: "var(--chart-1)" },
-                pago: { label: "Pago", color: "var(--chart-2)" },
-              } satisfies ChartConfig}
+              config={
+                {
+                  atualizada: { label: "Orçamento", color: "var(--chart-3)" },
+                  empenhada: { label: "Empenhado", color: "var(--chart-1)" },
+                  pago: { label: "Pago", color: "var(--chart-2)" },
+                } satisfies ChartConfig
+              }
               className="h-[280px] w-full"
             >
               <BarChart data={comparativoAnual} margin={{ left: 0, right: 12 }}>
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="ano" tickLine={false} axisLine={false} tickMargin={8} />
-                <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} />
-                <ChartTooltip content={<ChartTooltipContent formatter={(value) => formatCurrency(Number(value))} />} />
-                <Bar dataKey="atualizada" fill="var(--color-atualizada)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="empenhada" fill="var(--color-empenhada)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="pago" fill="var(--color-pago)" radius={[4, 4, 0, 0]} />
+                <XAxis
+                  dataKey="ano"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`}
+                />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value) => formatCurrency(Number(value))}
+                    />
+                  }
+                />
+                <Bar
+                  dataKey="atualizada"
+                  fill="var(--color-atualizada)"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar
+                  dataKey="empenhada"
+                  fill="var(--color-empenhada)"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar
+                  dataKey="pago"
+                  fill="var(--color-pago)"
+                  radius={[4, 4, 0, 0]}
+                />
                 <ChartLegend content={<ChartLegendContent />} />
               </BarChart>
             </ChartContainer>
@@ -1014,10 +1856,16 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={PieChart02Icon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={PieChart02Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Despesa por Categoria Economica
             </CardTitle>
-            <CardDescription>Distribuicao por natureza da despesa</CardDescription>
+            <CardDescription>
+              Distribuicao por natureza da despesa
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -1025,19 +1873,25 @@ export function DespesaMunicipal() {
                 <div key={index} className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-medium">{item.name}</span>
-                    <span className="text-muted-foreground">{formatCurrency(item.value)}</span>
+                    <span className="text-muted-foreground">
+                      {formatCurrency(item.value)}
+                    </span>
                   </div>
                   <div className="relative h-3 w-full overflow-hidden rounded-full bg-muted">
-                    <div 
-                      className="h-full rounded-full transition-all" 
-                      style={{ 
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
                         width: `${(item.value / totais.empenhada) * 100}%`,
-                        backgroundColor: item.fill.replace('var(--', 'var(--color-').replace(')', ')').replace('--color-chart', '--chart')
-                      }} 
+                        backgroundColor: item.fill
+                          .replace("var(--", "var(--color-")
+                          .replace(")", ")")
+                          .replace("--color-chart", "--chart"),
+                      }}
                     />
                   </div>
                   <p className="text-xs text-muted-foreground text-right">
-                    {calcPercent(item.value, totais.empenhada)}% do total empenhado
+                    {calcPercent(item.value, totais.empenhada)}% do total
+                    empenhado
                   </p>
                 </div>
               ))}
@@ -1052,10 +1906,16 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={SecurityCheckIcon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={SecurityCheckIcon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Despesas por Modalidade de Licitação
             </CardTitle>
-            <CardDescription>Quantidade e valores por modalidade</CardDescription>
+            <CardDescription>
+              Quantidade e valores por modalidade
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -1070,11 +1930,15 @@ export function DespesaMunicipal() {
               <TableBody>
                 {modalidadeLicitacao.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell className="font-medium">{item.modalidade}</TableCell>
+                    <TableCell className="font-medium">
+                      {item.modalidade}
+                    </TableCell>
                     <TableCell className="text-center">
                       <Badge variant="secondary">{item.quantidade}</Badge>
                     </TableCell>
-                    <TableCell className="text-right">{formatCurrency(item.valor)}</TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(item.valor)}
+                    </TableCell>
                     <TableCell className="text-right text-muted-foreground">
                       {calcPercent(item.valor, totais.empenhada)}%
                     </TableCell>
@@ -1089,10 +1953,16 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={UserMultipleIcon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={UserMultipleIcon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Principais Fornecedores
             </CardTitle>
-            <CardDescription>Top 5 fornecedores por valor contratado</CardDescription>
+            <CardDescription>
+              Top 5 fornecedores por valor contratado
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -1104,13 +1974,22 @@ export function DespesaMunicipal() {
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium">{fornecedor.nome}</p>
-                      <span className="text-sm font-semibold">{formatCurrency(fornecedor.valor)}</span>
+                      <span className="text-sm font-semibold">
+                        {formatCurrency(fornecedor.valor)}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <p className="text-xs text-muted-foreground">{fornecedor.cnpj}</p>
-                      <Badge variant="outline" className="text-xs">{fornecedor.percentual}%</Badge>
+                      <p className="text-xs text-muted-foreground">
+                        {fornecedor.cnpj}
+                      </p>
+                      <Badge variant="outline" className="text-xs">
+                        {fornecedor.percentual}%
+                      </Badge>
                     </div>
-                    <Progress value={fornecedor.percentual * 5} className="h-1.5" />
+                    <Progress
+                      value={fornecedor.percentual * 5}
+                      className="h-1.5"
+                    />
                   </div>
                 </div>
               ))}
@@ -1124,10 +2003,16 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={Target01Icon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={Target01Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Alinhamento com Objetivos de Desenvolvimento Sustentavel
             </CardTitle>
-            <CardDescription>Execução orçamentária vinculada aos ODS</CardDescription>
+            <CardDescription>
+              Execução orçamentária vinculada aos ODS
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -1135,15 +2020,25 @@ export function DespesaMunicipal() {
                 <div key={index} className="rounded-lg border p-4 space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
-                      <HugeiconsIcon 
-                        icon={meta.ods === "ODS 3" ? HeartCheckIcon : meta.ods === "ODS 4" ? GraduationScrollIcon : meta.ods === "ODS 11" ? Building04Icon : StarIcon} 
-                        strokeWidth={2} 
-                        className="size-5 text-primary" 
+                      <HugeiconsIcon
+                        icon={
+                          meta.ods === "ODS 3"
+                            ? HeartCheckIcon
+                            : meta.ods === "ODS 4"
+                              ? GraduationScrollIcon
+                              : meta.ods === "ODS 11"
+                                ? Building04Icon
+                                : StarIcon
+                        }
+                        strokeWidth={2}
+                        className="size-5 text-primary"
                       />
                     </div>
                     <div>
                       <p className="font-semibold">{meta.ods}</p>
-                      <p className="text-xs text-muted-foreground">{meta.titulo}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {meta.titulo}
+                      </p>
                     </div>
                   </div>
                   <div className="space-y-1">
@@ -1161,7 +2056,6 @@ export function DespesaMunicipal() {
             </div>
           </CardContent>
         </Card>
-
       </div>
 
       {/* Rigidez Orçamentária e Limite de Pessoal LRF */}
@@ -1170,12 +2064,25 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={SecurityCheckIcon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={SecurityCheckIcon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Rigidez Orçamentária
             </CardTitle>
             <CardDescription>
-              Índice de rigidez: <strong className={Number(percentualRigidez) > 70 ? "text-red-600" : "text-amber-600"}>{percentualRigidez}%</strong> — 
-              Despesas obrigatorias sobre o total empenhado
+              Índice de rigidez:{" "}
+              <strong
+                className={
+                  Number(percentualRigidez) > 70
+                    ? "text-red-600"
+                    : "text-amber-600"
+                }
+              >
+                {percentualRigidez}%
+              </strong>{" "}
+              — Despesas obrigatorias sobre o total empenhado
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1183,24 +2090,43 @@ export function DespesaMunicipal() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-lg border p-3 text-center">
                   <p className="text-xs text-muted-foreground">Obrigatorias</p>
-                  <p className="text-lg font-bold text-red-600">{formatMillions(totalObrigatoria)}</p>
-                  <p className="text-xs text-muted-foreground">{percentualRigidez}%</p>
+                  <p className="text-lg font-bold text-red-600">
+                    {formatMillions(totalObrigatoria)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {percentualRigidez}%
+                  </p>
                 </div>
                 <div className="rounded-lg border p-3 text-center">
-                  <p className="text-xs text-muted-foreground">Discricionarias</p>
-                  <p className="text-lg font-bold text-green-600">{formatMillions(totalDiscricionaria)}</p>
-                  <p className="text-xs text-muted-foreground">{(100 - Number(percentualRigidez)).toFixed(1)}%</p>
+                  <p className="text-xs text-muted-foreground">
+                    Discricionarias
+                  </p>
+                  <p className="text-lg font-bold text-green-600">
+                    {formatMillions(totalDiscricionaria)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {(100 - Number(percentualRigidez)).toFixed(1)}%
+                  </p>
                 </div>
               </div>
               <div className="space-y-2">
                 {rigidezOrcamentaria.map((item) => (
-                  <div key={item.categoria} className="flex items-center justify-between text-sm">
+                  <div
+                    key={item.categoria}
+                    className="flex items-center justify-between text-sm"
+                  >
                     <div className="flex items-center gap-2">
-                      <div className={`size-2 rounded-full ${item.tipo === "obrigatoria" ? "bg-red-500" : "bg-green-500"}`} />
-                      <span className="text-muted-foreground">{item.categoria}</span>
+                      <div
+                        className={`size-2 rounded-full ${item.tipo === "obrigatoria" ? "bg-red-500" : "bg-green-500"}`}
+                      />
+                      <span className="text-muted-foreground">
+                        {item.categoria}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">{formatMillions(item.valor)}</span>
+                      <span className="font-medium">
+                        {formatMillions(item.valor)}
+                      </span>
                       <Badge variant="outline" className="text-xs">
                         {((item.valor / totais.empenhada) * 100).toFixed(1)}%
                       </Badge>
@@ -1216,50 +2142,75 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={UserMultipleIcon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={UserMultipleIcon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Limite de Pessoal (LRF)
             </CardTitle>
             <CardDescription>
-              Despesa com pessoal: <strong className="text-green-600">{percentualPessoalRCL}%</strong> da RCL — 
-              Limite maximo: {limiteMaximo}%
+              Despesa com pessoal:{" "}
+              <strong className="text-green-600">
+                {percentualPessoalRCL}%
+              </strong>{" "}
+              da RCL — Limite maximo: {limiteMaximo}%
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Atual ({percentualPessoalRCL}%)</span>
-                  <span className="text-muted-foreground">Limite Prudencial ({limitePrudencial}%)</span>
-                  <span className="text-muted-foreground">Maximo ({limiteMaximo}%)</span>
+                  <span className="text-muted-foreground">
+                    Atual ({percentualPessoalRCL}%)
+                  </span>
+                  <span className="text-muted-foreground">
+                    Limite Prudencial ({limitePrudencial}%)
+                  </span>
+                  <span className="text-muted-foreground">
+                    Maximo ({limiteMaximo}%)
+                  </span>
                 </div>
                 <div className="relative h-4 w-full overflow-hidden rounded-full bg-muted">
-                  <div 
-                    className="absolute h-full rounded-full bg-green-500 transition-all" 
-                    style={{ width: `${(Number(percentualPessoalRCL) / limiteMaximo) * 100}%` }} 
+                  <div
+                    className="absolute h-full rounded-full bg-green-500 transition-all"
+                    style={{
+                      width: `${(Number(percentualPessoalRCL) / limiteMaximo) * 100}%`,
+                    }}
                   />
-                  <div 
-                    className="absolute h-full w-px bg-amber-500" 
-                    style={{ left: `${(limitePrudencial / limiteMaximo) * 100}%` }} 
+                  <div
+                    className="absolute h-full w-px bg-amber-500"
+                    style={{
+                      left: `${(limitePrudencial / limiteMaximo) * 100}%`,
+                    }}
                   />
-                  <div 
-                    className="absolute h-full w-px bg-red-500" 
-                    style={{ left: '100%' }} 
+                  <div
+                    className="absolute h-full w-px bg-red-500"
+                    style={{ left: "100%" }}
                   />
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>0%</span>
-                  <span>Margem: {(limiteMaximo - Number(percentualPessoalRCL)).toFixed(1)} p.p.</span>
+                  <span>
+                    Margem:{" "}
+                    {(limiteMaximo - Number(percentualPessoalRCL)).toFixed(1)}{" "}
+                    p.p.
+                  </span>
                 </div>
               </div>
               <Separator />
               <div className="grid grid-cols-3 gap-3">
                 <div className="rounded-lg border p-3 text-center">
                   <p className="text-xs text-muted-foreground">Desp. Pessoal</p>
-                  <p className="text-sm font-bold">{formatMillions(despesaPessoalTotal)}</p>
+                  <p className="text-sm font-bold">
+                    {formatMillions(despesaPessoalTotal)}
+                  </p>
                 </div>
                 <div className="rounded-lg border p-3 text-center">
                   <p className="text-xs text-muted-foreground">RCL</p>
-                  <p className="text-sm font-bold">{formatMillions(receitaCorrenteLiquida)}</p>
+                  <p className="text-sm font-bold">
+                    {formatMillions(receitaCorrenteLiquida)}
+                  </p>
                 </div>
                 <div className="rounded-lg border p-3 text-center bg-green-50 dark:bg-green-950/20">
                   <p className="text-xs text-muted-foreground">Situacao</p>
@@ -1267,17 +2218,47 @@ export function DespesaMunicipal() {
                 </div>
               </div>
               <ChartContainer
-                config={{
-                  pessoal: { label: "% Pessoal/RCL", color: "var(--chart-1)" },
-                } satisfies ChartConfig}
+                config={
+                  {
+                    pessoal: {
+                      label: "% Pessoal/RCL",
+                      color: "var(--chart-1)",
+                    },
+                  } satisfies ChartConfig
+                }
                 className="h-[140px] w-full"
               >
-                <LineChart data={evolucaoPessoalRCL} margin={{ left: 0, right: 12 }}>
+                <LineChart
+                  data={evolucaoPessoalRCL}
+                  margin={{ left: 0, right: 12 }}
+                >
                   <CartesianGrid vertical={false} />
-                  <XAxis dataKey="periodo" tickLine={false} axisLine={false} tickMargin={8} tick={{ fontSize: 10 }} />
-                  <YAxis tickLine={false} axisLine={false} tickMargin={8} domain={[28, 56]} tickFormatter={(v: number) => `${v}%`} />
-                  <ChartTooltip content={<ChartTooltipContent formatter={(value) => `${value}%`} />} />
-                  <Line dataKey="pessoal" type="monotone" stroke="var(--color-pessoal)" strokeWidth={2} dot={{ r: 3 }} />
+                  <XAxis
+                    dataKey="periodo"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tick={{ fontSize: 10 }}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    domain={[28, 56]}
+                    tickFormatter={(v: number) => `${v}%`}
+                  />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent formatter={(value) => `${value}%`} />
+                    }
+                  />
+                  <Line
+                    dataKey="pessoal"
+                    type="monotone"
+                    stroke="var(--color-pessoal)"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                  />
                 </LineChart>
               </ChartContainer>
             </div>
@@ -1291,22 +2272,37 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={PieChart02Icon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={PieChart02Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Despesa Corrente vs Capital
             </CardTitle>
-            <CardDescription>Composicao por categoria economica</CardDescription>
+            <CardDescription>
+              Composicao por categoria economica
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
               <ChartContainer
-                config={{
-                  correntes: { label: "Correntes", color: "var(--chart-1)" },
-                  capital: { label: "Capital", color: "var(--chart-3)" },
-                } satisfies ChartConfig}
+                config={
+                  {
+                    correntes: { label: "Correntes", color: "var(--chart-1)" },
+                    capital: { label: "Capital", color: "var(--chart-3)" },
+                  } satisfies ChartConfig
+                }
                 className="mx-auto aspect-square h-[180px]"
               >
                 <PieChart>
-                  <ChartTooltip content={<ChartTooltipContent formatter={(value) => formatCurrency(Number(value))} hideLabel />} />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        formatter={(value) => formatCurrency(Number(value))}
+                        hideLabel
+                      />
+                    }
+                  />
                   <Pie
                     data={despesaCorrenteCapitalChart}
                     dataKey="valor"
@@ -1315,10 +2311,14 @@ export function DespesaMunicipal() {
                     cy="50%"
                     innerRadius={45}
                     outerRadius={75}
-                    label={({ percent }: { percent: number }) => `${(percent * 100).toFixed(0)}%`}
+                    label={({ percent }: { percent: number }) =>
+                      `${(percent * 100).toFixed(0)}%`
+                    }
                     labelLine={false}
                   />
-                  <ChartLegend content={<ChartLegendContent nameKey="nome" />} />
+                  <ChartLegend
+                    content={<ChartLegendContent nameKey="nome" />}
+                  />
                 </PieChart>
               </ChartContainer>
               <div className="space-y-3">
@@ -1328,12 +2328,21 @@ export function DespesaMunicipal() {
                       <p className="text-sm font-medium">{cat.tipo}</p>
                       <Badge variant="outline">{cat.percentual}%</Badge>
                     </div>
-                    <p className="text-lg font-bold">{formatMillions(cat.valor)}</p>
+                    <p className="text-lg font-bold">
+                      {formatMillions(cat.valor)}
+                    </p>
                     <div className="space-y-1">
                       {cat.subcategorias.map((sub) => (
-                        <div key={sub.nome} className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">{sub.nome}</span>
-                          <span className="font-medium">{formatMillions(sub.valor)}</span>
+                        <div
+                          key={sub.nome}
+                          className="flex items-center justify-between text-xs"
+                        >
+                          <span className="text-muted-foreground">
+                            {sub.nome}
+                          </span>
+                          <span className="font-medium">
+                            {formatMillions(sub.valor)}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -1349,12 +2358,17 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={Clock01Icon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={Clock01Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Restos a Pagar — Aging
             </CardTitle>
             <CardDescription>
-              Total: <strong>{formatCurrency(totalRestosGeral)}</strong> — 
-              Processados: {formatMillions(totalRestosProcessados)} | Nao processados: {formatMillions(totalRestosNaoProcessados)}
+              Total: <strong>{formatCurrency(totalRestosGeral)}</strong> —
+              Processados: {formatMillions(totalRestosProcessados)} | Nao
+              processados: {formatMillions(totalRestosNaoProcessados)}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1372,15 +2386,38 @@ export function DespesaMunicipal() {
                 {restosAPagarAging.map((item) => (
                   <TableRow key={item.faixa}>
                     <TableCell className="font-medium">{item.faixa}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(item.processados)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(item.naoProcessados)}</TableCell>
-                    <TableCell className="text-right font-medium">{formatCurrency(item.total)}</TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(item.processados)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(item.naoProcessados)}
+                    </TableCell>
+                    <TableCell className="text-right font-medium">
+                      {formatCurrency(item.total)}
+                    </TableCell>
                     <TableCell className="text-center">
-                      <Badge 
-                        variant={item.risco === "critico" ? "destructive" : item.risco === "alto" ? "destructive" : item.risco === "medio" ? "outline" : "secondary"}
-                        className={item.risco === "critico" ? "" : item.risco === "alto" ? "" : item.risco === "medio" ? "text-amber-600" : "text-green-600"}
+                      <Badge
+                        variant={
+                          item.risco === "critico"
+                            ? "destructive"
+                            : item.risco === "alto"
+                              ? "destructive"
+                              : item.risco === "medio"
+                                ? "outline"
+                                : "secondary"
+                        }
+                        className={
+                          item.risco === "critico"
+                            ? ""
+                            : item.risco === "alto"
+                              ? ""
+                              : item.risco === "medio"
+                                ? "text-amber-600"
+                                : "text-green-600"
+                        }
                       >
-                        {item.risco.charAt(0).toUpperCase() + item.risco.slice(1)}
+                        {item.risco.charAt(0).toUpperCase() +
+                          item.risco.slice(1)}
                       </Badge>
                     </TableCell>
                   </TableRow>
@@ -1389,9 +2426,15 @@ export function DespesaMunicipal() {
               <TableFooter>
                 <TableRow>
                   <TableCell className="font-bold">Total</TableCell>
-                  <TableCell className="text-right font-bold">{formatCurrency(totalRestosProcessados)}</TableCell>
-                  <TableCell className="text-right font-bold">{formatCurrency(totalRestosNaoProcessados)}</TableCell>
-                  <TableCell className="text-right font-bold">{formatCurrency(totalRestosGeral)}</TableCell>
+                  <TableCell className="text-right font-bold">
+                    {formatCurrency(totalRestosProcessados)}
+                  </TableCell>
+                  <TableCell className="text-right font-bold">
+                    {formatCurrency(totalRestosNaoProcessados)}
+                  </TableCell>
+                  <TableCell className="text-right font-bold">
+                    {formatCurrency(totalRestosGeral)}
+                  </TableCell>
                   <TableCell />
                 </TableRow>
               </TableFooter>
@@ -1406,10 +2449,16 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={ChartLineData02Icon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={ChartLineData02Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Projeção de Execução
             </CardTitle>
-            <CardDescription>Execução atual e projetada por secretaria — Meta: 95%</CardDescription>
+            <CardDescription>
+              Execução atual e projetada por secretaria — Meta: 95%
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -1417,32 +2466,65 @@ export function DespesaMunicipal() {
                 <div key={item.secretaria} className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="font-mono text-xs">{item.secretaria}</Badge>
+                      <Badge variant="outline" className="font-mono text-xs">
+                        {item.secretaria}
+                      </Badge>
                       {item.status === "critico" && (
-                        <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} className="size-3.5 text-red-500" />
+                        <HugeiconsIcon
+                          icon={Alert02Icon}
+                          strokeWidth={2}
+                          className="size-3.5 text-red-500"
+                        />
                       )}
                     </div>
                     <div className="flex items-center gap-2 text-xs">
-                      <span className="text-muted-foreground">Atual: {item.atual}%</span>
-                      <span className="font-medium">→ Proj: {item.projetado}%</span>
-                      <Badge 
-                        variant={item.status === "atingido" ? "secondary" : item.status === "atencao" ? "outline" : "destructive"}
-                        className={item.status === "atingido" ? "text-green-600" : item.status === "atencao" ? "text-amber-600" : ""}
+                      <span className="text-muted-foreground">
+                        Atual: {item.atual}%
+                      </span>
+                      <span className="font-medium">
+                        → Proj: {item.projetado}%
+                      </span>
+                      <Badge
+                        variant={
+                          item.status === "atingido"
+                            ? "secondary"
+                            : item.status === "atencao"
+                              ? "outline"
+                              : "destructive"
+                        }
+                        className={
+                          item.status === "atingido"
+                            ? "text-green-600"
+                            : item.status === "atencao"
+                              ? "text-amber-600"
+                              : ""
+                        }
                       >
-                        {item.status === "atingido" ? "OK" : item.status === "atencao" ? "Atenção" : "Crítico"}
+                        {item.status === "atingido"
+                          ? "OK"
+                          : item.status === "atencao"
+                            ? "Atenção"
+                            : "Crítico"}
                       </Badge>
                     </div>
                   </div>
                   <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
-                    <div 
+                    <div
                       className={`absolute h-full rounded-full transition-all ${
-                        item.status === "atingido" ? "bg-green-500" : item.status === "atencao" ? "bg-amber-500" : "bg-red-500"
+                        item.status === "atingido"
+                          ? "bg-green-500"
+                          : item.status === "atencao"
+                            ? "bg-amber-500"
+                            : "bg-red-500"
                       }`}
-                      style={{ width: `${item.atual}%` }} 
+                      style={{ width: `${item.atual}%` }}
                     />
-                    <div 
+                    <div
                       className="absolute h-full rounded-full bg-primary/20"
-                      style={{ left: `${item.atual}%`, width: `${item.projetado - item.atual}%` }} 
+                      style={{
+                        left: `${item.atual}%`,
+                        width: `${item.projetado - item.atual}%`,
+                      }}
                     />
                   </div>
                 </div>
@@ -1455,10 +2537,16 @@ export function DespesaMunicipal() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={Building04Icon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={Building04Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Benchmark Municipal
             </CardTitle>
-            <CardDescription>Comparação com municípios de porte similar</CardDescription>
+            <CardDescription>
+              Comparação com municípios de porte similar
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -1473,27 +2561,54 @@ export function DespesaMunicipal() {
               </TableHeader>
               <TableBody>
                 {benchmarkDespesa.map((mun) => (
-                  <TableRow key={mun.municipio} className={mun.destaque ? "bg-primary/5 font-medium" : ""}>
+                  <TableRow
+                    key={mun.municipio}
+                    className={mun.destaque ? "bg-primary/5 font-medium" : ""}
+                  >
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
-                        {mun.destaque && <HugeiconsIcon icon={StarIcon} strokeWidth={2} className="size-3.5 text-amber-500" />}
+                        {mun.destaque && (
+                          <HugeiconsIcon
+                            icon={StarIcon}
+                            strokeWidth={2}
+                            className="size-3.5 text-amber-500"
+                          />
+                        )}
                         {mun.municipio}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">{mun.execucao}%</TableCell>
                     <TableCell className="text-right">
-                      <Badge 
-                        variant={mun.pessoalRCL > 40 ? "destructive" : "secondary"}
+                      {mun.execucao}%
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={
+                          mun.pessoalRCL > 40 ? "destructive" : "secondary"
+                        }
                         className={mun.pessoalRCL > 40 ? "" : "text-green-600"}
                       >
                         {mun.pessoalRCL}%
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">{mun.investimento}%</TableCell>
                     <TableCell className="text-right">
-                      <Badge 
-                        variant={mun.restosAPagar > 15 ? "destructive" : mun.restosAPagar > 10 ? "outline" : "secondary"}
-                        className={mun.restosAPagar > 15 ? "" : mun.restosAPagar > 10 ? "text-amber-600" : "text-green-600"}
+                      {mun.investimento}%
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={
+                          mun.restosAPagar > 15
+                            ? "destructive"
+                            : mun.restosAPagar > 10
+                              ? "outline"
+                              : "secondary"
+                        }
+                        className={
+                          mun.restosAPagar > 15
+                            ? ""
+                            : mun.restosAPagar > 10
+                              ? "text-amber-600"
+                              : "text-green-600"
+                        }
                       >
                         {mun.restosAPagar}%
                       </Badge>
@@ -1504,17 +2619,29 @@ export function DespesaMunicipal() {
             </Table>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <div className="rounded-lg border p-3 space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Posicao Geral</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Posicao Geral
+                </p>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-bold text-green-600">2o</span>
-                  <span className="text-xs text-muted-foreground">de 5 municípios</span>
+                  <span className="text-xs text-muted-foreground">
+                    de 5 municípios
+                  </span>
                 </div>
-                <p className="text-xs text-muted-foreground">Destaque em controle de pessoal e restos a pagar</p>
+                <p className="text-xs text-muted-foreground">
+                  Destaque em controle de pessoal e restos a pagar
+                </p>
               </div>
               <div className="rounded-lg border p-3 space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Ponto de Melhoria</p>
-                <p className="text-sm font-medium text-amber-600">Investimentos</p>
-                <p className="text-xs text-muted-foreground">12.6% vs 14.8% do melhor comparado — oportunidade de ampliacao</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Ponto de Melhoria
+                </p>
+                <p className="text-sm font-medium text-amber-600">
+                  Investimentos
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  12.6% vs 14.8% do melhor comparado — oportunidade de ampliacao
+                </p>
               </div>
             </div>
           </CardContent>
@@ -1525,7 +2652,11 @@ export function DespesaMunicipal() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <HugeiconsIcon icon={Clock01Icon} strokeWidth={2} className="size-5" />
+            <HugeiconsIcon
+              icon={Clock01Icon}
+              strokeWidth={2}
+              className="size-5"
+            />
             Eventos Recentes
           </CardTitle>
           <CardDescription>Ultimas movimentacoes</CardDescription>
@@ -1535,12 +2666,19 @@ export function DespesaMunicipal() {
             {eventosRecentes.map((evento, index) => (
               <div key={index} className="flex gap-3">
                 <div className="flex flex-col items-center">
-                  <div className={`size-2.5 rounded-full ${
-                    evento.tipo === "empenho" ? "bg-blue-500" :
-                    evento.tipo === "pagamento" ? "bg-green-500" :
-                    evento.tipo === "licitacao" ? "bg-amber-500" :
-                    evento.tipo === "liquidacao" ? "bg-purple-500" : "bg-gray-500"
-                  }`} />
+                  <div
+                    className={`size-2.5 rounded-full ${
+                      evento.tipo === "empenho"
+                        ? "bg-blue-500"
+                        : evento.tipo === "pagamento"
+                          ? "bg-green-500"
+                          : evento.tipo === "licitacao"
+                            ? "bg-amber-500"
+                            : evento.tipo === "liquidacao"
+                              ? "bg-purple-500"
+                              : "bg-gray-500"
+                    }`}
+                  />
                   {index < eventosRecentes.length - 1 && (
                     <div className="w-px flex-1 bg-border" />
                   )}
@@ -1548,7 +2686,9 @@ export function DespesaMunicipal() {
                 <div className="flex-1 pb-4">
                   <p className="text-xs text-muted-foreground">{evento.data}</p>
                   <p className="text-sm">{evento.evento}</p>
-                  <Badge variant="outline" className="mt-1 text-xs">{evento.secretaria}</Badge>
+                  <Badge variant="outline" className="mt-1 text-xs">
+                    {evento.secretaria}
+                  </Badge>
                 </div>
               </div>
             ))}
@@ -1562,296 +2702,469 @@ export function DespesaMunicipal() {
       <div className="relative py-4">
         <Separator />
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-muted px-4 dark:bg-background">
-          <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Análises</span>
+          <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            Análises
+          </span>
         </div>
       </div>
 
       <div className="space-y-6">
-      {/* Secao de Analise Inteligente - Estilo IA */}
-      <Card className="border-l-4 border-l-primary bg-gradient-to-br from-primary/5 via-background to-background">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
-              <HugeiconsIcon icon={BulbIcon} strokeWidth={2} className="size-5 text-primary" />
+        {/* Secao de Analise Inteligente - Estilo IA */}
+        <Card className="border-l-4 border-l-primary bg-gradient-to-br from-primary/5 via-background to-background">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                <HugeiconsIcon
+                  icon={BulbIcon}
+                  strokeWidth={2}
+                  className="size-5 text-primary"
+                />
+              </div>
+              <div>
+                <CardTitle>
+                  Análise Inteligente da Execução Orçamentária
+                </CardTitle>
+                <CardDescription>
+                  Insights gerados com base nos dados do periodo
+                </CardDescription>
+              </div>
             </div>
-            <div>
-              <CardTitle>Análise Inteligente da Execução Orçamentária</CardTitle>
-              <CardDescription>Insights gerados com base nos dados do periodo</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Visao Geral */}
+            <div className="prose prose-sm dark:prose-invert max-w-none">
+              <p className="text-foreground leading-relaxed">
+                Analisando os dados de execução orçamentária do município para o
+                exercício de {periodoSelecionado}, observa-se um{" "}
+                <strong>desempenho satisfatório</strong> na gestão fiscal, com
+                taxa de execução de{" "}
+                <strong>
+                  {calcPercent(totais.empenhada, totais.atualizada)}%
+                </strong>{" "}
+                do orçamento atualizado de{" "}
+                <strong>{formatCurrency(totais.atualizada)}</strong>. A relacao
+                entre valores empenhados e pagos demonstra boa capacidade de
+                liquidacao, com{" "}
+                <strong>{calcPercent(totais.pago, totais.empenhada)}%</strong>{" "}
+                dos empenhos ja efetivamente pagos.
+              </p>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Visao Geral */}
-          <div className="prose prose-sm dark:prose-invert max-w-none">
-            <p className="text-foreground leading-relaxed">
-              Analisando os dados de execução orçamentária do município para o exercício de {periodoSelecionado}, 
-              observa-se um <strong>desempenho satisfatório</strong> na gestão fiscal, com taxa de execução de{" "}
-              <strong>{calcPercent(totais.empenhada, totais.atualizada)}%</strong> do orçamento atualizado de{" "}
-              <strong>{formatCurrency(totais.atualizada)}</strong>. A relacao entre valores empenhados e pagos 
-              demonstra boa capacidade de liquidacao, com <strong>{calcPercent(totais.pago, totais.empenhada)}%</strong>{" "}
-              dos empenhos ja efetivamente pagos.
-            </p>
-          </div>
 
-          <Separator />
+            <Separator />
 
-          {/* Pontos de Destaque */}
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="destaques">
-              <AccordionTrigger>
-                <div className="flex items-center gap-2">
-                  <HugeiconsIcon icon={Flag01Icon} strokeWidth={2} className="size-4 text-green-600" />
-                  <span>Pontos de Destaque Positivo</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-3 pl-6">
-                  <div className="flex gap-2">
-                    <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} className="size-4 mt-0.5 text-green-600 shrink-0" />
-                    <p className="text-sm text-muted-foreground">
-                      <strong className="text-foreground">Saude e Educação com alta execução:</strong> As secretarias de Saúde (SEMSA) 
-                      e Educação (SEMED) apresentam as maiores taxas de execução orçamentária, ambas acima de 90%, 
-                      demonstrando prioridade nas areas essenciais de atendimento a populacao.
-                    </p>
+            {/* Pontos de Destaque */}
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="destaques">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={Flag01Icon}
+                      strokeWidth={2}
+                      className="size-4 text-green-600"
+                    />
+                    <span>Pontos de Destaque Positivo</span>
                   </div>
-                  <div className="flex gap-2">
-                    <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} className="size-4 mt-0.5 text-green-600 shrink-0" />
-                    <p className="text-sm text-muted-foreground">
-                      <strong className="text-foreground">Reducao de Restos a Pagar:</strong> Houve diminuicao de 12% nos 
-                      restos a pagar em comparacao ao ano anterior, indicando melhor planejamento financeiro e 
-                      maior capacidade de liquidacao das despesas empenhadas.
-                    </p>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pl-6">
+                    <div className="flex gap-2">
+                      <HugeiconsIcon
+                        icon={CheckmarkCircle02Icon}
+                        strokeWidth={2}
+                        className="size-4 mt-0.5 text-green-600 shrink-0"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">
+                          Saude e Educação com alta execução:
+                        </strong>{" "}
+                        As secretarias de Saúde (SEMSA) e Educação (SEMED)
+                        apresentam as maiores taxas de execução orçamentária,
+                        ambas acima de 90%, demonstrando prioridade nas areas
+                        essenciais de atendimento a populacao.
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <HugeiconsIcon
+                        icon={CheckmarkCircle02Icon}
+                        strokeWidth={2}
+                        className="size-4 mt-0.5 text-green-600 shrink-0"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">
+                          Reducao de Restos a Pagar:
+                        </strong>{" "}
+                        Houve diminuicao de 12% nos restos a pagar em comparacao
+                        ao ano anterior, indicando melhor planejamento
+                        financeiro e maior capacidade de liquidacao das despesas
+                        empenhadas.
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <HugeiconsIcon
+                        icon={CheckmarkCircle02Icon}
+                        strokeWidth={2}
+                        className="size-4 mt-0.5 text-green-600 shrink-0"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">
+                          Crescimento sustentável:
+                        </strong>{" "}
+                        O orcamento municipal apresenta crescimento medio de 9%
+                        ao ano nos ultimos 5 anos, com manutencao proporcional
+                        da capacidade de execucao.
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} className="size-4 mt-0.5 text-green-600 shrink-0" />
-                    <p className="text-sm text-muted-foreground">
-                      <strong className="text-foreground">Crescimento sustentável:</strong> O orcamento municipal apresenta 
-                      crescimento medio de 9% ao ano nos ultimos 5 anos, com manutencao proporcional da capacidade 
-                      de execucao.
-                    </p>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+                </AccordionContent>
+              </AccordionItem>
 
-            <AccordionItem value="atencao">
-              <AccordionTrigger>
-                <div className="flex items-center gap-2">
-                  <HugeiconsIcon icon={AlertCircleIcon} strokeWidth={2} className="size-4 text-amber-600" />
-                  <span>Pontos de Atenção</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-3 pl-6">
-                  <div className="flex gap-2">
-                    <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} className="size-4 mt-0.5 text-amber-600 shrink-0" />
-                    <p className="text-sm text-muted-foreground">
-                      <strong className="text-foreground">Infraestrutura com execução abaixo da media:</strong> A Secretaria 
-                      de Infraestrutura (SEMINF) apresenta execução de 86%, inferior a média municipal. Recomenda-se 
-                      avaliacao dos processos licitatorios em andamento e possivel reprogramacao de cronogramas.
-                    </p>
+              <AccordionItem value="atencao">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={AlertCircleIcon}
+                      strokeWidth={2}
+                      className="size-4 text-amber-600"
+                    />
+                    <span>Pontos de Atenção</span>
                   </div>
-                  <div className="flex gap-2">
-                    <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} className="size-4 mt-0.5 text-amber-600 shrink-0" />
-                    <p className="text-sm text-muted-foreground">
-                      <strong className="text-foreground">Concentracao de fornecedores:</strong> Os 5 principais fornecedores 
-                      concentram aproximadamente 41% do valor total empenhado. Sugere-se diversificacao da base de 
-                      fornecedores para reduzir riscos e aumentar a competitividade.
-                    </p>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pl-6">
+                    <div className="flex gap-2">
+                      <HugeiconsIcon
+                        icon={Alert02Icon}
+                        strokeWidth={2}
+                        className="size-4 mt-0.5 text-amber-600 shrink-0"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">
+                          Infraestrutura com execução abaixo da media:
+                        </strong>{" "}
+                        A Secretaria de Infraestrutura (SEMINF) apresenta
+                        execução de 86%, inferior a média municipal.
+                        Recomenda-se avaliacao dos processos licitatorios em
+                        andamento e possivel reprogramacao de cronogramas.
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <HugeiconsIcon
+                        icon={Alert02Icon}
+                        strokeWidth={2}
+                        className="size-4 mt-0.5 text-amber-600 shrink-0"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">
+                          Concentracao de fornecedores:
+                        </strong>{" "}
+                        Os 5 principais fornecedores concentram aproximadamente
+                        41% do valor total empenhado. Sugere-se diversificacao
+                        da base de fornecedores para reduzir riscos e aumentar a
+                        competitividade.
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <HugeiconsIcon
+                        icon={Alert02Icon}
+                        strokeWidth={2}
+                        className="size-4 mt-0.5 text-amber-600 shrink-0"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">
+                          Saldo significativo a empenhar:
+                        </strong>{" "}
+                        Ainda restam {formatCurrency(totais.aEmpenhar)} (
+                        {calcPercent(totais.aEmpenhar, totais.atualizada)}%) do
+                        orcamento a ser executado. Considerando o encerramento
+                        do exercício, e necessario acelerar os processos de
+                        contratacao pendentes.
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} className="size-4 mt-0.5 text-amber-600 shrink-0" />
-                    <p className="text-sm text-muted-foreground">
-                      <strong className="text-foreground">Saldo significativo a empenhar:</strong> Ainda restam{" "}
-                      {formatCurrency(totais.aEmpenhar)} ({calcPercent(totais.aEmpenhar, totais.atualizada)}%) do 
-                      orcamento a ser executado. Considerando o encerramento do exercício, e necessario acelerar 
-                      os processos de contratacao pendentes.
-                    </p>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+                </AccordionContent>
+              </AccordionItem>
 
-            <AccordionItem value="recomendacoes">
-              <AccordionTrigger>
-                <div className="flex items-center gap-2">
-                  <HugeiconsIcon icon={BulbIcon} strokeWidth={2} className="size-4 text-blue-600" />
-                  <span>Recomendacoes Estrategicas</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-3 pl-6">
-                  <div className="rounded-lg border bg-blue-50/50 dark:bg-blue-950/20 p-3">
-                    <p className="text-sm font-medium text-foreground mb-1">1. Aceleração da Execução em Infraestrutura</p>
-                    <p className="text-xs text-muted-foreground">
-                      Implementar forca-tarefa para destravar processos licitatorios pendentes na SEMINF, 
-                      priorizando obras com maior impacto social e cronograma viavel ate o final do exercício.
-                    </p>
+              <AccordionItem value="recomendacoes">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={BulbIcon}
+                      strokeWidth={2}
+                      className="size-4 text-blue-600"
+                    />
+                    <span>Recomendacoes Estrategicas</span>
                   </div>
-                  <div className="rounded-lg border bg-blue-50/50 dark:bg-blue-950/20 p-3">
-                    <p className="text-sm font-medium text-foreground mb-1">2. Planejamento de Restos a Pagar</p>
-                    <p className="text-xs text-muted-foreground">
-                      Elaborar cronograma de liquidacao prioritaria para os {formatCurrency(totais.aPagar)} em 
-                      restos a pagar, evitando acumulo excessivo para o proximo exercício e garantindo 
-                      conformidade com a LRF.
-                    </p>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pl-6">
+                    <div className="rounded-lg border bg-blue-50/50 dark:bg-blue-950/20 p-3">
+                      <p className="text-sm font-medium text-foreground mb-1">
+                        1. Aceleração da Execução em Infraestrutura
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Implementar forca-tarefa para destravar processos
+                        licitatorios pendentes na SEMINF, priorizando obras com
+                        maior impacto social e cronograma viavel ate o final do
+                        exercício.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border bg-blue-50/50 dark:bg-blue-950/20 p-3">
+                      <p className="text-sm font-medium text-foreground mb-1">
+                        2. Planejamento de Restos a Pagar
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Elaborar cronograma de liquidacao prioritaria para os{" "}
+                        {formatCurrency(totais.aPagar)} em restos a pagar,
+                        evitando acumulo excessivo para o proximo exercício e
+                        garantindo conformidade com a LRF.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border bg-blue-50/50 dark:bg-blue-950/20 p-3">
+                      <p className="text-sm font-medium text-foreground mb-1">
+                        3. Ampliacao da Base de Fornecedores
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Desenvolver programa de fomento a participacao de micro
+                        e pequenas empresas locais em licitacoes, visando maior
+                        competitividade e desenvolvimento economico regional.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border bg-blue-50/50 dark:bg-blue-950/20 p-3">
+                      <p className="text-sm font-medium text-foreground mb-1">
+                        4. Monitoramento Continuo ODS
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Fortalecer o alinhamento das despesas aos Objetivos de
+                        Desenvolvimento Sustentavel, especialmente ODS 11
+                        (Cidades Sustentáveis) que apresenta a menor taxa de
+                        execução (86%).
+                      </p>
+                    </div>
                   </div>
-                  <div className="rounded-lg border bg-blue-50/50 dark:bg-blue-950/20 p-3">
-                    <p className="text-sm font-medium text-foreground mb-1">3. Ampliacao da Base de Fornecedores</p>
-                    <p className="text-xs text-muted-foreground">
-                      Desenvolver programa de fomento a participacao de micro e pequenas empresas locais em 
-                      licitacoes, visando maior competitividade e desenvolvimento economico regional.
-                    </p>
-                  </div>
-                  <div className="rounded-lg border bg-blue-50/50 dark:bg-blue-950/20 p-3">
-                    <p className="text-sm font-medium text-foreground mb-1">4. Monitoramento Continuo ODS</p>
-                    <p className="text-xs text-muted-foreground">
-                      Fortalecer o alinhamento das despesas aos Objetivos de Desenvolvimento Sustentavel, 
-                      especialmente ODS 11 (Cidades Sustentáveis) que apresenta a menor taxa de execução (86%).
-                    </p>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+                </AccordionContent>
+              </AccordionItem>
 
-            <AccordionItem value="projecoes">
-              <AccordionTrigger>
-                <div className="flex items-center gap-2">
-                  <HugeiconsIcon icon={ChartLineData02Icon} strokeWidth={2} className="size-4 text-purple-600" />
-                  <span>Projecoes e Cenarios</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-4 pl-6">
-                  <p className="text-sm text-muted-foreground">
-                    Com base na tendência histórica e no ritmo atual de execução, projeta-se para o 
-                    encerramento do exercício:
+              <AccordionItem value="projecoes">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={ChartLineData02Icon}
+                      strokeWidth={2}
+                      className="size-4 text-purple-600"
+                    />
+                    <span>Projecoes e Cenarios</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 pl-6">
+                    <p className="text-sm text-muted-foreground">
+                      Com base na tendência histórica e no ritmo atual de
+                      execução, projeta-se para o encerramento do exercício:
+                    </p>
+                    <div className="grid gap-3 sm:grid-cols-3">
+                      <div className="rounded-lg border p-3 text-center">
+                        <p className="text-2xl font-bold text-green-600">94%</p>
+                        <p className="text-xs text-muted-foreground">
+                          Cenario Otimista
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Execução Final
+                        </p>
+                      </div>
+                      <div className="rounded-lg border p-3 text-center bg-primary/5">
+                        <p className="text-2xl font-bold text-primary">91%</p>
+                        <p className="text-xs text-muted-foreground">
+                          Cenario Provavel
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Execução Final
+                        </p>
+                      </div>
+                      <div className="rounded-lg border p-3 text-center">
+                        <p className="text-2xl font-bold text-amber-600">88%</p>
+                        <p className="text-xs text-muted-foreground">
+                          Cenario Conservador
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Execução Final
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground italic">
+                      * Projeções baseadas na média histórica de execução do
+                      último trimestre dos exercícios anteriores e no saldo
+                      atual disponivel para empenho.
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+            <Separator />
+
+            {/* Conclusao */}
+            <div className="rounded-lg border bg-muted/50 p-4">
+              <div className="flex gap-3">
+                <HugeiconsIcon
+                  icon={InformationCircleIcon}
+                  strokeWidth={2}
+                  className="size-5 text-primary shrink-0 mt-0.5"
+                />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-foreground">
+                    Conclusao da Analise
                   </p>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-lg border p-3 text-center">
-                      <p className="text-2xl font-bold text-green-600">94%</p>
-                      <p className="text-xs text-muted-foreground">Cenario Otimista</p>
-                      <p className="text-xs text-muted-foreground">Execução Final</p>
-                    </div>
-                    <div className="rounded-lg border p-3 text-center bg-primary/5">
-                      <p className="text-2xl font-bold text-primary">91%</p>
-                      <p className="text-xs text-muted-foreground">Cenario Provavel</p>
-                      <p className="text-xs text-muted-foreground">Execução Final</p>
-                    </div>
-                    <div className="rounded-lg border p-3 text-center">
-                      <p className="text-2xl font-bold text-amber-600">88%</p>
-                      <p className="text-xs text-muted-foreground">Cenario Conservador</p>
-                      <p className="text-xs text-muted-foreground">Execução Final</p>
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground italic">
-                    * Projeções baseadas na média histórica de execução do último trimestre dos exercícios 
-                    anteriores e no saldo atual disponivel para empenho.
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    A execução orçamentária do município encontra-se em patamar
+                    adequado para o periodo, com indicadores que demonstram
+                    responsabilidade fiscal e foco nas areas prioritarias de
+                    saude e educacao. Os pontos de atenção identificados sao
+                    gerenciáveis e, com as ações recomendadas, o município tem
+                    condições de encerrar o exercício com execução superior a
+                    90%, mantendo o padrao de qualidade na gestao dos recursos
+                    publicos.
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-3 pt-3 border-t">
+                    Analise gerada em {new Date().toLocaleDateString("pt-BR")}{" "}
+                    as{" "}
+                    {new Date().toLocaleTimeString("pt-BR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    | Dados referentes ao exercício de {periodoSelecionado}
                   </p>
                 </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-          <Separator />
-
-          {/* Conclusao */}
-          <div className="rounded-lg border bg-muted/50 p-4">
-            <div className="flex gap-3">
-              <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} className="size-5 text-primary shrink-0 mt-0.5" />
+        {/* Resumo Analitico */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Resumo Analitico</CardTitle>
+            <CardDescription>
+              Indicadores de desempenho da execução orçamentária
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6 md:grid-cols-4">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">Conclusao da Analise</p>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  A execução orçamentária do município encontra-se em patamar adequado para o periodo, 
-                  com indicadores que demonstram responsabilidade fiscal e foco nas areas prioritarias 
-                  de saude e educacao. Os pontos de atenção identificados sao gerenciáveis e, com as 
-                  ações recomendadas, o município tem condições de encerrar o exercício com execução 
-                  superior a 90%, mantendo o padrao de qualidade na gestao dos recursos publicos.
+                <p className="text-sm font-medium text-muted-foreground">
+                  Taxa de Execução
                 </p>
-                <p className="text-xs text-muted-foreground mt-3 pt-3 border-t">
-                  Analise gerada em {new Date().toLocaleDateString('pt-BR')} as {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} 
-                  {" "}| Dados referentes ao exercício de {periodoSelecionado}
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold">
+                    {calcPercent(totais.empenhada, totais.atualizada)}%
+                  </span>
+                  <Badge variant="secondary" className="text-xs">
+                    <HugeiconsIcon
+                      icon={ArrowUp01Icon}
+                      strokeWidth={2}
+                      className="size-3"
+                    />
+                    +5.2%
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Comparado ao mesmo periodo do ano anterior
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Taxa de Pagamento
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold">
+                    {calcPercent(totais.pago, totais.empenhada)}%
+                  </span>
+                  <Badge variant="secondary" className="text-xs">
+                    <HugeiconsIcon
+                      icon={ArrowUp01Icon}
+                      strokeWidth={2}
+                      className="size-3"
+                    />
+                    +2.8%
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Do total empenhado foi efetivamente pago
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Restos a Pagar
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold">
+                    {formatMillions(totais.aPagar)}
+                  </span>
+                  <Badge variant="outline" className="text-xs text-amber-600">
+                    <HugeiconsIcon
+                      icon={ArrowDown01Icon}
+                      strokeWidth={2}
+                      className="size-3"
+                    />
+                    -12%
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Reducao em relacao ao ano anterior
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Saldo Disponivel
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold">
+                    {formatMillions(totais.aEmpenhar)}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {calcPercent(totais.aEmpenhar, totais.atualizada)}% do
+                  orçamento ainda disponivel
                 </p>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Resumo Analitico */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Resumo Analitico</CardTitle>
-          <CardDescription>Indicadores de desempenho da execução orçamentária</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-6 md:grid-cols-4">
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Taxa de Execução</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold">{calcPercent(totais.empenhada, totais.atualizada)}%</span>
-                <Badge variant="secondary" className="text-xs">
-                  <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} className="size-3" />
-                  +5.2%
+        {/* Alertas de Gestao */}
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold text-foreground">
+            Alertas e Notificacoes
+          </h3>
+          {alertasGestao.map((alerta, index) => (
+            <Alert
+              key={index}
+              variant={alerta.tipo === "warning" ? "destructive" : "default"}
+            >
+              <HugeiconsIcon
+                icon={
+                  alerta.tipo === "warning"
+                    ? Alert02Icon
+                    : alerta.tipo === "success"
+                      ? CheckmarkCircle02Icon
+                      : InformationCircleIcon
+                }
+                strokeWidth={2}
+                className="size-4"
+              />
+              <AlertTitle className="flex items-center gap-2">
+                {alerta.titulo}
+                <Badge variant="outline" className="text-xs">
+                  {alerta.orgao}
                 </Badge>
-              </div>
-              <p className="text-xs text-muted-foreground">Comparado ao mesmo periodo do ano anterior</p>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Taxa de Pagamento</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold">{calcPercent(totais.pago, totais.empenhada)}%</span>
-                <Badge variant="secondary" className="text-xs">
-                  <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} className="size-3" />
-                  +2.8%
-                </Badge>
-              </div>
-              <p className="text-xs text-muted-foreground">Do total empenhado foi efetivamente pago</p>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Restos a Pagar</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold">{formatMillions(totais.aPagar)}</span>
-                <Badge variant="outline" className="text-xs text-amber-600">
-                  <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} className="size-3" />
-                  -12%
-                </Badge>
-              </div>
-              <p className="text-xs text-muted-foreground">Reducao em relacao ao ano anterior</p>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Saldo Disponivel</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold">{formatMillions(totais.aEmpenhar)}</span>
-              </div>
-              <p className="text-xs text-muted-foreground">{calcPercent(totais.aEmpenhar, totais.atualizada)}% do orçamento ainda disponivel</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Alertas de Gestao */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">Alertas e Notificacoes</h3>
-        {alertasGestao.map((alerta, index) => (
-          <Alert key={index} variant={alerta.tipo === "warning" ? "destructive" : "default"}>
-            <HugeiconsIcon 
-              icon={alerta.tipo === "warning" ? Alert02Icon : alerta.tipo === "success" ? CheckmarkCircle02Icon : InformationCircleIcon} 
-              strokeWidth={2} 
-              className="size-4" 
-            />
-            <AlertTitle className="flex items-center gap-2">
-              {alerta.titulo}
-              <Badge variant="outline" className="text-xs">{alerta.orgao}</Badge>
-            </AlertTitle>
-            <AlertDescription>{alerta.descricao}</AlertDescription>
-          </Alert>
-        ))}
-      </div>
+              </AlertTitle>
+              <AlertDescription>{alerta.descricao}</AlertDescription>
+            </Alert>
+          ))}
+        </div>
       </div>
     </div>
-  )
+  );
 }
