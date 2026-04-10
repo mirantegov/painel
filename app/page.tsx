@@ -11,6 +11,11 @@ import { RHMunicipal } from "@/components/rh-municipal"
 import { PrestacaoContas } from "@/components/prestacao-contas"
 import { Frotas } from "@/components/frotas"
 import { Obras } from "@/components/obras"
+import { Educacao } from "@/components/educacao"
+import { Saude } from "@/components/saude"
+import { Patrimonio } from "@/components/patrimonio"
+import { Processos } from "@/components/processos"
+import { AssistenciaSocial } from "@/components/assistencia-social"
 import { TributacaoMunicipal } from "@/components/tributacao-municipal"
 import { OrcamentoMunicipal } from "@/components/orcamento-municipal"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -19,19 +24,24 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, D
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Analytics01Icon, MoneyAdd01Icon, BankIcon, ShoppingCartIcon, UserMultipleIcon, SecurityCheckIcon, Invoice01Icon, Home01Icon, UserIcon, Cancel01Icon, Settings01Icon, Wallet01Icon, DeliveryTruck01Icon, ConstructionIcon } from "@hugeicons/core-free-icons"
+import { Analytics01Icon, MoneyAdd01Icon, BankIcon, ShoppingCartIcon, UserMultipleIcon, SecurityCheckIcon, Invoice01Icon, Home01Icon, UserIcon, Cancel01Icon, Settings01Icon, Wallet01Icon, DeliveryTruck01Icon, ConstructionIcon, BookOpen02Icon, Stethoscope02Icon, Archive02Icon, CourtLawIcon, HandHelpingIcon } from "@hugeicons/core-free-icons"
 
 const TAB_ORDER = [
   "visao-geral",
-  "orcamento",
-  "receita",
   "despesa",
+  "receita",
   "financeiro",
+  "tributacao",
   "compras",
   "rh",
-  "tributacao",
-  "frotas",
+  "orcamento",
+  "saude",
+  "educacao",
+  "assistencia-social",
   "obras",
+  "frotas",
+  "patrimonio",
+  "processos",
   "prestacao-contas",
 ]
 const SCROLL_DELAY_MS = 5000
@@ -160,50 +170,70 @@ export default function Page() {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-2xl p-2 sm:w-auto sm:grid-cols-none sm:flex sm:rounded-full sm:p-1">
+          <TabsList className="flex h-auto w-full flex-wrap gap-2 rounded-2xl p-2">
             <TabsTrigger value="visao-geral" className="gap-2">
               <HugeiconsIcon icon={Home01Icon} strokeWidth={2} className="size-4" />
               Geral
             </TabsTrigger>
-            <TabsTrigger value="orcamento" className="gap-2">
-              <HugeiconsIcon icon={Wallet01Icon} strokeWidth={2} className="size-4" />
-              Orçamento
+            <TabsTrigger value="despesa" className="gap-2">
+              <HugeiconsIcon icon={Analytics01Icon} strokeWidth={2} className="size-4" />
+              Despesas
             </TabsTrigger>
             <TabsTrigger value="receita" className="gap-2">
               <HugeiconsIcon icon={MoneyAdd01Icon} strokeWidth={2} className="size-4" />
-              Receita
-            </TabsTrigger>
-            <TabsTrigger value="despesa" className="gap-2">
-              <HugeiconsIcon icon={Analytics01Icon} strokeWidth={2} className="size-4" />
-              Despesa
+              Receitas
             </TabsTrigger>
             <TabsTrigger value="financeiro" className="gap-2">
               <HugeiconsIcon icon={BankIcon} strokeWidth={2} className="size-4" />
               Financeiro
             </TabsTrigger>
-            <TabsTrigger value="compras" className="gap-2">
-              <HugeiconsIcon icon={ShoppingCartIcon} strokeWidth={2} className="size-4" />
-              Compras
-            </TabsTrigger>
-            <TabsTrigger value="rh" className="gap-2">
-              <HugeiconsIcon icon={UserMultipleIcon} strokeWidth={2} className="size-4" />
-              RH
-            </TabsTrigger>
             <TabsTrigger value="tributacao" className="gap-2">
               <HugeiconsIcon icon={Invoice01Icon} strokeWidth={2} className="size-4" />
               Tributos
             </TabsTrigger>
-            <TabsTrigger value="frotas" className="gap-2">
-              <HugeiconsIcon icon={DeliveryTruck01Icon} strokeWidth={2} className="size-4" />
-              Frotas
+            <TabsTrigger value="compras" className="gap-2">
+              <HugeiconsIcon icon={ShoppingCartIcon} strokeWidth={2} className="size-4" />
+              Licitações e Contratos
+            </TabsTrigger>
+            <TabsTrigger value="rh" className="gap-2">
+              <HugeiconsIcon icon={UserMultipleIcon} strokeWidth={2} className="size-4" />
+              Recursos Humanos
+            </TabsTrigger>
+            <TabsTrigger value="orcamento" className="gap-2">
+              <HugeiconsIcon icon={Wallet01Icon} strokeWidth={2} className="size-4" />
+              Planejamento
+            </TabsTrigger>
+            <TabsTrigger value="saude" className="gap-2">
+              <HugeiconsIcon icon={Stethoscope02Icon} strokeWidth={2} className="size-4" />
+              Saúde
+            </TabsTrigger>
+            <TabsTrigger value="educacao" className="gap-2">
+              <HugeiconsIcon icon={BookOpen02Icon} strokeWidth={2} className="size-4" />
+              Educação
+            </TabsTrigger>
+            <TabsTrigger value="assistencia-social" className="gap-2">
+              <HugeiconsIcon icon={HandHelpingIcon} strokeWidth={2} className="size-4" />
+              Assistência Social
             </TabsTrigger>
             <TabsTrigger value="obras" className="gap-2">
               <HugeiconsIcon icon={ConstructionIcon} strokeWidth={2} className="size-4" />
               Obras
             </TabsTrigger>
+            <TabsTrigger value="frotas" className="gap-2">
+              <HugeiconsIcon icon={DeliveryTruck01Icon} strokeWidth={2} className="size-4" />
+              Frotas
+            </TabsTrigger>
+            <TabsTrigger value="patrimonio" className="gap-2">
+              <HugeiconsIcon icon={Archive02Icon} strokeWidth={2} className="size-4" />
+              Patrimônio
+            </TabsTrigger>
+            <TabsTrigger value="processos" className="gap-2">
+              <HugeiconsIcon icon={CourtLawIcon} strokeWidth={2} className="size-4" />
+              Processos
+            </TabsTrigger>
             <TabsTrigger value="prestacao-contas" className="gap-2">
               <HugeiconsIcon icon={SecurityCheckIcon} strokeWidth={2} className="size-4" />
-              Gestão
+              Contas Públicas
             </TabsTrigger>
           </TabsList>
           
@@ -245,6 +275,26 @@ export default function Page() {
 
           <TabsContent value="obras" className="mt-6">
             <Obras />
+          </TabsContent>
+
+          <TabsContent value="educacao" className="mt-6">
+            <Educacao />
+          </TabsContent>
+
+          <TabsContent value="assistencia-social" className="mt-6">
+            <AssistenciaSocial />
+          </TabsContent>
+
+          <TabsContent value="saude" className="mt-6">
+            <Saude />
+          </TabsContent>
+
+          <TabsContent value="patrimonio" className="mt-6">
+            <Patrimonio />
+          </TabsContent>
+
+          <TabsContent value="processos" className="mt-6">
+            <Processos />
           </TabsContent>
           
           <TabsContent value="prestacao-contas" className="mt-6">
