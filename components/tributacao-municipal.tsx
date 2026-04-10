@@ -92,6 +92,12 @@ import {
   Cancel01Icon,
   FileValidationIcon,
   SecurityCheckIcon,
+  Calculator01Icon,
+  CourtLawIcon,
+  FileAttachmentIcon,
+  DocumentValidationIcon,
+  Analytics01Icon,
+  Activity01Icon,
 } from "@hugeicons/core-free-icons";
 import {
   Accordion,
@@ -564,6 +570,460 @@ const metasArrecadacao = [
   },
 ];
 
+// ==========================================
+// NOVOS DADOS — NFS-e e Nota Fiscal
+// ==========================================
+
+const dadosNFSe = {
+  totalEmitidas: 285400,
+  totalCanceladas: 3420,
+  totalSubstituidas: 1850,
+  valorTotalServicos: 756000000,
+  issGerado: 26460000,
+  mediaNotasDia: 870,
+  empresasEmissoras: 3280,
+  empresasSemEmissao30dias: 640,
+  evolucaoMensal: [
+    { mes: "Jan", notas: 24200, valor: 64000000, iss: 2240000 },
+    { mes: "Fev", notas: 22800, valor: 60500000, iss: 2118000 },
+    { mes: "Mar", notas: 26500, valor: 71200000, iss: 2492000 },
+    { mes: "Abr", notas: 25100, valor: 67800000, iss: 2373000 },
+    { mes: "Mai", notas: 27300, valor: 73500000, iss: 2573000 },
+    { mes: "Jun", notas: 24800, valor: 65200000, iss: 2282000 },
+    { mes: "Jul", notas: 26900, valor: 72100000, iss: 2524000 },
+    { mes: "Ago", notas: 28100, valor: 74800000, iss: 2618000 },
+    { mes: "Set", notas: 25600, valor: 68200000, iss: 2387000 },
+    { mes: "Out", notas: 27400, valor: 73800000, iss: 2583000 },
+    { mes: "Nov", notas: 26700, valor: 64900000, iss: 2270000 },
+  ],
+  rankingCNAE: [
+    {
+      cnae: "6201-5/01",
+      descricao: "Desenvolvimento de software",
+      notas: 42500,
+      valor: 128000000,
+      iss: 4480000,
+      percentual: 16.9,
+    },
+    {
+      cnae: "4120-4/00",
+      descricao: "Construção de edifícios",
+      notas: 18200,
+      valor: 98000000,
+      iss: 3430000,
+      percentual: 13.0,
+    },
+    {
+      cnae: "8610-1/01",
+      descricao: "Atividades de atendimento hospitalar",
+      notas: 15800,
+      valor: 85000000,
+      iss: 2975000,
+      percentual: 11.2,
+    },
+    {
+      cnae: "6911-7/01",
+      descricao: "Serviços advocatícios",
+      notas: 28400,
+      valor: 62000000,
+      iss: 2170000,
+      percentual: 8.2,
+    },
+    {
+      cnae: "8630-5/03",
+      descricao: "Atividade médica ambulatorial",
+      notas: 22100,
+      valor: 58000000,
+      iss: 2030000,
+      percentual: 7.7,
+    },
+    {
+      cnae: "7020-4/00",
+      descricao: "Consultoria em gestão empresarial",
+      notas: 19800,
+      valor: 52000000,
+      iss: 1820000,
+      percentual: 6.9,
+    },
+    {
+      cnae: "4930-2/02",
+      descricao: "Transporte rodoviário de carga",
+      notas: 12400,
+      valor: 45000000,
+      iss: 1575000,
+      percentual: 6.0,
+    },
+    {
+      cnae: "6190-6/99",
+      descricao: "Outras ativ. telecomunicações",
+      notas: 8200,
+      valor: 38000000,
+      iss: 1330000,
+      percentual: 5.0,
+    },
+  ],
+  alertasNFSe: [
+    {
+      tipo: "critico" as const,
+      descricao:
+        "640 empresas ativas não emitiram NFS-e nos últimos 30 dias — possível omissão de receita",
+    },
+    {
+      tipo: "alerta" as const,
+      descricao:
+        "3.420 notas canceladas no exercício (1,2% do total) — avaliar padrões de cancelamento",
+    },
+    {
+      tipo: "info" as const,
+      descricao:
+        "Setor de Tecnologia apresentou crescimento de 18,5% no volume de NFS-e em relação ao exercício anterior",
+    },
+  ],
+};
+
+// ==========================================
+// NOVOS DADOS — Transferências Constitucionais
+// ==========================================
+
+const transferenciasConstitucionais = {
+  fpm: {
+    previsto: 42000000,
+    recebido: 38500000,
+    percentual: 91.7,
+    evolucaoMensal: [
+      { mes: "Jan", valor: 3200000 },
+      { mes: "Fev", valor: 3100000 },
+      { mes: "Mar", valor: 3800000 },
+      { mes: "Abr", valor: 3400000 },
+      { mes: "Mai", valor: 3600000 },
+      { mes: "Jun", valor: 3200000 },
+      { mes: "Jul", valor: 3500000 },
+      { mes: "Ago", valor: 3800000 },
+      { mes: "Set", valor: 3400000 },
+      { mes: "Out", valor: 3700000 },
+      { mes: "Nov", valor: 3300000 },
+    ],
+  },
+  icms: {
+    previsto: 28000000,
+    recebido: 25200000,
+    percentual: 90.0,
+    indicePM: 0.4285,
+    rankingEstadual: 42,
+    totalMunicipios: 399,
+  },
+  ipva: {
+    previsto: 12000000,
+    recebido: 10800000,
+    percentual: 90.0,
+    veiculosMunicipio: 48500,
+  },
+  fundeb: {
+    recebido: 18500000,
+    complementacaoUniao: 4200000,
+    alunosRede: 12800,
+    valorAlunoAno: 1445.31,
+  },
+  itr: {
+    previsto: 850000,
+    recebido: 720000,
+    percentual: 84.7,
+    conveniado: true,
+    percentualRetencao: 100,
+  },
+  totalPrevisto: 82850000,
+  totalRecebido: 75220000,
+  comparativoAnual: [
+    {
+      ano: "2022",
+      fpm: 35800000,
+      icms: 22400000,
+      ipva: 9800000,
+      fundeb: 15200000,
+      itr: 620000,
+      total: 83820000,
+    },
+    {
+      ano: "2023",
+      fpm: 38200000,
+      icms: 23800000,
+      ipva: 10200000,
+      fundeb: 16800000,
+      itr: 680000,
+      total: 89680000,
+    },
+    {
+      ano: "2024",
+      fpm: 38500000,
+      icms: 25200000,
+      ipva: 10800000,
+      fundeb: 18500000,
+      itr: 720000,
+      total: 93720000,
+    },
+  ],
+};
+
+// ==========================================
+// NOVOS DADOS — Processos Administrativos Fiscais (PAF)
+// ==========================================
+
+const processosAdmFiscais = {
+  totalProcessos: 845,
+  emTramitacao: 320,
+  julgados: 425,
+  arquivados: 100,
+  valorDiscutido: 12800000,
+  valorJulgadoProcedente: 8200000,
+  valorJulgadoImprocedente: 3100000,
+  valorPendente: 5600000,
+  tempoMedioJulgamento: 145,
+  impugnacoes: {
+    recebidas: 285,
+    deferidas: 68,
+    indeferidas: 142,
+    parcialmenteDeferidas: 45,
+    pendentes: 30,
+  },
+  recursos: {
+    interpostos: 180,
+    providos: 32,
+    improvidos: 98,
+    parcialmenteProvidos: 25,
+    pendentes: 25,
+  },
+  porTributo: [
+    { tributo: "IPTU", processos: 280, valor: 4200000, percentual: 33.1 },
+    { tributo: "ISS", processos: 320, valor: 5800000, percentual: 37.9 },
+    { tributo: "ITBI", processos: 85, valor: 1200000, percentual: 10.1 },
+    { tributo: "Taxas", processos: 120, valor: 980000, percentual: 14.2 },
+    { tributo: "Dívida Ativa", processos: 40, valor: 620000, percentual: 4.7 },
+  ],
+  prazosVencendo: [
+    {
+      processo: "PAF 2024/0342",
+      contribuinte: "Construtora Beta Engenharia",
+      tributo: "ISS",
+      valor: 380000,
+      prazo: "15/01/2025",
+      tipo: "Impugnação",
+    },
+    {
+      processo: "PAF 2024/0285",
+      contribuinte: "Rede de Postos XYZ",
+      tributo: "IPTU/ISS",
+      valor: 520000,
+      prazo: "22/01/2025",
+      tipo: "Recurso",
+    },
+    {
+      processo: "PAF 2024/0198",
+      contribuinte: "Hotel Fazenda Bela Vista",
+      tributo: "IPTU",
+      valor: 280000,
+      prazo: "05/02/2025",
+      tipo: "Impugnação",
+    },
+    {
+      processo: "PAF 2024/0421",
+      contribuinte: "Cerâmica Progresso Ind.",
+      tributo: "ISS",
+      valor: 195000,
+      prazo: "12/02/2025",
+      tipo: "Recurso",
+    },
+    {
+      processo: "PAF 2024/0389",
+      contribuinte: "TechSoft Sistemas",
+      tributo: "ISS",
+      valor: 145000,
+      prazo: "28/02/2025",
+      tipo: "Impugnação",
+    },
+  ],
+};
+
+// ==========================================
+// NOVOS DADOS — Indicadores de Esforço Fiscal
+// ==========================================
+
+const esforcoFiscal = {
+  populacao: 125000,
+  receitaTributariaPerCapita: 0, // calculado dinamicamente
+  iptuPerCapita: 0,
+  issPerCapita: 0,
+  dividaAtivaPerCapita: 0,
+  pibMunicipal: 3200000000,
+  cargaTributariaLocal: 0, // calculado
+  comparativoRegional: [
+    {
+      municipio: "Município Atual",
+      populacao: 125000,
+      recTribPerCapita: 0,
+      iptuPerCapita: 0,
+      issPerCapita: 0,
+      indiceEsforco: 0,
+    },
+    {
+      municipio: "Município A (similar)",
+      populacao: 118000,
+      recTribPerCapita: 520.0,
+      iptuPerCapita: 145.0,
+      issPerCapita: 195.0,
+      indiceEsforco: 82.5,
+    },
+    {
+      municipio: "Município B (similar)",
+      populacao: 132000,
+      recTribPerCapita: 480.0,
+      iptuPerCapita: 125.0,
+      issPerCapita: 210.0,
+      indiceEsforco: 78.2,
+    },
+    {
+      municipio: "Município C (similar)",
+      populacao: 110000,
+      recTribPerCapita: 560.0,
+      iptuPerCapita: 160.0,
+      issPerCapita: 220.0,
+      indiceEsforco: 88.4,
+    },
+    {
+      municipio: "Média Estadual",
+      populacao: 0,
+      recTribPerCapita: 495.0,
+      iptuPerCapita: 138.0,
+      issPerCapita: 198.0,
+      indiceEsforco: 80.0,
+    },
+  ],
+};
+
+// ==========================================
+// NOVOS DADOS — Planta Genérica de Valores (PGV)
+// ==========================================
+
+const plantaGenericaValores = {
+  ultimaAtualizacao: "2019",
+  anoAtual: "2024",
+  anosDefasagem: 5,
+  valorVenalTotal: 8210000000,
+  valorMercadoEstimado: 12800000000,
+  defasagemPercentual: 35.9,
+  potencialIPTUAdicional: 3800000,
+  zonasFiscais: [
+    {
+      zona: "Zona Central",
+      imoveis: 8200,
+      valorVenalMedio: 320000,
+      valorMercadoMedio: 520000,
+      defasagem: 38.5,
+    },
+    {
+      zona: "Zona Comercial Norte",
+      imoveis: 4500,
+      valorVenalMedio: 280000,
+      valorMercadoMedio: 430000,
+      defasagem: 34.9,
+    },
+    {
+      zona: "Zona Residencial Leste",
+      imoveis: 12800,
+      valorVenalMedio: 180000,
+      valorMercadoMedio: 285000,
+      defasagem: 36.8,
+    },
+    {
+      zona: "Zona Residencial Sul",
+      imoveis: 9200,
+      valorVenalMedio: 220000,
+      valorMercadoMedio: 340000,
+      defasagem: 35.3,
+    },
+    {
+      zona: "Zona Industrial",
+      imoveis: 1200,
+      valorVenalMedio: 450000,
+      valorMercadoMedio: 680000,
+      defasagem: 33.8,
+    },
+    {
+      zona: "Zona Periférica Oeste",
+      imoveis: 6680,
+      valorVenalMedio: 95000,
+      valorMercadoMedio: 145000,
+      defasagem: 34.5,
+    },
+  ],
+};
+
+// ==========================================
+// NOVOS DADOS — Envelhecimento da Dívida Ativa
+// ==========================================
+
+const envelhecimentoDivida = [
+  {
+    faixa: "Até 1 ano",
+    valor: 4200000,
+    percentual: 8.7,
+    processos: 1850,
+    cor: "var(--chart-1)",
+  },
+  {
+    faixa: "1 a 2 anos",
+    valor: 7800000,
+    percentual: 16.1,
+    processos: 3200,
+    cor: "var(--chart-2)",
+  },
+  {
+    faixa: "2 a 3 anos",
+    valor: 10200000,
+    percentual: 21.0,
+    processos: 4100,
+    cor: "var(--chart-3)",
+  },
+  {
+    faixa: "3 a 4 anos",
+    valor: 12500000,
+    percentual: 25.8,
+    processos: 4800,
+    cor: "var(--chart-4)",
+  },
+  {
+    faixa: "4 a 5 anos (prescrição)",
+    valor: 8600000,
+    percentual: 17.7,
+    processos: 3200,
+    cor: "var(--chart-5)",
+  },
+  {
+    faixa: "Acima de 5 anos",
+    valor: 5200000,
+    percentual: 10.7,
+    processos: 1850,
+    cor: "hsl(0, 70%, 50%)",
+  },
+];
+
+// Chart configs para novos gráficos
+const chartConfigNFSe = {
+  notas: { label: "Notas Emitidas", color: "var(--chart-1)" },
+  iss: { label: "ISS Gerado", color: "var(--chart-2)" },
+} satisfies ChartConfig;
+
+const chartConfigTransferencias = {
+  fpm: { label: "FPM", color: "var(--chart-1)" },
+  icms: { label: "ICMS", color: "var(--chart-2)" },
+  ipva: { label: "IPVA", color: "var(--chart-3)" },
+  fundeb: { label: "FUNDEB", color: "var(--chart-4)" },
+  itr: { label: "ITR", color: "var(--chart-5)" },
+} satisfies ChartConfig;
+
+const chartConfigEnvelhecimento = {
+  valor: { label: "Valor", color: "var(--chart-1)" },
+} satisfies ChartConfig;
+
 // Alertas Tributários
 const alertasTributarios = [
   {
@@ -607,6 +1067,41 @@ const alertasTributarios = [
     descricao:
       "69,8% dos atendimentos ao contribuinte já são realizados por canais digitais. Meta de 75% até o final do exercício requer ampliação dos serviços online.",
     setor: "Atendimento",
+  },
+  {
+    tipo: "critico" as const,
+    titulo: "PGV Desatualizada — 5 Anos de Defasagem",
+    descricao:
+      "A Planta Genérica de Valores não é atualizada desde 2019. A defasagem estimada de 35,9% representa potencial adicional de R$ 3,8M/ano em IPTU. Recomenda-se iniciar processo legislativo para atualização.",
+    setor: "Cadastro",
+  },
+  {
+    tipo: "alerta" as const,
+    titulo: "Queda no Índice de Participação do ICMS",
+    descricao:
+      "O IPM (Índice de Participação dos Municípios) caiu de 0,4412 para 0,4285 no último exercício. Revisar componentes do índice (valor adicionado fiscal, população, área) para estratégia de recuperação.",
+    setor: "Transferências",
+  },
+  {
+    tipo: "alerta" as const,
+    titulo: "640 Empresas Sem Emissão de NFS-e",
+    descricao:
+      "640 empresas ativas no cadastro econômico não emitiram NFS-e nos últimos 30 dias. Pode indicar omissão de receita ou encerramento não comunicado. Recomenda-se cruzamento de dados e notificação.",
+    setor: "NFS-e",
+  },
+  {
+    tipo: "info" as const,
+    titulo: "Oportunidade REFIS — Recuperação de Dívida Ativa",
+    descricao:
+      "Considerando o estoque de R$ 48,5M em dívida ativa e o volume de créditos em risco de prescrição, avaliar a viabilidade de programa de recuperação fiscal (REFIS) com descontos escalonados em juros e multa.",
+    setor: "Dívida Ativa",
+  },
+  {
+    tipo: "info" as const,
+    titulo: "30 Processos Administrativos com Prazo Vencendo",
+    descricao:
+      "Existem processos administrativos fiscais com prazos de impugnação e recurso vencendo nos próximos 60 dias. O valor total envolvido é de R$ 1,52M. Necessário acompanhamento da JARF/TARF.",
+    setor: "PAF",
   },
 ];
 
@@ -898,6 +1393,9 @@ export function TributacaoMunicipal() {
           <TabsTrigger value="divida-ativa">Dívida Ativa</TabsTrigger>
           <TabsTrigger value="fiscalizacao">Fiscalização</TabsTrigger>
           <TabsTrigger value="contribuintes">Contribuintes</TabsTrigger>
+          <TabsTrigger value="nfse">NFS-e</TabsTrigger>
+          <TabsTrigger value="transferencias">Transferências</TabsTrigger>
+          <TabsTrigger value="paf">Contencioso</TabsTrigger>
           <TabsTrigger value="metas">Metas</TabsTrigger>
         </TabsList>
 
@@ -2625,6 +3123,915 @@ export function TributacaoMunicipal() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* ========================================== */}
+        {/* Tab: NFS-e e Nota Fiscal                   */}
+        {/* ========================================== */}
+        <TabsContent value="nfse" className="space-y-4">
+          {/* KPIs NFS-e */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <KpiCard
+              icon={FileAttachmentIcon}
+              title="Total NFS-e Emitidas"
+              value={formatNumber(dadosNFSe.totalEmitidas)}
+              borderColor="border-l-blue-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  Média de {formatNumber(dadosNFSe.mediaNotasDia)} notas/dia —{" "}
+                  {formatNumber(dadosNFSe.empresasEmissoras)} empresas emissoras
+                </p>
+              }
+            />
+            <KpiCard
+              icon={MoneyReceiveSquareIcon}
+              title="Valor Total Serviços"
+              value={formatMillions(dadosNFSe.valorTotalServicos)}
+              borderColor="border-l-green-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  ISS gerado: {formatCurrency(dadosNFSe.issGerado)}
+                </p>
+              }
+            />
+            <KpiCard
+              icon={Cancel01Icon}
+              title="Notas Canceladas"
+              value={formatNumber(dadosNFSe.totalCanceladas)}
+              borderColor="border-l-red-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  {(
+                    (dadosNFSe.totalCanceladas / dadosNFSe.totalEmitidas) *
+                    100
+                  ).toFixed(1)}
+                  % do total — {formatNumber(dadosNFSe.totalSubstituidas)}{" "}
+                  substituídas
+                </p>
+              }
+            />
+            <KpiCard
+              icon={Alert02Icon}
+              title="Empresas Sem Emissão"
+              value={formatNumber(dadosNFSe.empresasSemEmissao30dias)}
+              valueClassName="text-red-600"
+              borderColor="border-l-amber-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  Sem NFS-e nos últimos 30 dias — possível omissão de receita
+                </p>
+              }
+            />
+          </div>
+
+          {/* Evolução Mensal NFS-e */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={ChartLineData02Icon}
+                  strokeWidth={2}
+                  className="size-5"
+                />
+                Evolução Mensal — Emissão de NFS-e
+              </CardTitle>
+              <CardDescription>
+                Volume de notas emitidas e ISS gerado por mês — Exercício{" "}
+                {periodoSelecionado}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={chartConfigNFSe}
+                className="h-[300px] w-full"
+              >
+                <BarChart data={dadosNFSe.evolucaoMensal} accessibilityLayer>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="mes"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                  />
+                  <YAxis
+                    yAxisId="left"
+                    tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}K`}
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                  />
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    tickFormatter={(v: number) =>
+                      `${(v / 1000000).toFixed(1)}M`
+                    }
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Bar
+                    yAxisId="left"
+                    dataKey="notas"
+                    fill="var(--color-notas)"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="iss"
+                    stroke="var(--color-iss)"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                  />
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          {/* Ranking por CNAE */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={Analytics01Icon}
+                  strokeWidth={2}
+                  className="size-5"
+                />
+                Ranking de Arrecadação por Atividade Econômica (CNAE)
+              </CardTitle>
+              <CardDescription>
+                Principais atividades econômicas por volume de NFS-e e ISS
+                gerado
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[40px]">#</TableHead>
+                    <TableHead>CNAE</TableHead>
+                    <TableHead>Descrição</TableHead>
+                    <TableHead className="text-center">NFS-e</TableHead>
+                    <TableHead className="text-right">Valor Serviços</TableHead>
+                    <TableHead className="text-right">ISS Gerado</TableHead>
+                    <TableHead className="text-right">% ISS</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {dadosNFSe.rankingCNAE.map((item, i) => (
+                    <TableRow key={item.cnae}>
+                      <TableCell className="font-bold text-muted-foreground">
+                        {i + 1}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {item.cnae}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {item.descricao}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {formatNumber(item.notas)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatMillions(item.valor)}
+                      </TableCell>
+                      <TableCell className="text-right font-medium">
+                        {formatCurrency(item.iss)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Badge variant="outline">{item.percentual}%</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={3} className="font-bold">
+                      Total Top 8 CNAEs
+                    </TableCell>
+                    <TableCell className="text-center font-bold">
+                      {formatNumber(
+                        dadosNFSe.rankingCNAE.reduce((a, c) => a + c.notas, 0),
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right font-bold">
+                      {formatMillions(
+                        dadosNFSe.rankingCNAE.reduce((a, c) => a + c.valor, 0),
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right font-bold">
+                      {formatCurrency(
+                        dadosNFSe.rankingCNAE.reduce((a, c) => a + c.iss, 0),
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right font-bold">
+                      {dadosNFSe.rankingCNAE
+                        .reduce((a, c) => a + c.percentual, 0)
+                        .toFixed(1)}
+                      %
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Alertas NFS-e */}
+          <div className="space-y-3">
+            {dadosNFSe.alertasNFSe.map((alerta, i) => (
+              <Alert
+                key={i}
+                variant={alerta.tipo === "critico" ? "destructive" : "default"}
+              >
+                <HugeiconsIcon
+                  icon={
+                    alerta.tipo === "critico"
+                      ? Alert02Icon
+                      : alerta.tipo === "alerta"
+                        ? AlertCircleIcon
+                        : InformationCircleIcon
+                  }
+                  strokeWidth={2}
+                  className="size-4"
+                />
+                <AlertTitle>
+                  {alerta.tipo === "critico"
+                    ? "Atenção Crítica"
+                    : alerta.tipo === "alerta"
+                      ? "Atenção"
+                      : "Informação"}
+                </AlertTitle>
+                <AlertDescription>{alerta.descricao}</AlertDescription>
+              </Alert>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* ========================================== */}
+        {/* Tab: Transferências Constitucionais         */}
+        {/* ========================================== */}
+        <TabsContent value="transferencias" className="space-y-4">
+          {/* KPIs Transferências */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <KpiCard
+              icon={BankIcon}
+              title="FPM"
+              value={formatMillions(transferenciasConstitucionais.fpm.recebido)}
+              borderColor="border-l-blue-500"
+              footer={
+                <>
+                  <Progress
+                    value={transferenciasConstitucionais.fpm.percentual}
+                    className="h-2"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {transferenciasConstitucionais.fpm.percentual}% do previsto
+                    (
+                    {formatMillions(transferenciasConstitucionais.fpm.previsto)}
+                    )
+                  </p>
+                </>
+              }
+            />
+            <KpiCard
+              icon={MoneyReceiveSquareIcon}
+              title="ICMS (Cota-Parte)"
+              value={formatMillions(
+                transferenciasConstitucionais.icms.recebido,
+              )}
+              borderColor="border-l-green-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  IPM: {transferenciasConstitucionais.icms.indicePM} — Ranking:{" "}
+                  {transferenciasConstitucionais.icms.rankingEstadual}° de{" "}
+                  {transferenciasConstitucionais.icms.totalMunicipios}
+                </p>
+              }
+            />
+            <KpiCard
+              icon={Wallet01Icon}
+              title="IPVA (Cota-Parte)"
+              value={formatMillions(
+                transferenciasConstitucionais.ipva.recebido,
+              )}
+              borderColor="border-l-amber-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  {formatNumber(
+                    transferenciasConstitucionais.ipva.veiculosMunicipio,
+                  )}{" "}
+                  veículos registrados
+                </p>
+              }
+            />
+            <KpiCard
+              icon={Building06Icon}
+              title="FUNDEB"
+              value={formatMillions(
+                transferenciasConstitucionais.fundeb.recebido,
+              )}
+              borderColor="border-l-violet-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  Complementação União:{" "}
+                  {formatMillions(
+                    transferenciasConstitucionais.fundeb.complementacaoUniao,
+                  )}{" "}
+                  —{" "}
+                  {formatNumber(
+                    transferenciasConstitucionais.fundeb.alunosRede,
+                  )}{" "}
+                  alunos
+                </p>
+              }
+            />
+            <KpiCard
+              icon={Home01Icon}
+              title="ITR (Conveniado)"
+              value={formatMillions(transferenciasConstitucionais.itr.recebido)}
+              borderColor="border-l-teal-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  Retenção:{" "}
+                  {transferenciasConstitucionais.itr.percentualRetencao}% —{" "}
+                  {transferenciasConstitucionais.itr.percentual}% do previsto
+                </p>
+              }
+            />
+          </div>
+
+          {/* Resumo Total */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={MoneyAdd01Icon}
+                  strokeWidth={2}
+                  className="size-5"
+                />
+                Transferências Constitucionais — Resumo
+              </CardTitle>
+              <CardDescription>
+                Total recebido vs. previsto e evolução anual das transferências
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-3 mb-6">
+                <div className="rounded-lg border p-4 space-y-1 border-green-200 dark:border-green-800">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Recebido
+                  </p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {formatCurrency(
+                      transferenciasConstitucionais.totalRecebido,
+                    )}
+                  </p>
+                </div>
+                <div className="rounded-lg border p-4 space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Previsto (LOA)
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {formatCurrency(
+                      transferenciasConstitucionais.totalPrevisto,
+                    )}
+                  </p>
+                </div>
+                <div className="rounded-lg border p-4 space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Realização
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {(
+                      (transferenciasConstitucionais.totalRecebido /
+                        transferenciasConstitucionais.totalPrevisto) *
+                      100
+                    ).toFixed(1)}
+                    %
+                  </p>
+                  <Progress
+                    value={
+                      (transferenciasConstitucionais.totalRecebido /
+                        transferenciasConstitucionais.totalPrevisto) *
+                      100
+                    }
+                    className="h-2"
+                  />
+                </div>
+              </div>
+
+              <Separator className="my-4" />
+
+              {/* Evolução FPM Mensal */}
+              <h4 className="font-semibold mb-3">Evolução Mensal do FPM</h4>
+              <ChartContainer
+                config={
+                  {
+                    fpm: { label: "FPM", color: "var(--chart-1)" },
+                  } satisfies ChartConfig
+                }
+                className="h-[250px] w-full"
+              >
+                <BarChart
+                  data={transferenciasConstitucionais.fpm.evolucaoMensal}
+                  accessibilityLayer
+                >
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="mes"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                  />
+                  <YAxis
+                    tickFormatter={(v: number) =>
+                      `${(v / 1000000).toFixed(1)}M`
+                    }
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                  />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        formatter={(value: number) =>
+                          formatCurrency(value as number)
+                        }
+                      />
+                    }
+                  />
+                  <Bar
+                    dataKey="valor"
+                    fill="var(--chart-1)"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ChartContainer>
+
+              <Separator className="my-4" />
+
+              {/* Comparativo Anual Transferências */}
+              <h4 className="font-semibold mb-3">
+                Comparativo Anual — 3 Exercícios
+              </h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Exercício</TableHead>
+                    <TableHead className="text-right">FPM</TableHead>
+                    <TableHead className="text-right">ICMS</TableHead>
+                    <TableHead className="text-right">IPVA</TableHead>
+                    <TableHead className="text-right">FUNDEB</TableHead>
+                    <TableHead className="text-right">ITR</TableHead>
+                    <TableHead className="text-right font-bold">
+                      Total
+                    </TableHead>
+                    <TableHead className="text-center">Variação</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {transferenciasConstitucionais.comparativoAnual.map(
+                    (ano, i) => {
+                      const varAnual =
+                        i > 0
+                          ? (
+                              ((ano.total -
+                                transferenciasConstitucionais.comparativoAnual[
+                                  i - 1
+                                ].total) /
+                                transferenciasConstitucionais.comparativoAnual[
+                                  i - 1
+                                ].total) *
+                              100
+                            ).toFixed(1)
+                          : null;
+                      return (
+                        <TableRow key={ano.ano}>
+                          <TableCell className="font-bold">{ano.ano}</TableCell>
+                          <TableCell className="text-right">
+                            {formatMillions(ano.fpm)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {formatMillions(ano.icms)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {formatMillions(ano.ipva)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {formatMillions(ano.fundeb)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {formatMillions(ano.itr)}
+                          </TableCell>
+                          <TableCell className="text-right font-bold">
+                            {formatMillions(ano.total)}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {varAnual ? (
+                              <Badge
+                                className={
+                                  Number(varAnual) > 0
+                                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                                    : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                                }
+                              >
+                                {Number(varAnual) > 0 ? "+" : ""}
+                                {varAnual}%
+                              </Badge>
+                            ) : (
+                              <span className="text-muted-foreground">—</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    },
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Informação sobre dependência */}
+          <div className="rounded-lg bg-muted/50 p-4">
+            <div className="flex items-start gap-2 text-sm">
+              <HugeiconsIcon
+                icon={InformationCircleIcon}
+                strokeWidth={2}
+                className="size-4 text-blue-600 mt-0.5"
+              />
+              <div>
+                <span className="font-medium">
+                  Grau de dependência de transferências:
+                </span>
+                <span className="ml-1">
+                  As transferências constitucionais (
+                  {formatCurrency(transferenciasConstitucionais.totalRecebido)})
+                  representam{" "}
+                  <strong>
+                    {(
+                      (transferenciasConstitucionais.totalRecebido /
+                        (transferenciasConstitucionais.totalRecebido +
+                          totalArrecadado)) *
+                      100
+                    ).toFixed(1)}
+                    %
+                  </strong>{" "}
+                  da receita corrente total (própria + transferida), indicando o
+                  nível de autonomia financeira do município.
+                </span>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* ========================================== */}
+        {/* Tab: Processos Administrativos Fiscais     */}
+        {/* ========================================== */}
+        <TabsContent value="paf" className="space-y-4">
+          {/* KPIs PAF */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <KpiCard
+              icon={CourtLawIcon}
+              title="Total de Processos"
+              value={formatNumber(processosAdmFiscais.totalProcessos)}
+              borderColor="border-l-blue-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  {formatNumber(processosAdmFiscais.emTramitacao)} em tramitação
+                  — {formatNumber(processosAdmFiscais.julgados)} julgados —{" "}
+                  {formatNumber(processosAdmFiscais.arquivados)} arquivados
+                </p>
+              }
+            />
+            <KpiCard
+              icon={MoneyReceiveSquareIcon}
+              title="Valor Total Discutido"
+              value={formatMillions(processosAdmFiscais.valorDiscutido)}
+              borderColor="border-l-red-500"
+              footer={
+                <>
+                  <div className="flex items-center gap-1 text-xs">
+                    <span className="text-green-600">
+                      Procedente:{" "}
+                      {formatMillions(
+                        processosAdmFiscais.valorJulgadoProcedente,
+                      )}
+                    </span>
+                    <span className="text-muted-foreground">|</span>
+                    <span className="text-red-600">
+                      Improcedente:{" "}
+                      {formatMillions(
+                        processosAdmFiscais.valorJulgadoImprocedente,
+                      )}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Pendente de julgamento:{" "}
+                    {formatCurrency(processosAdmFiscais.valorPendente)}
+                  </p>
+                </>
+              }
+            />
+            <KpiCard
+              icon={Clock01Icon}
+              title="Tempo Médio de Julgamento"
+              value={`${processosAdmFiscais.tempoMedioJulgamento} dias`}
+              borderColor="border-l-amber-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  Meta: 120 dias —{" "}
+                  {processosAdmFiscais.tempoMedioJulgamento > 120
+                    ? "Acima da meta"
+                    : "Dentro da meta"}
+                </p>
+              }
+            />
+            <KpiCard
+              icon={DocumentValidationIcon}
+              title="Taxa de Êxito Fiscal"
+              value={`${((processosAdmFiscais.valorJulgadoProcedente / (processosAdmFiscais.valorJulgadoProcedente + processosAdmFiscais.valorJulgadoImprocedente)) * 100).toFixed(1)}%`}
+              borderColor="border-l-green-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  Percentual de créditos mantidos após julgamento
+                </p>
+              }
+            />
+          </div>
+
+          {/* Impugnações e Recursos */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Impugnações</CardTitle>
+                <CardDescription>
+                  Situação das impugnações recebidas
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Recebidas</span>
+                    <span className="font-bold">
+                      {formatNumber(processosAdmFiscais.impugnacoes.recebidas)}
+                    </span>
+                  </div>
+                  {[
+                    {
+                      label: "Deferidas",
+                      value: processosAdmFiscais.impugnacoes.deferidas,
+                      cor: "bg-red-600",
+                    },
+                    {
+                      label: "Indeferidas (êxito fiscal)",
+                      value: processosAdmFiscais.impugnacoes.indeferidas,
+                      cor: "bg-green-600",
+                    },
+                    {
+                      label: "Parcialmente deferidas",
+                      value:
+                        processosAdmFiscais.impugnacoes.parcialmenteDeferidas,
+                      cor: "bg-amber-600",
+                    },
+                    {
+                      label: "Pendentes de julgamento",
+                      value: processosAdmFiscais.impugnacoes.pendentes,
+                      cor: "bg-blue-600",
+                    },
+                  ].map((item) => (
+                    <div key={item.label} className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          {item.label}
+                        </span>
+                        <span>
+                          {formatNumber(item.value)} (
+                          {(
+                            (item.value /
+                              processosAdmFiscais.impugnacoes.recebidas) *
+                            100
+                          ).toFixed(1)}
+                          %)
+                        </span>
+                      </div>
+                      <div className="h-2 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${item.cor}`}
+                          style={{
+                            width: `${(item.value / processosAdmFiscais.impugnacoes.recebidas) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Recursos</CardTitle>
+                <CardDescription>
+                  Situação dos recursos interpostos
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Interpostos</span>
+                    <span className="font-bold">
+                      {formatNumber(processosAdmFiscais.recursos.interpostos)}
+                    </span>
+                  </div>
+                  {[
+                    {
+                      label: "Providos (favorável contribuinte)",
+                      value: processosAdmFiscais.recursos.providos,
+                      cor: "bg-red-600",
+                    },
+                    {
+                      label: "Improvidos (êxito fiscal)",
+                      value: processosAdmFiscais.recursos.improvidos,
+                      cor: "bg-green-600",
+                    },
+                    {
+                      label: "Parcialmente providos",
+                      value: processosAdmFiscais.recursos.parcialmenteProvidos,
+                      cor: "bg-amber-600",
+                    },
+                    {
+                      label: "Pendentes de julgamento",
+                      value: processosAdmFiscais.recursos.pendentes,
+                      cor: "bg-blue-600",
+                    },
+                  ].map((item) => (
+                    <div key={item.label} className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          {item.label}
+                        </span>
+                        <span>
+                          {formatNumber(item.value)} (
+                          {(
+                            (item.value /
+                              processosAdmFiscais.recursos.interpostos) *
+                            100
+                          ).toFixed(1)}
+                          %)
+                        </span>
+                      </div>
+                      <div className="h-2 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${item.cor}`}
+                          style={{
+                            width: `${(item.value / processosAdmFiscais.recursos.interpostos) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Distribuição por Tributo */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={PieChart02Icon}
+                  strokeWidth={2}
+                  className="size-5"
+                />
+                Distribuição de Processos por Tributo
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Tributo</TableHead>
+                    <TableHead className="text-center">Processos</TableHead>
+                    <TableHead className="text-right">
+                      Valor Discutido
+                    </TableHead>
+                    <TableHead className="text-right">% do Total</TableHead>
+                    <TableHead className="text-center">Barra</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {processosAdmFiscais.porTributo.map((item) => (
+                    <TableRow key={item.tributo}>
+                      <TableCell className="font-medium">
+                        {item.tributo}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {formatNumber(item.processos)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(item.valor)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.percentual}%
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-primary"
+                            style={{ width: `${item.percentual}%` }}
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Processos com Prazo Vencendo */}
+          <Card className="border-amber-200 dark:border-amber-800/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={Clock01Icon}
+                  strokeWidth={2}
+                  className="size-5 text-amber-600"
+                />
+                Processos com Prazos Próximos
+              </CardTitle>
+              <CardDescription>
+                Processos com prazos de impugnação ou recurso vencendo nos
+                próximos 60 dias
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Processo</TableHead>
+                    <TableHead>Contribuinte</TableHead>
+                    <TableHead>Tributo</TableHead>
+                    <TableHead className="text-right">Valor</TableHead>
+                    <TableHead className="text-center">Prazo</TableHead>
+                    <TableHead className="text-center">Tipo</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {processosAdmFiscais.prazosVencendo.map((p) => (
+                    <TableRow key={p.processo}>
+                      <TableCell className="font-mono text-sm">
+                        {p.processo}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {p.contribuinte}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{p.tributo}</Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(p.valor)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800">
+                          {p.prazo}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge
+                          variant={
+                            p.tipo === "Impugnação" ? "secondary" : "outline"
+                          }
+                        >
+                          {p.tipo}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={3} className="font-bold">
+                      Total em Risco
+                    </TableCell>
+                    <TableCell className="text-right font-bold">
+                      {formatCurrency(
+                        processosAdmFiscais.prazosVencendo.reduce(
+                          (a, p) => a + p.valor,
+                          0,
+                        ),
+                      )}
+                    </TableCell>
+                    <TableCell colSpan={2} />
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
 
       {/* ======================================================= */}
@@ -2730,6 +4137,395 @@ export function TributacaoMunicipal() {
                   {formatMillions(totalArrecadado)} vs.{" "}
                   {formatMillions(arrecadacao2023)} em 2023
                 </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Índice de Esforço Fiscal */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HugeiconsIcon
+                icon={Calculator01Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
+              Índice de Esforço Fiscal — Indicadores Per Capita
+            </CardTitle>
+            <CardDescription>
+              Comparativo de receita tributária per capita com municípios de
+              porte similar
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+              <div className="rounded-lg border p-4 space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Receita Tributária Per Capita
+                </p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(totalArrecadado / esforcoFiscal.populacao)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  População: {formatNumber(esforcoFiscal.populacao)} hab.
+                </p>
+              </div>
+              <div className="rounded-lg border p-4 space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  IPTU Per Capita
+                </p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(
+                    dadosIPTU.arrecadado / esforcoFiscal.populacao,
+                  )}
+                </p>
+              </div>
+              <div className="rounded-lg border p-4 space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  ISS Per Capita
+                </p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(
+                    dadosISS.arrecadado / esforcoFiscal.populacao,
+                  )}
+                </p>
+              </div>
+              <div className="rounded-lg border p-4 space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Carga Tributária Local
+                </p>
+                <p className="text-2xl font-bold">
+                  {(
+                    (totalArrecadado / esforcoFiscal.pibMunicipal) *
+                    100
+                  ).toFixed(2)}
+                  %
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Receita tributária / PIB municipal
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-4" />
+
+            <h4 className="font-semibold mb-3">
+              Benchmarking Regional — Municípios de Porte Similar
+            </h4>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Município</TableHead>
+                  <TableHead className="text-center">População</TableHead>
+                  <TableHead className="text-right">
+                    Rec. Trib. Per Capita
+                  </TableHead>
+                  <TableHead className="text-right">IPTU Per Capita</TableHead>
+                  <TableHead className="text-right">ISS Per Capita</TableHead>
+                  <TableHead className="text-center">Índice Esforço</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {esforcoFiscal.comparativoRegional.map((mun, i) => {
+                  const isAtual = i === 0;
+                  const recTribPC = isAtual
+                    ? totalArrecadado / esforcoFiscal.populacao
+                    : mun.recTribPerCapita;
+                  const iptuPC = isAtual
+                    ? dadosIPTU.arrecadado / esforcoFiscal.populacao
+                    : mun.iptuPerCapita;
+                  const issPC = isAtual
+                    ? dadosISS.arrecadado / esforcoFiscal.populacao
+                    : mun.issPerCapita;
+                  const indice = isAtual
+                    ? (totalArrecadado / esforcoFiscal.populacao / 560) * 100
+                    : mun.indiceEsforco;
+                  return (
+                    <TableRow
+                      key={mun.municipio}
+                      className={isAtual ? "bg-primary/5 font-medium" : ""}
+                    >
+                      <TableCell className={isAtual ? "font-bold" : ""}>
+                        {mun.municipio}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {mun.populacao > 0 ? formatNumber(mun.populacao) : "—"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(recTribPC)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(iptuPC)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(issPC)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge
+                          className={
+                            indice >= 85
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800"
+                              : indice >= 75
+                                ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800"
+                                : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800"
+                          }
+                        >
+                          {indice.toFixed(1)}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Planta Genérica de Valores (PGV) */}
+        <Card className="border-amber-200 dark:border-amber-800/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HugeiconsIcon
+                icon={Building06Icon}
+                strokeWidth={2}
+                className="size-5 text-amber-600"
+              />
+              Planta Genérica de Valores (PGV)
+            </CardTitle>
+            <CardDescription>
+              Análise de defasagem cadastral e potencial de atualização
+              tributária
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+              <div className="rounded-lg border border-amber-200 dark:border-amber-800 p-4 space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Última Atualização
+                </p>
+                <p className="text-2xl font-bold text-amber-600">
+                  {plantaGenericaValores.ultimaAtualizacao}
+                </p>
+                <p className="text-xs text-red-600 font-medium">
+                  {plantaGenericaValores.anosDefasagem} anos de defasagem
+                </p>
+              </div>
+              <div className="rounded-lg border p-4 space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Valor Venal Total (PGV atual)
+                </p>
+                <p className="text-2xl font-bold">
+                  {formatMillions(plantaGenericaValores.valorVenalTotal)}
+                </p>
+              </div>
+              <div className="rounded-lg border p-4 space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Valor de Mercado Estimado
+                </p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {formatMillions(plantaGenericaValores.valorMercadoEstimado)}
+                </p>
+              </div>
+              <div className="rounded-lg border border-red-200 dark:border-red-800 p-4 space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Defasagem Média
+                </p>
+                <p className="text-2xl font-bold text-red-600">
+                  {plantaGenericaValores.defasagemPercentual}%
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Potencial adicional:{" "}
+                  {formatCurrency(plantaGenericaValores.potencialIPTUAdicional)}
+                  /ano
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-4" />
+
+            <h4 className="font-semibold mb-3">Defasagem por Zona Fiscal</h4>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Zona Fiscal</TableHead>
+                  <TableHead className="text-center">Imóveis</TableHead>
+                  <TableHead className="text-right">
+                    Valor Venal Médio
+                  </TableHead>
+                  <TableHead className="text-right">
+                    Valor Mercado Médio
+                  </TableHead>
+                  <TableHead className="text-right">Defasagem</TableHead>
+                  <TableHead className="text-center">Situação</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {plantaGenericaValores.zonasFiscais.map((zona) => (
+                  <TableRow key={zona.zona}>
+                    <TableCell className="font-medium">{zona.zona}</TableCell>
+                    <TableCell className="text-center">
+                      {formatNumber(zona.imoveis)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(zona.valorVenalMedio)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(zona.valorMercadoMedio)}
+                    </TableCell>
+                    <TableCell className="text-right font-bold text-red-600">
+                      {zona.defasagem}%
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800">
+                        Desatualizado
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+            <div className="mt-4 rounded-lg bg-amber-50 dark:bg-amber-950/20 p-4">
+              <div className="flex items-start gap-2 text-sm">
+                <HugeiconsIcon
+                  icon={AlertCircleIcon}
+                  strokeWidth={2}
+                  className="size-4 text-amber-600 mt-0.5"
+                />
+                <div>
+                  <span className="font-medium text-amber-800 dark:text-amber-400">
+                    Recomendação:
+                  </span>
+                  <span className="text-amber-700 dark:text-amber-300 ml-1">
+                    A atualização da Planta Genérica de Valores pode gerar
+                    receita adicional estimada de{" "}
+                    {formatCurrency(
+                      plantaGenericaValores.potencialIPTUAdicional,
+                    )}
+                    /ano somente em IPTU. Recomenda-se iniciar processo
+                    legislativo para revisão da PGV, incluindo levantamento
+                    técnico com geoprocessamento e pesquisa de valores de
+                    mercado.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Envelhecimento da Dívida Ativa */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HugeiconsIcon
+                icon={Clock01Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
+              Envelhecimento da Dívida Ativa
+            </CardTitle>
+            <CardDescription>
+              Distribuição do estoque da dívida ativa por faixa de tempo de
+              inadimplência
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2 mb-6">
+              <div>
+                <ChartContainer
+                  config={chartConfigEnvelhecimento}
+                  className="h-[280px] w-full"
+                >
+                  <PieChart accessibilityLayer>
+                    <Pie
+                      data={envelhecimentoDivida}
+                      dataKey="valor"
+                      nameKey="faixa"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={2}
+                    >
+                      {envelhecimentoDivida.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.cor} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          formatter={(value: number) =>
+                            formatCurrency(value as number)
+                          }
+                        />
+                      }
+                    />
+                  </PieChart>
+                </ChartContainer>
+              </div>
+              <div className="space-y-3">
+                {envelhecimentoDivida.map((faixa) => (
+                  <div key={faixa.faixa} className="space-y-1">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="size-3 rounded-full"
+                          style={{ backgroundColor: faixa.cor }}
+                        />
+                        <span className="font-medium">{faixa.faixa}</span>
+                      </div>
+                      <span className="text-muted-foreground">
+                        {formatCurrency(faixa.valor)} ({faixa.percentual}%)
+                      </span>
+                    </div>
+                    <div className="h-2 rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${faixa.percentual}%`,
+                          backgroundColor: faixa.cor,
+                        }}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {formatNumber(faixa.processos)} processos/inscrições
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-red-50 dark:bg-red-950/20 p-4">
+              <div className="flex items-start gap-2 text-sm">
+                <HugeiconsIcon
+                  icon={Alert02Icon}
+                  strokeWidth={2}
+                  className="size-4 text-red-600 mt-0.5"
+                />
+                <div>
+                  <span className="font-medium text-red-800 dark:text-red-400">
+                    Alerta de prescrição:
+                  </span>
+                  <span className="text-red-700 dark:text-red-300 ml-1">
+                    {formatCurrency(
+                      envelhecimentoDivida[4].valor +
+                        envelhecimentoDivida[5].valor,
+                    )}{" "}
+                    (
+                    {(
+                      ((envelhecimentoDivida[4].valor +
+                        envelhecimentoDivida[5].valor) /
+                        dividaAtiva.estoqueTotal) *
+                      100
+                    ).toFixed(1)}
+                    % do estoque) estão em faixa de risco de prescrição (4+
+                    anos). Destes,{" "}
+                    {formatCurrency(envelhecimentoDivida[5].valor)} já
+                    ultrapassaram 5 anos e podem estar prescritos. Ação urgente
+                    de cobrança judicial ou protesto é necessária.
+                  </span>
+                </div>
               </div>
             </div>
           </CardContent>
