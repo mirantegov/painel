@@ -1,0 +1,644 @@
+"use client";
+
+import * as React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { KpiCard } from "@/components/ui/kpi-card";
+import { Progress } from "@/components/ui/progress";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableFooter,
+} from "@/components/ui/table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Pie,
+  PieChart,
+  XAxis,
+  YAxis,
+  Cell,
+} from "recharts";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Building06Icon,
+  MoneyBag02Icon,
+  CheckmarkCircle01Icon,
+  AlertCircleIcon,
+  InformationCircleIcon,
+} from "@hugeicons/core-free-icons";
+import {
+  INVESTIMENTO_OBRAS,
+  DATA_OBRAS_SANEAMENTO,
+  formatCurrency,
+  formatCurrencyCompact,
+  formatPercent,
+} from "@/lib/demo-saneamento";
+import { cn } from "@/lib/utils";
+
+// Converte "Mar/2025" → Date, retorna null se "-"
+function parseMesAno(s: string): Date | null {
+  if (s === "-") return null;
+  const mesMap: Record<string, number> = {
+    Jan: 0,
+    Fev: 1,
+    Mar: 2,
+    Abr: 3,
+    Mai: 4,
+    Jun: 5,
+    Jul: 6,
+    Ago: 7,
+    Set: 8,
+    Out: 9,
+    Nov: 10,
+    Dez: 11,
+  };
+  const [mes, ano] = s.split("/");
+  const m = mesMap[mes];
+  if (m === undefined || !ano) return null;
+  return new Date(parseInt(ano), m);
+}
+
+function InvestimentoPorTipoChart() {
+  const tipoMap = new Map<string, number>();
+  for (const o of DATA_OBRAS_SANEAMENTO) {
+    tipoMap.set(o.tipo, (tipoMap.get(o.tipo) || 0) + o.valorTotal);
+  }
+  const chartData = Array.from(tipoMap.entries()).map(([tipo, valor]) => ({
+    tipo,
+    valor,
+    percentual: (valor / INVESTIMENTO_OBRAS) * 100,
+  }));
+
+  const colors = [
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
+  ];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Investimento por Tipo</CardTitle>
+        <CardDescription>Distribuição por categoria de obra</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={chartData.reduce((config, item, index) => {
+            config[item.tipo.toLowerCase().replace(/\s+/g, "")] = {
+              label: item.tipo,
+              color: colors[index % colors.length],
+            };
+            return config;
+          }, {} as ChartConfig)}
+          className="mx-auto aspect-square h-[280px]"
+        >
+          <PieChart>
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  formatter={(value) => formatCurrency(Number(value))}
+                />
+              }
+            />
+            <Pie
+              data={chartData.map((item, index) => ({
+                ...item,
+                fill: colors[index % colors.length],
+              }))}
+              dataKey="valor"
+              nameKey="tipo"
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={100}
+            >
+              {chartData.map((_, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={colors[index % colors.length]}
+                />
+              ))}
+            </Pie>
+            <ChartLegend content={<ChartLegendContent />} />
+          </PieChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ProgressoObrasChart() {
+  const chartData = DATA_OBRAS_SANEAMENTO.filter(
+    (o) => o.status !== "Licitação",
+  ).map((o) => ({
+    nome: o.nome.length > 22 ? o.nome.substring(0, 22) + "…" : o.nome,
+    executado: o.percentualExecucao,
+    restante: 100 - o.percentualExecucao,
+    status: o.status,
+  }));
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Progresso das Obras</CardTitle>
+        <CardDescription>
+          % de execução física por obra (obras em andamento)
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={
+            {
+              executado: { label: "Executado", color: "var(--chart-2)" },
+              restante: { label: "A Executar", color: "var(--chart-4)" },
+            } satisfies ChartConfig
+          }
+          className="h-[300px] w-full"
+        >
+          <BarChart
+            data={chartData}
+            layout="vertical"
+            margin={{ left: 150, right: 40 }}
+          >
+            <CartesianGrid horizontal={false} />
+            <XAxis
+              type="number"
+              domain={[0, 100]}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(v) => `${v}%`}
+            />
+            <YAxis
+              dataKey="nome"
+              type="category"
+              tickLine={false}
+              axisLine={false}
+              width={145}
+              style={{ fontSize: "11px" }}
+            />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent formatter={(value) => [`${value}%`, ""]} />
+              }
+            />
+            <Bar
+              dataKey="executado"
+              fill="var(--color-executado)"
+              stackId="a"
+              radius={[0, 0, 0, 0]}
+            />
+            <Bar
+              dataKey="restante"
+              fill="var(--color-restante)"
+              stackId="a"
+              radius={[0, 4, 4, 0]}
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AlertasAtrasoCard() {
+  const hoje = new Date(2026, 3, 1); // Abril 2026
+
+  const obrasAtrasadas = DATA_OBRAS_SANEAMENTO.filter((o) => {
+    if (o.status === "Concluída" || o.status === "Licitação") return false;
+    if (o.status === "Paralisada") return true;
+    const prazo = parseMesAno(o.mesPrevisto);
+    return prazo !== null && prazo < hoje;
+  });
+
+  const obrasParalisadas = obrasAtrasadas.filter(
+    (o) => o.status === "Paralisada",
+  );
+  const obrasAtrasadasEmExec = obrasAtrasadas.filter(
+    (o) => o.status === "Em Execução",
+  );
+
+  if (obrasAtrasadas.length === 0) {
+    return (
+      <Card className="border-l-4 border-l-emerald-500">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-emerald-600">
+            <HugeiconsIcon
+              icon={CheckmarkCircle01Icon}
+              strokeWidth={2}
+              className="h-5 w-5"
+            />
+            Cronograma em Dia
+          </CardTitle>
+          <CardDescription>
+            Todas as obras estão dentro do prazo previsto.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="border-l-4 border-l-red-500">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <HugeiconsIcon
+            icon={AlertCircleIcon}
+            strokeWidth={2}
+            className="h-5 w-5 text-red-600"
+          />
+          Alertas de Cronograma
+        </CardTitle>
+        <CardDescription>
+          {obrasAtrasadas.length} obra{obrasAtrasadas.length > 1 ? "s" : ""}{" "}
+          requerem atenção
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {obrasParalisadas.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-red-600 mb-2 uppercase tracking-wide">
+                Paralisadas ({obrasParalisadas.length})
+              </p>
+              {obrasParalisadas.map((o) => (
+                <div
+                  key={o.id}
+                  className="flex items-start justify-between rounded-lg bg-red-50 dark:bg-red-950/20 p-3 mb-2"
+                >
+                  <div>
+                    <p className="text-sm font-medium">{o.nome}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {o.bairro} — prazo: {o.mesPrevisto}
+                    </p>
+                  </div>
+                  <Badge variant="destructive" className="shrink-0 ml-2">
+                    {o.percentualExecucao}% exec.
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
+          {obrasAtrasadasEmExec.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-amber-600 mb-2 uppercase tracking-wide">
+                Com prazo vencido ({obrasAtrasadasEmExec.length})
+              </p>
+              {obrasAtrasadasEmExec.map((o) => (
+                <div
+                  key={o.id}
+                  className="flex items-start justify-between rounded-lg bg-amber-50 dark:bg-amber-950/20 p-3 mb-2"
+                >
+                  <div>
+                    <p className="text-sm font-medium">{o.nome}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {o.bairro} — prazo: {o.mesPrevisto}
+                    </p>
+                  </div>
+                  <Badge
+                    variant="secondary"
+                    className="shrink-0 ml-2 bg-amber-100 text-amber-800"
+                  >
+                    {o.percentualExecucao}% exec.
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function TabelaObrasDetalhada() {
+  const [statusFilter, setStatusFilter] = React.useState("todos");
+  const [tipoFilter, setTipoFilter] = React.useState("todos");
+
+  const filteredObras = DATA_OBRAS_SANEAMENTO.filter((obra) => {
+    const statusMatch =
+      statusFilter === "todos" || obra.status === statusFilter;
+    const tipoMatch = tipoFilter === "todos" || obra.tipo === tipoFilter;
+    return statusMatch && tipoMatch;
+  });
+
+  const totalValor = filteredObras.reduce((s, o) => s + o.valorTotal, 0);
+  const totalExecutado = filteredObras.reduce(
+    (s, o) => s + o.valorExecutado,
+    0,
+  );
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Obras de Saneamento Detalhadas</CardTitle>
+        <CardDescription>
+          {filteredObras.length} obras{" "}
+          {statusFilter !== "todos" ? `com status ${statusFilter}` : ""}
+          {tipoFilter !== "todos" ? ` do tipo ${tipoFilter}` : ""}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap gap-2 mb-4">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os status</SelectItem>
+              <SelectItem value="Em Execução">Em Execução</SelectItem>
+              <SelectItem value="Concluída">Concluída</SelectItem>
+              <SelectItem value="Paralisada">Paralisada</SelectItem>
+              <SelectItem value="Licitação">Licitação</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={tipoFilter} onValueChange={setTipoFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os tipos</SelectItem>
+              <SelectItem value="Rede de Água">Rede de Água</SelectItem>
+              <SelectItem value="Rede de Esgoto">Rede de Esgoto</SelectItem>
+              <SelectItem value="ETA">ETA</SelectItem>
+              <SelectItem value="ETE">ETE</SelectItem>
+              <SelectItem value="Reservatório">Reservatório</SelectItem>
+              <SelectItem value="Macrodrenagem">Macrodrenagem</SelectItem>
+              <SelectItem value="Microdrenagem">Microdrenagem</SelectItem>
+              <SelectItem value="Estação Elevatória">
+                Estação Elevatória
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Obra</TableHead>
+              <TableHead>Tipo</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Valor Total</TableHead>
+              <TableHead className="text-right">Executado</TableHead>
+              <TableHead className="text-center">Execução</TableHead>
+              <TableHead>Prazo</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredObras.map((o) => (
+              <TableRow key={o.id}>
+                <TableCell>
+                  <div>
+                    <span className="font-medium">{o.nome}</span>
+                    <p className="text-xs text-muted-foreground">{o.bairro}</p>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">{o.tipo}</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={
+                      o.status === "Concluída"
+                        ? "default"
+                        : o.status === "Paralisada"
+                          ? "destructive"
+                          : "secondary"
+                    }
+                    className={o.status === "Concluída" ? "bg-emerald-600" : ""}
+                  >
+                    {o.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right font-mono text-sm">
+                  {formatCurrencyCompact(o.valorTotal)}
+                </TableCell>
+                <TableCell className="text-right font-mono text-sm">
+                  {formatCurrencyCompact(o.valorExecutado)}
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <Progress
+                      value={o.percentualExecucao}
+                      className={cn(
+                        "w-16 h-2",
+                        o.status === "Paralisada"
+                          ? "[&>div]:bg-red-500"
+                          : o.percentualExecucao === 100
+                            ? "[&>div]:bg-emerald-500"
+                            : "[&>div]:bg-green-500",
+                      )}
+                    />
+                    <span className="w-10 text-right text-xs font-medium">
+                      {o.percentualExecucao}%
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-xs text-muted-foreground">
+                  {o.mesInicio} — {o.mesPrevisto}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={3} className="font-bold">
+                Total {statusFilter !== "todos" ? `(${statusFilter})` : ""}
+              </TableCell>
+              <TableCell className="text-right font-mono font-bold">
+                {formatCurrencyCompact(totalValor)}
+              </TableCell>
+              <TableCell className="text-right font-mono font-bold">
+                {formatCurrencyCompact(totalExecutado)}
+              </TableCell>
+              <TableCell className="text-center font-bold">
+                {totalValor > 0
+                  ? ((totalExecutado / totalValor) * 100).toFixed(1)
+                  : 0}
+                %
+              </TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ObrasSaneamento() {
+  const totalValor = DATA_OBRAS_SANEAMENTO.reduce(
+    (s, o) => s + o.valorTotal,
+    0,
+  );
+  const totalExecutado = DATA_OBRAS_SANEAMENTO.reduce(
+    (s, o) => s + o.valorExecutado,
+    0,
+  );
+  const emExecucao = DATA_OBRAS_SANEAMENTO.filter(
+    (o) => o.status === "Em Execução",
+  ).length;
+  const concluidas = DATA_OBRAS_SANEAMENTO.filter(
+    (o) => o.status === "Concluída",
+  ).length;
+  const paralisadas = DATA_OBRAS_SANEAMENTO.filter(
+    (o) => o.status === "Paralisada",
+  ).length;
+
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl font-bold">Obras</h2>
+        <p className="text-muted-foreground">
+          Investimentos e andamento de obras de saneamento
+        </p>
+      </div>
+
+      {/* KPIs */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <KpiCard
+          title="Em Execução"
+          icon={Building06Icon}
+          value={String(emExecucao)}
+          borderColor="border-l-green-500"
+          footer={
+            <p className="text-xs text-muted-foreground">Obras em andamento</p>
+          }
+        />
+        <KpiCard
+          title="Investimento Total"
+          icon={MoneyBag02Icon}
+          value={formatCurrencyCompact(INVESTIMENTO_OBRAS)}
+          borderColor="border-l-emerald-600"
+          footer={
+            <p className="text-xs text-muted-foreground">
+              {formatPercent((totalExecutado / totalValor) * 100)} executado
+            </p>
+          }
+        />
+        <KpiCard
+          title="Concluídas"
+          icon={CheckmarkCircle01Icon}
+          value={String(concluidas)}
+          borderColor="border-l-emerald-600"
+          footer={<p className="text-xs text-emerald-600">Obras finalizadas</p>}
+        />
+        <KpiCard
+          title="Paralisadas"
+          icon={AlertCircleIcon}
+          value={String(paralisadas)}
+          valueClassName={paralisadas > 0 ? "text-red-600" : ""}
+          borderColor="border-l-red-500"
+          footer={
+            <p className="text-xs text-red-600">
+              {paralisadas > 0 ? "Atenção necessária" : "Nenhuma"}
+            </p>
+          }
+        />
+      </div>
+
+      {/* Alertas */}
+      {paralisadas > 0 && (
+        <Alert>
+          <HugeiconsIcon
+            icon={AlertCircleIcon}
+            strokeWidth={2}
+            className="h-4 w-4"
+          />
+          <AlertTitle>Atenção: Obras Paralisadas</AlertTitle>
+          <AlertDescription>
+            Existem {paralisadas} obra{paralisadas > 1 ? "s" : ""} paralisada
+            {paralisadas > 1 ? "s" : ""}. Recomenda-se revisão dos contratos e
+            retomada das atividades.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Alertas de cronograma */}
+      <AlertasAtrasoCard />
+
+      {/* Gráficos */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <InvestimentoPorTipoChart />
+        <ProgressoObrasChart />
+      </div>
+
+      {/* Tabela Detalhada */}
+      <TabelaObrasDetalhada />
+
+      {/* Leitura Executiva */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <HugeiconsIcon
+              icon={InformationCircleIcon}
+              strokeWidth={2}
+              className="h-5 w-5"
+            />
+            Leitura Executiva
+          </CardTitle>
+          <CardDescription>Obras de Saneamento</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="rounded-lg bg-muted/50 p-4">
+              <h4 className="font-semibold text-sm mb-2">Andamento</h4>
+              <p className="text-sm text-muted-foreground">
+                Das {DATA_OBRAS_SANEAMENTO.length} obras cadastradas,{" "}
+                {emExecucao} estão em execução, {concluidas} foram concluídas e{" "}
+                {paralisadas}{" "}
+                {paralisadas === 1
+                  ? "encontra-se paralisada"
+                  : "encontram-se paralisadas"}
+                . O investimento total previsto é de{" "}
+                {formatCurrencyCompact(INVESTIMENTO_OBRAS)}, com{" "}
+                {formatPercent((totalExecutado / totalValor) * 100)} executado.
+              </p>
+            </div>
+            <div className="rounded-lg bg-muted/50 p-4">
+              <h4 className="font-semibold text-sm mb-2">Prioridades</h4>
+              <p className="text-sm text-muted-foreground">
+                A obra da Nova ETE Zona Sul representa o maior investimento
+                individual. A canalização do Córrego Fundo (paralisada) e a
+                Galeria Pluvial Av. Brasil (prazo vencido) exigem atenção
+                imediata. Recomenda-se priorizar a conclusão das obras de
+                macrodrenagem antes do período chuvoso.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

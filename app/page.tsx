@@ -20,6 +20,7 @@ import { TributacaoMunicipal } from "@/components/tributacao-municipal";
 import { OrcamentoMunicipal } from "@/components/orcamento-municipal";
 import { Legislativo } from "@/components/legislativo/legislativo";
 import { Previdencia } from "@/components/previdencia/previdencia";
+import { Saneamento } from "@/components/saneamento/saneamento";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -56,6 +57,7 @@ import {
   CourtLawIcon,
   HandHelpingIcon,
   SavingsIcon,
+  DropletIcon,
 } from "@hugeicons/core-free-icons";
 
 const TAB_ORDER = [
@@ -77,6 +79,7 @@ const TAB_ORDER = [
   "prestacao-contas",
   "legislativo",
   "previdencia",
+  "saneamento",
 ];
 const SCROLL_DELAY_MS = 5000;
 const SCROLL_SPEED_PX = 0.75;
@@ -380,6 +383,14 @@ export default function Page() {
               />
               Previdência
             </TabsTrigger>
+            <TabsTrigger value="saneamento" className="gap-2">
+              <HugeiconsIcon
+                icon={DropletIcon}
+                strokeWidth={2}
+                className="size-4"
+              />
+              Saneamento
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="visao-geral" className="mt-6">
@@ -452,6 +463,10 @@ export default function Page() {
 
           <TabsContent value="previdencia" className="mt-6">
             <Previdencia />
+          </TabsContent>
+
+          <TabsContent value="saneamento" className="mt-6">
+            <Saneamento />
           </TabsContent>
         </Tabs>
       </div>
