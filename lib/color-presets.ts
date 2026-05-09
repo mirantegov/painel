@@ -36,6 +36,16 @@ export const COLOR_PRESETS = [
     label: "Monokai",
     hint: "Paleta inspirada em Monokai / VS Code (OKLCH)",
   },
+  {
+    id: "midnight-blue",
+    label: "Midnight Blue",
+    hint: "Azuis profundos estilo midnight / shadcn (OKLCH)",
+  },
+  {
+    id: "blue-jeans",
+    label: "Blue Jeans",
+    hint: "Registry shadcn / tema denim-indigo (OKLCH)",
+  },
 ] as const
 
 export type ColorPresetId = (typeof COLOR_PRESETS)[number]["id"]
