@@ -59,6 +59,7 @@ All data is static demo data — no external API calls. Data is either:
 - Styling: Tailwind CSS v4 utility classes; use `cn()` from `lib/utils.ts` for conditional classes
 - Charts: Recharts via the shadcn `Chart` wrapper in `components/ui/chart.tsx`
 - Theme: `next-themes` — components should respect `dark:` variants
+- Paletas nomeadas (`ThemeSelector`): Padrão, Dracula, Ocean Breeze, Floresta noturna, Northern Lights, Supabase, Monokai — persistidas em `localStorage` (`lib/color-presets.ts`) e aplicadas via `data-color-preset` em `app/globals.css`
 - Path alias: `@/` maps to the project root
 
 ### Authentication

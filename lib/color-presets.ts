@@ -21,6 +21,21 @@ export const COLOR_PRESETS = [
     label: "Floresta noturna",
     hint: "Verdes profundos",
   },
+  {
+    id: "northern-lights",
+    label: "Northern Lights",
+    hint: "tweakcn.com/r/themes/northern-lights.json (registry shadcn)",
+  },
+  {
+    id: "supabase",
+    label: "Supabase",
+    hint: "tweakcn.com/r/themes/supabase.json (registry shadcn)",
+  },
+  {
+    id: "monokai",
+    label: "Monokai",
+    hint: "Paleta inspirada em Monokai / VS Code (OKLCH)",
+  },
 ] as const
 
 export type ColorPresetId = (typeof COLOR_PRESETS)[number]["id"]
