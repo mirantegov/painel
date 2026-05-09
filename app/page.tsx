@@ -23,6 +23,7 @@ import { Legislativo } from "@/components/legislativo/legislativo";
 import { Previdencia } from "@/components/previdencia/previdencia";
 import { Saneamento } from "@/components/saneamento/saneamento";
 import { DefesaCivil } from "@/components/defesa-civil";
+import { AudienciasPublicas } from "@/components/audiencias-publicas/audiencias-publicas";
 import { ThemeSelector } from "@/components/theme-selector";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,6 +63,7 @@ import {
   DropletIcon,
   FileClockIcon,
   Alert02Icon,
+  PresentationBarChart01Icon,
 } from "@hugeicons/core-free-icons";
 
 const TAB_ORDER = [
@@ -86,6 +88,7 @@ const TAB_ORDER = [
   "previdencia",
   "saneamento",
   "defesa-civil",
+  "audiencias-publicas",
 ];
 const SCROLL_DELAY_MS = 5000;
 const SCROLL_SPEED_PX = 0.75;
@@ -413,6 +416,14 @@ export default function Page() {
               />
               Defesa Civil
             </TabsTrigger>
+            <TabsTrigger value="audiencias-publicas" className="gap-2">
+              <HugeiconsIcon
+                icon={PresentationBarChart01Icon}
+                strokeWidth={2}
+                className="size-4"
+              />
+              Audiências Públicas
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="visao-geral" className="mt-6">
@@ -497,6 +508,10 @@ export default function Page() {
 
           <TabsContent value="defesa-civil" className="mt-6">
             <DefesaCivil />
+          </TabsContent>
+
+          <TabsContent value="audiencias-publicas" className="mt-6">
+            <AudienciasPublicas />
           </TabsContent>
         </Tabs>
       </div>
