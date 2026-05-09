@@ -160,8 +160,8 @@ export default function Page() {
   }, [autoScrollEnabled, activeTab]);
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-start bg-muted p-4 sm:p-6 lg:p-12 dark:bg-background">
-      <div className="w-full max-w-6xl space-y-8">
+    <div className="flex min-h-screen w-full flex-col items-stretch justify-start bg-muted px-[5%] py-4 sm:py-6 dark:bg-background">
+      <div className="w-full space-y-8">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
