@@ -86,28 +86,28 @@ export const MODULES: ModuleConfig[] = [
     component: TributacaoMunicipal,
   },
   {
+    id: "orcamento",
+    label: "Planejamento",
+    icon: Wallet01Icon,
+    component: OrcamentoMunicipal,
+  },
+  {
+    id: "prestacao-contas",
+    label: "Contas Públicas",
+    icon: SecurityCheckIcon,
+    component: PrestacaoContas,
+  },
+  {
     id: "compras",
     label: "Licitações e Contratos",
     icon: ShoppingCartIcon,
     component: ComprasMunicipais,
   },
   {
-    id: "licitacoes-painel",
-    label: "Painel de licitações",
-    icon: FileClockIcon,
-    component: LicitacoesPainel,
-  },
-  {
     id: "rh",
     label: "Recursos Humanos",
     icon: UserMultipleIcon,
     component: RHMunicipal,
-  },
-  {
-    id: "orcamento",
-    label: "Planejamento",
-    icon: Wallet01Icon,
-    component: OrcamentoMunicipal,
   },
   { id: "saude", label: "Saúde", icon: Stethoscope02Icon, component: Saude },
   {
@@ -121,6 +121,12 @@ export const MODULES: ModuleConfig[] = [
     label: "Assistência Social",
     icon: HandHelpingIcon,
     component: AssistenciaSocial,
+  },
+  {
+    id: "defesa-civil",
+    label: "Defesa Civil",
+    icon: Alert02Icon,
+    component: DefesaCivil,
   },
   { id: "obras", label: "Obras", icon: ConstructionIcon, component: Obras },
   {
@@ -142,18 +148,6 @@ export const MODULES: ModuleConfig[] = [
     component: Processos,
   },
   {
-    id: "prestacao-contas",
-    label: "Contas Públicas",
-    icon: SecurityCheckIcon,
-    component: PrestacaoContas,
-  },
-  {
-    id: "legislativo",
-    label: "Legislativo",
-    icon: BankIcon,
-    component: Legislativo,
-  },
-  {
     id: "previdencia",
     label: "Previdência",
     icon: SavingsIcon,
@@ -166,10 +160,16 @@ export const MODULES: ModuleConfig[] = [
     component: Saneamento,
   },
   {
-    id: "defesa-civil",
-    label: "Defesa Civil",
-    icon: Alert02Icon,
-    component: DefesaCivil,
+    id: "legislativo",
+    label: "Legislativo",
+    icon: BankIcon,
+    component: Legislativo,
+  },
+  {
+    id: "licitacoes-painel",
+    label: "Painel de licitações",
+    icon: FileClockIcon,
+    component: LicitacoesPainel,
   },
 ];
 

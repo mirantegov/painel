@@ -643,7 +643,8 @@ export function Processos() {
                   cx="50%"
                   cy="50%"
                   outerRadius={100}
-                  label={(entry) => `${entry.area} (${entry.percentual}%)`}
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
                 >
                   {distribuicaoPorArea.map((entry, index) => (
                     <Cell

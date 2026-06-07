@@ -27,6 +27,7 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  ChartPieValueLegend,
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
@@ -1205,7 +1206,7 @@ export function DespesaMunicipal() {
                   outros: { label: "Outros", color: "var(--chart-5)" },
                 } satisfies ChartConfig
               }
-              className="mx-auto aspect-square h-[280px]"
+              className="mx-auto aspect-auto h-[300px] w-full"
             >
               <PieChart>
                 <ChartTooltip
@@ -1250,8 +1251,21 @@ export function DespesaMunicipal() {
                   cy="50%"
                   innerRadius={60}
                   outerRadius={100}
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
                 />
-                <ChartLegend content={<ChartLegendContent nameKey="name" />} />
+                <ChartLegend
+                  layout="vertical"
+                  align="right"
+                  verticalAlign="middle"
+                  content={
+                    <ChartPieValueLegend
+                      nameKey="name"
+                      valueKey="value"
+                      valueFormatter={formatMillions}
+                    />
+                  }
+                />
               </PieChart>
             </ChartContainer>
           </CardContent>

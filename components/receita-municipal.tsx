@@ -27,6 +27,7 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  ChartPieValueLegend,
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
@@ -1126,7 +1127,7 @@ export function ReceitaMunicipal() {
                   outras: { label: "Outras Receitas", color: "var(--chart-4)" },
                 } satisfies ChartConfig
               }
-              className="mx-auto aspect-square h-[280px]"
+              className="mx-auto aspect-auto h-[300px] w-full"
             >
               <PieChart>
                 <ChartTooltip
@@ -1148,7 +1149,18 @@ export function ReceitaMunicipal() {
                   label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                   labelLine={false}
                 />
-                <ChartLegend content={<ChartLegendContent nameKey="nome" />} />
+                <ChartLegend
+                  layout="vertical"
+                  align="right"
+                  verticalAlign="middle"
+                  content={
+                    <ChartPieValueLegend
+                      nameKey="nome"
+                      valueKey="valor"
+                      valueFormatter={formatMillions}
+                    />
+                  }
+                />
               </PieChart>
             </ChartContainer>
           </CardContent>

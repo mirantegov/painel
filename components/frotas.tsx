@@ -31,6 +31,7 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  ChartPieValueLegend,
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
@@ -810,6 +811,8 @@ export function Frotas() {
                       innerRadius={52}
                       outerRadius={80}
                       paddingAngle={2}
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
                     >
                       {composicaoPatrimonio.map((entry, i) => (
                         <Cell key={i} fill={entry.fill} />
@@ -1116,28 +1119,43 @@ export function Frotas() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ChartContainer config={chartConfigManut} className="mx-auto aspect-square max-h-[280px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                      <Pie
-                        data={manutencaoPreventivaVsCorretiva}
-                        dataKey="valor"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={100}
-                        label={({ name, percent }) =>
-                          `${name} ${(percent * 100).toFixed(0)}%`
-                        }
-                      >
-                        {manutencaoPreventivaVsCorretiva.map((e, i) => (
-                          <Cell key={i} fill={e.fill} />
-                        ))}
-                      </Pie>
-                      <ChartLegend content={<ChartLegendContent />} />
-                    </PieChart>
-                  </ResponsiveContainer>
+                <ChartContainer config={chartConfigManut} className="mx-auto aspect-auto h-[280px] w-full">
+                  <PieChart>
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          formatter={(value) => formatCurrency(Number(value))}
+                          hideLabel
+                        />
+                      }
+                    />
+                    <Pie
+                      data={manutencaoPreventivaVsCorretiva}
+                      dataKey="valor"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
+                    >
+                      {manutencaoPreventivaVsCorretiva.map((e, i) => (
+                        <Cell key={i} fill={e.fill} />
+                      ))}
+                    </Pie>
+                    <ChartLegend
+                      layout="vertical"
+                      align="right"
+                      verticalAlign="middle"
+                      content={
+                        <ChartPieValueLegend
+                          nameKey="name"
+                          valueKey="valor"
+                          valueFormatter={formatCurrency}
+                        />
+                      }
+                    />
+                  </PieChart>
                 </ChartContainer>
               </CardContent>
             </Card>

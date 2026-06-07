@@ -80,6 +80,7 @@ import {
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
+  ChartPieValueLegend,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -1472,12 +1473,16 @@ export function Saude() {
               <CardContent>
                 <ChartContainer
                   config={chartConfigDespesas}
-                  className="mx-auto aspect-square max-h-[320px]"
+                  className="mx-auto aspect-auto h-[320px] w-full"
                 >
                   <PieChart>
                     <ChartTooltip
                       content={
-                        <ChartTooltipContent nameKey="categoria" hideLabel />
+                        <ChartTooltipContent
+                          nameKey="categoria"
+                          formatter={(value) => formatCurrency(Number(value))}
+                          hideLabel
+                        />
                       }
                     />
                     <Pie
@@ -1486,13 +1491,24 @@ export function Saude() {
                       nameKey="categoria"
                       innerRadius={70}
                       outerRadius={110}
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
                     >
                       {despesasSaude.map((item) => (
                         <Cell key={item.categoria} fill={item.fill} />
                       ))}
                     </Pie>
                     <ChartLegend
-                      content={<ChartLegendContent nameKey="categoria" />}
+                      layout="vertical"
+                      align="right"
+                      verticalAlign="middle"
+                      content={
+                        <ChartPieValueLegend
+                          nameKey="categoria"
+                          valueKey="valor"
+                          valueFormatter={formatCurrency}
+                        />
+                      }
                     />
                   </PieChart>
                 </ChartContainer>

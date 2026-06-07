@@ -340,6 +340,60 @@ function ChartLegendContent({
   )
 }
 
+function ChartPieValueLegend({
+  className,
+  payload,
+  nameKey,
+  valueKey = "value",
+  valueFormatter,
+}: React.ComponentProps<"div"> & {
+  nameKey?: string
+  valueKey?: string
+  valueFormatter?: (value: number) => string
+} & RechartsPrimitive.DefaultLegendContentProps) {
+  const { config } = useChart()
+
+  if (!payload?.length) {
+    return null
+  }
+
+  return (
+    <div
+      className={cn(
+        "flex max-w-[220px] flex-col justify-center gap-2.5 pl-4",
+        className
+      )}
+    >
+      {payload
+        .filter((item) => item.type !== "none")
+        .map((item, index) => {
+          const key = `${nameKey ?? item.dataKey ?? "value"}`
+          const itemConfig = getPayloadConfigFromPayload(config, item, key)
+          const datum = item.payload as Record<string, unknown> | undefined
+          const raw = datum?.[valueKey]
+          const num = typeof raw === "number" ? raw : Number(raw)
+
+          return (
+            <div key={index} className="flex items-center gap-2 text-xs">
+              <div
+                className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                style={{ backgroundColor: item.color }}
+              />
+              <span className="truncate text-muted-foreground">
+                {itemConfig?.label ?? item.value}
+              </span>
+              <span className="ml-auto shrink-0 font-mono font-medium tabular-nums text-foreground">
+                {valueFormatter && Number.isFinite(num)
+                  ? valueFormatter(num)
+                  : String(raw ?? "")}
+              </span>
+            </div>
+          )
+        })}
+    </div>
+  )
+}
+
 function getPayloadConfigFromPayload(
   config: ChartConfig,
   payload: unknown,
@@ -382,5 +436,6 @@ export {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  ChartPieValueLegend,
   ChartStyle,
 }

@@ -1088,9 +1088,9 @@ export function RHMunicipal() {
                       outerRadius={100}
                       paddingAngle={2}
                       dataKey="value"
-                      label={({ name, percent }) =>
-                        `${name} ${(percent * 100).toFixed(0)}%`
-                      }
+                      nameKey="name"
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} />
                   </PieChart>
@@ -1831,9 +1831,8 @@ export function RHMunicipal() {
                       innerRadius={40}
                       outerRadius={70}
                       dataKey="value"
-                      label={({ name, percent }) =>
-                        `${name} ${(percent * 100).toFixed(1)}%`
-                      }
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} />
                   </PieChart>
@@ -1889,6 +1888,8 @@ export function RHMunicipal() {
                       innerRadius={40}
                       outerRadius={70}
                       dataKey="value"
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} />
                   </PieChart>
@@ -2022,6 +2023,8 @@ export function RHMunicipal() {
                       innerRadius={40}
                       outerRadius={70}
                       dataKey="value"
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} />
                   </PieChart>

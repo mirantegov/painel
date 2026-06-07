@@ -52,6 +52,7 @@ import {
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
+  ChartPieValueLegend,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -1620,7 +1621,7 @@ export function AssistenciaSocial() {
               <CardContent>
                 <ChartContainer
                   config={chartFontes}
-                  className="mx-auto aspect-square max-h-[320px]"
+                  className="mx-auto aspect-auto h-[320px] w-full"
                 >
                   <PieChart>
                     <ChartTooltip
@@ -1637,13 +1638,24 @@ export function AssistenciaSocial() {
                       nameKey="nome"
                       innerRadius={70}
                       outerRadius={110}
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
                     >
                       {fontesRecursos.map((item) => (
                         <Cell key={item.nome} fill={item.fill} />
                       ))}
                     </Pie>
                     <ChartLegend
-                      content={<ChartLegendContent nameKey="nome" />}
+                      layout="vertical"
+                      align="right"
+                      verticalAlign="middle"
+                      content={
+                        <ChartPieValueLegend
+                          nameKey="nome"
+                          valueKey="valor"
+                          valueFormatter={formatCurrency}
+                        />
+                      }
                     />
                   </PieChart>
                 </ChartContainer>

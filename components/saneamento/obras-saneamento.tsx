@@ -27,6 +27,7 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  ChartPieValueLegend,
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
@@ -120,7 +121,7 @@ function InvestimentoPorTipoChart() {
             };
             return config;
           }, {} as ChartConfig)}
-          className="mx-auto aspect-square h-[280px]"
+          className="mx-auto aspect-auto h-[300px] w-full"
         >
           <PieChart>
             <ChartTooltip
@@ -141,6 +142,8 @@ function InvestimentoPorTipoChart() {
               cy="50%"
               innerRadius={60}
               outerRadius={100}
+              label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+              labelLine={false}
             >
               {chartData.map((_, index) => (
                 <Cell
@@ -149,7 +152,18 @@ function InvestimentoPorTipoChart() {
                 />
               ))}
             </Pie>
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend
+              layout="vertical"
+              align="right"
+              verticalAlign="middle"
+              content={
+                <ChartPieValueLegend
+                  nameKey="tipo"
+                  valueKey="valor"
+                  valueFormatter={formatCurrencyCompact}
+                />
+              }
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>
