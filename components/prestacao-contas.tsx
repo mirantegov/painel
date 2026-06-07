@@ -95,9 +95,7 @@ import {
 import {
   dadosMSC,
   entidadeMSC,
-  contasMSC,
   historicoMSC,
-  type ContaMSC,
 } from "@/lib/demo-msc";
 
 // ==========================================
@@ -2620,14 +2618,6 @@ export function PrestacaoContas() {
                       />
                       Consulta MSC
                     </TabsTrigger>
-                    <TabsTrigger value="balancete" className="gap-2">
-                      <HugeiconsIcon
-                        icon={FileValidationIcon}
-                        strokeWidth={2}
-                        className="size-4"
-                      />
-                      Balancete
-                    </TabsTrigger>
                     <TabsTrigger value="historico-msc" className="gap-2">
                       <HugeiconsIcon
                         icon={ChartLineData02Icon}
@@ -2763,138 +2753,6 @@ export function PrestacaoContas() {
                             </TableRow>
                           </TableBody>
                         </Table>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-
-                  {/* Sub-tab: Balancete */}
-                  <TabsContent value="balancete" className="space-y-4">
-                    <Card>
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <CardTitle>Balancete Contábil — PCASP</CardTitle>
-                            <CardDescription>
-                              Plano de Contas Aplicado ao Setor Público —{" "}
-                              {dadosMSC.municipio}/{dadosMSC.uf}
-                            </CardDescription>
-                          </div>
-                          <Badge
-                            variant="outline"
-                            className="font-mono text-xs"
-                          >
-                            Competência: Jan/2026
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        {(() => {
-                          const grupos = [
-                            "Ativo Circulante",
-                            "Ativo Não Circulante",
-                            "Passivo Circulante",
-                            "Variações Patrimoniais",
-                            "Controle Orçamentário",
-                          ] as ContaMSC["grupo"][];
-
-                          const grupoCores: Record<
-                            ContaMSC["grupo"],
-                            string
-                          > = {
-                            "Ativo Circulante": "bg-blue-50 dark:bg-blue-950/30",
-                            "Ativo Não Circulante":
-                              "bg-indigo-50 dark:bg-indigo-950/30",
-                            "Passivo Circulante":
-                              "bg-red-50 dark:bg-red-950/30",
-                            "Variações Patrimoniais":
-                              "bg-orange-50 dark:bg-orange-950/30",
-                            "Controle Orçamentário":
-                              "bg-zinc-50 dark:bg-zinc-900/30",
-                          };
-
-                          const formatBRL = (v: number) =>
-                            v.toLocaleString("pt-BR", {
-                              style: "currency",
-                              currency: "BRL",
-                            });
-
-                          return (
-                            <div className="space-y-6">
-                              {grupos.map((grupo) => {
-                                const contas = contasMSC.filter(
-                                  (c) => c.grupo === grupo,
-                                );
-                                if (contas.length === 0) return null;
-                                const totalSaldoFinal = contas.reduce(
-                                  (acc, c) => acc + c.saldoFinal,
-                                  0,
-                                );
-                                return (
-                                  <div key={grupo}>
-                                    <div
-                                      className={`flex items-center justify-between rounded-t-md px-3 py-2 ${grupoCores[grupo]}`}
-                                    >
-                                      <span className="text-xs font-semibold uppercase tracking-wide">
-                                        {grupo}
-                                      </span>
-                                      <span className="text-xs font-mono font-medium">
-                                        Total: {formatBRL(totalSaldoFinal)}
-                                      </span>
-                                    </div>
-                                    <Table>
-                                      <TableHeader>
-                                        <TableRow>
-                                          <TableHead className="text-xs">
-                                            Conta
-                                          </TableHead>
-                                          <TableHead className="text-xs">
-                                            Descrição
-                                          </TableHead>
-                                          <TableHead className="text-xs text-right">
-                                            Saldo Inicial
-                                          </TableHead>
-                                          <TableHead className="text-xs text-right">
-                                            Débitos
-                                          </TableHead>
-                                          <TableHead className="text-xs text-right">
-                                            Créditos
-                                          </TableHead>
-                                          <TableHead className="text-xs text-right">
-                                            Saldo Final
-                                          </TableHead>
-                                        </TableRow>
-                                      </TableHeader>
-                                      <TableBody>
-                                        {contas.map((conta) => (
-                                          <TableRow key={conta.conta}>
-                                            <TableCell className="font-mono text-xs">
-                                              {conta.conta}
-                                            </TableCell>
-                                            <TableCell className="text-sm">
-                                              {conta.descricao}
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono text-xs">
-                                              {formatBRL(conta.saldoInicial)}
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono text-xs text-blue-600">
-                                              {formatBRL(conta.debitos)}
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono text-xs text-red-600">
-                                              {formatBRL(conta.creditos)}
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono text-xs font-semibold">
-                                              {formatBRL(conta.saldoFinal)}
-                                            </TableCell>
-                                          </TableRow>
-                                        ))}
-                                      </TableBody>
-                                    </Table>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          );
-                        })()}
                       </CardContent>
                     </Card>
                   </TabsContent>
