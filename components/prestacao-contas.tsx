@@ -80,6 +80,18 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  dadosAgenda,
+  tiposObrigacao,
+  entidadesAgenda,
+  pendenciasAgenda,
+  vencimentosAgenda,
+  historicoAgenda,
+  type StatusObrigacao,
+  type EntidadeAgenda,
+  type TipoObrigacao,
+  type VencimentoAgenda,
+} from "@/lib/demo-agenda-obrigacoes";
 
 // ==========================================
 // DADOS DO CAUC
@@ -961,6 +973,120 @@ function ConformidadePorGrupoChart() {
 }
 
 // ==========================================
+// AGENDA DE OBRIGAÇÕES — AUXILIARES
+// ==========================================
+
+function contarObrigacoes(entidades: EntidadeAgenda[], tipos: TipoObrigacao[]) {
+  let emDia = 0;
+  let naoAtendido = 0;
+  let naoAplicavel = 0;
+
+  entidades.forEach((entidade) => {
+    tipos.forEach((tipo) => {
+      const status = entidade.status[tipo.codigo];
+      if (status === "Em dia") emDia++;
+      else if (status === "Não atendido") naoAtendido++;
+      else naoAplicavel++;
+    });
+  });
+
+  const totalAplicavel = emDia + naoAtendido;
+  return { emDia, naoAtendido, naoAplicavel, totalAplicavel };
+}
+
+function getStatusObrigacaoDot(status: StatusObrigacao) {
+  switch (status) {
+    case "Em dia":
+      return <div className="size-3 rounded-full bg-green-500" />;
+    case "Não atendido":
+      return <div className="size-3 rounded-full bg-red-500" />;
+    case "Não aplicável":
+      return <div className="size-2.5 rounded-full bg-muted-foreground/30" />;
+  }
+}
+
+function getVencimentoBadge(status: VencimentoAgenda["status"]) {
+  switch (status) {
+    case "Cumprido":
+      return (
+        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800">
+          Cumprido
+        </Badge>
+      );
+    case "Próximo":
+      return (
+        <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800">
+          Próximo
+        </Badge>
+      );
+    case "Pendente":
+      return (
+        <Badge className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800">
+          Pendente
+        </Badge>
+      );
+  }
+}
+
+function EvolucaoAgendaChart() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <HugeiconsIcon
+            icon={ChartLineData02Icon}
+            strokeWidth={2}
+            className="size-5"
+          />
+          Evolução da Conformidade da Agenda
+        </CardTitle>
+        <CardDescription>
+          Percentual de obrigações em dia ao longo dos últimos meses
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={
+            {
+              conformidade: {
+                label: "Conformidade (%)",
+                color: "var(--chart-2)",
+              },
+            } satisfies ChartConfig
+          }
+          className="h-[280px] w-full"
+        >
+          <AreaChart data={historicoAgenda} margin={{ left: 12, right: 12 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="mes"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
+            <YAxis
+              domain={[0, 100]}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Area
+              dataKey="conformidade"
+              type="monotone"
+              fill="var(--color-conformidade)"
+              stroke="var(--color-conformidade)"
+              fillOpacity={0.4}
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+          </AreaChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ==========================================
 // COMPONENTE PRINCIPAL
 // ==========================================
 
@@ -978,6 +1104,12 @@ export function PrestacaoContas() {
   const percentualRegular = Math.round(
     (contagem["Regular"] / totalAtivos) * 100,
   );
+
+  const contagemAgenda = contarObrigacoes(entidadesAgenda, tiposObrigacao);
+  const conformidadeAgenda =
+    contagemAgenda.totalAplicavel > 0
+      ? Math.round((contagemAgenda.emDia / contagemAgenda.totalAplicavel) * 100)
+      : 0;
 
   return (
     <div className="space-y-8">
@@ -1095,6 +1227,14 @@ export function PrestacaoContas() {
               className="size-4"
             />
             Contas TCE/PR
+          </TabsTrigger>
+          <TabsTrigger value="agenda" className="gap-2">
+            <HugeiconsIcon
+              icon={Calendar01Icon}
+              strokeWidth={2}
+              className="size-4"
+            />
+            Agenda de Obrigações
           </TabsTrigger>
         </TabsList>
 
@@ -1910,6 +2050,443 @@ export function PrestacaoContas() {
               </>
             );
           })()}
+        </TabsContent>
+
+        {/* Tab: Agenda de Obrigações */}
+        <TabsContent value="agenda" className="space-y-6">
+          {/* KPIs */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <KpiCard
+              iconElement={<div className="size-2 rounded-full bg-green-500" />}
+              title="Em dia"
+              value={contagemAgenda.emDia}
+              borderColor="border-l-green-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  Obrigações cumpridas
+                </p>
+              }
+            />
+
+            <KpiCard
+              iconElement={<div className="size-2 rounded-full bg-red-500" />}
+              title="Não atendidas"
+              value={contagemAgenda.naoAtendido}
+              borderColor="border-l-red-500"
+              footer={
+                <p className="text-xs text-red-600 font-medium">
+                  Requer regularização
+                </p>
+              }
+            />
+
+            <KpiCard
+              iconElement={
+                <div className="size-2 rounded-full bg-muted-foreground/40" />
+              }
+              title="Não aplicável"
+              value={contagemAgenda.naoAplicavel}
+              borderColor="border-l-zinc-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  Não exigidas das entidades
+                </p>
+              }
+            />
+
+            <KpiCard
+              icon={Building01Icon}
+              title="Entidades"
+              value={entidadesAgenda.length}
+              borderColor="border-l-blue-500"
+              footer={
+                <p className="text-xs text-muted-foreground">
+                  Monitoradas pelo município
+                </p>
+              }
+            />
+
+            <KpiCard
+              icon={Target01Icon}
+              title="Conformidade"
+              value={<>{conformidadeAgenda}%</>}
+              borderColor="border-l-purple-500"
+              footer={
+                <>
+                  <Progress value={conformidadeAgenda} className="h-2" />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {contagemAgenda.emDia}/{contagemAgenda.totalAplicavel}{" "}
+                    obrigações em dia
+                  </p>
+                </>
+              }
+            />
+          </div>
+
+          {/* Legenda das obrigações */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={InformationCircleIcon}
+                  strokeWidth={2}
+                  className="size-5"
+                />
+                Legenda das Obrigações
+              </CardTitle>
+              <CardDescription>
+                Compromissos do município junto ao TCE/PR —{" "}
+                {dadosAgenda.municipio}/{dadosAgenda.uf},{" "}
+                {dadosAgenda.bimestreAtual}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {tiposObrigacao.map((tipo) => (
+                  <div key={tipo.codigo} className="flex items-start gap-2">
+                    <Badge
+                      variant="outline"
+                      className="font-mono text-xs shrink-0"
+                    >
+                      {tipo.codigo}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {tipo.descricao}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Tabs de Conteúdo */}
+          <Tabs defaultValue="matriz" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="matriz" className="gap-2">
+                <HugeiconsIcon
+                  icon={Flag01Icon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
+                Matriz
+              </TabsTrigger>
+              <TabsTrigger value="pendencias" className="gap-2">
+                <HugeiconsIcon
+                  icon={Alert02Icon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
+                Pendências ({pendenciasAgenda.length})
+              </TabsTrigger>
+              <TabsTrigger value="calendario" className="gap-2">
+                <HugeiconsIcon
+                  icon={Calendar01Icon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
+                Calendário
+              </TabsTrigger>
+              <TabsTrigger value="historico" className="gap-2">
+                <HugeiconsIcon
+                  icon={ChartLineData02Icon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
+                Histórico
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Tab: Matriz */}
+            <TabsContent value="matriz" className="space-y-4">
+              {/* Legenda de status */}
+              <div className="flex flex-wrap items-center gap-4 text-sm">
+                <span className="font-medium">Situação:</span>
+                <div className="flex items-center gap-1.5">
+                  <div className="size-3 rounded-full bg-green-500" />
+                  <span>Em dia</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="size-3 rounded-full bg-red-500" />
+                  <span>Não atendido</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="size-2.5 rounded-full bg-muted-foreground/30" />
+                  <span>Não aplicável</span>
+                </div>
+              </div>
+
+              <Card>
+                <CardContent className="pt-6 overflow-x-auto">
+                  <TooltipProvider>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="min-w-[220px]">
+                            Entidade
+                          </TableHead>
+                          {tiposObrigacao.map((tipo) => (
+                            <TableHead
+                              key={tipo.codigo}
+                              className="text-center"
+                            >
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="cursor-help font-mono text-xs">
+                                    {tipo.codigo}
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="max-w-[220px]">
+                                    {tipo.descricao}
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TableHead>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {entidadesAgenda.map((entidade) => (
+                          <TableRow key={entidade.id}>
+                            <TableCell className="font-medium">
+                              <div className="flex items-center gap-2">
+                                <HugeiconsIcon
+                                  icon={Building01Icon}
+                                  strokeWidth={2}
+                                  className="size-4 text-muted-foreground shrink-0"
+                                />
+                                <span>{entidade.nome}</span>
+                              </div>
+                            </TableCell>
+                            {tiposObrigacao.map((tipo) => {
+                              const status = entidade.status[tipo.codigo];
+                              return (
+                                <TableCell
+                                  key={tipo.codigo}
+                                  className="text-center"
+                                >
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex items-center justify-center cursor-help">
+                                        {getStatusObrigacaoDot(status)}
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="font-medium">
+                                        {tipo.codigo} — {status}
+                                      </p>
+                                      <p className="max-w-[220px] text-muted-foreground">
+                                        {tipo.descricao}
+                                      </p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TooltipProvider>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Tab: Pendências */}
+            <TabsContent value="pendencias" className="space-y-4">
+              {pendenciasAgenda.length === 0 ? (
+                <Alert>
+                  <HugeiconsIcon
+                    icon={CheckmarkCircle02Icon}
+                    strokeWidth={2}
+                    className="size-4 text-green-600"
+                  />
+                  <AlertTitle>Tudo em dia</AlertTitle>
+                  <AlertDescription>
+                    Nenhuma obrigação pendente para as entidades do município.
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <HugeiconsIcon
+                        icon={Alert02Icon}
+                        strokeWidth={2}
+                        className="size-5 text-red-600"
+                      />
+                      Itens não atendidos
+                    </CardTitle>
+                    <CardDescription>
+                      Obrigações pendentes de regularização junto ao TCE/PR
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Entidade</TableHead>
+                          <TableHead className="w-[80px]">Item</TableHead>
+                          <TableHead>Descrição do Item não Atendido</TableHead>
+                          <TableHead className="w-[160px]">Período</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pendenciasAgenda.map((pendencia, index) => {
+                          const entidade = entidadesAgenda.find(
+                            (e) => e.id === pendencia.entidadeId,
+                          );
+                          return (
+                            <TableRow key={index}>
+                              <TableCell className="text-sm font-medium">
+                                {entidade?.nome ?? pendencia.entidadeId}
+                              </TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant="outline"
+                                  className="font-mono text-xs"
+                                >
+                                  {pendencia.obrigacao}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-sm text-muted-foreground">
+                                {pendencia.descricao}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                {pendencia.periodo}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
+            {/* Tab: Calendário */}
+            <TabsContent value="calendario" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={Calendar01Icon}
+                      strokeWidth={2}
+                      className="size-5"
+                    />
+                    Próximos Vencimentos
+                  </CardTitle>
+                  <CardDescription>
+                    Agenda de prazos das obrigações junto ao TCE/PR
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[90px]">Obrigação</TableHead>
+                        <TableHead>Descrição</TableHead>
+                        <TableHead>Período</TableHead>
+                        <TableHead className="w-[120px]">Vencimento</TableHead>
+                        <TableHead className="w-[120px]">Situação</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {vencimentosAgenda.map((venc, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-xs"
+                            >
+                              {venc.obrigacao}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            <p>{venc.descricao}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {venc.entidades.join(", ")}
+                            </p>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {venc.periodo}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            <div className="flex items-center gap-1.5">
+                              <HugeiconsIcon
+                                icon={Clock01Icon}
+                                strokeWidth={2}
+                                className="size-3.5 text-muted-foreground"
+                              />
+                              {venc.vencimento}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {getVencimentoBadge(venc.status)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Tab: Histórico */}
+            <TabsContent value="historico" className="space-y-4">
+              <EvolucaoAgendaChart />
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={ChartLineData02Icon}
+                      strokeWidth={2}
+                      className="size-5"
+                    />
+                    Detalhamento Mensal
+                  </CardTitle>
+                  <CardDescription>
+                    Obrigações em dia e não atendidas por mês
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Mês</TableHead>
+                        <TableHead className="text-center">Em dia</TableHead>
+                        <TableHead className="text-center">
+                          Não atendidas
+                        </TableHead>
+                        <TableHead className="text-center">
+                          Conformidade
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {historicoAgenda.map((item) => (
+                        <TableRow key={item.mes}>
+                          <TableCell className="font-medium">
+                            {item.mes}
+                          </TableCell>
+                          <TableCell className="text-center text-green-600">
+                            {item.emDia}
+                          </TableCell>
+                          <TableCell className="text-center text-red-600">
+                            {item.naoAtendido}
+                          </TableCell>
+                          <TableCell className="text-center font-medium">
+                            {item.conformidade}%
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </TabsContent>
       </Tabs>
     </div>
