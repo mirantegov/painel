@@ -42,7 +42,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import {
   Area,
   AreaChart,
@@ -69,28 +68,18 @@ import {
   RefreshIcon,
   AlertCircleIcon,
   CheckmarkCircle02Icon,
-  InformationCircleIcon,
   Target01Icon,
   ChartLineData02Icon,
   PieChart02Icon,
   Clock01Icon,
   Flag01Icon,
-  Alert02Icon,
   CoinsDollarIcon,
   MoneySend01Icon,
   FileValidationIcon,
   SecurityCheckIcon,
   UserMultipleIcon,
-  BulbIcon,
 } from "@hugeicons/core-free-icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { KpiCard } from "@/components/ui/kpi-card";
 
@@ -338,7 +327,9 @@ const obrasNaoIniciadas = obras.filter(
   (o) => o.status === "nao_iniciada",
 ).length;
 const execucaoFisicaMedia =
-  obras.filter((o) => o.status !== "nao_iniciada").reduce((a, b) => a + b.execucaoFisica, 0) /
+  obras
+    .filter((o) => o.status !== "nao_iniciada")
+    .reduce((a, b) => a + b.execucaoFisica, 0) /
   obras.filter((o) => o.status !== "nao_iniciada").length;
 
 // Obras por tipo (PieChart)
@@ -369,9 +360,8 @@ const obrasPorTipo = [
   },
   {
     tipo: "Drenagem/Saneam.",
-    quantidade: obras.filter((o) =>
-      ["Drenagem", "Saneamento"].includes(o.tipo),
-    ).length,
+    quantidade: obras.filter((o) => ["Drenagem", "Saneamento"].includes(o.tipo))
+      .length,
     valor: obras
       .filter((o) => ["Drenagem", "Saneamento"].includes(o.tipo))
       .reduce((a, b) => a + b.valorContratado, 0),
@@ -399,11 +389,23 @@ const chartConfigTipo = {
 
 // Obras por status (PieChart)
 const obrasPorStatus = [
-  { status: "Em Andamento", quantidade: obrasAndamento, fill: "var(--chart-1)" },
+  {
+    status: "Em Andamento",
+    quantidade: obrasAndamento,
+    fill: "var(--chart-1)",
+  },
   { status: "Concluídas", quantidade: obrasConcluidas, fill: "var(--chart-2)" },
-  { status: "Paralisadas", quantidade: obrasParalisadas, fill: "var(--chart-4)" },
+  {
+    status: "Paralisadas",
+    quantidade: obrasParalisadas,
+    fill: "var(--chart-4)",
+  },
   { status: "Atrasadas", quantidade: obrasAtrasadas, fill: "var(--chart-5)" },
-  { status: "Não Iniciadas", quantidade: obrasNaoIniciadas, fill: "var(--chart-3)" },
+  {
+    status: "Não Iniciadas",
+    quantidade: obrasNaoIniciadas,
+    fill: "var(--chart-3)",
+  },
 ];
 
 const chartConfigStatus = {
@@ -416,22 +418,91 @@ const chartConfigStatus = {
 
 // Execução mensal acumulada (AreaChart)
 const execucaoMensal = [
-  { mes: "Jan", fisico: 8.2, financeiro: 6.5, acumuladoFisico: 8.2, acumuladoFinanceiro: 6.5 },
-  { mes: "Fev", fisico: 6.8, financeiro: 7.1, acumuladoFisico: 15.0, acumuladoFinanceiro: 13.6 },
-  { mes: "Mar", fisico: 7.5, financeiro: 8.0, acumuladoFisico: 22.5, acumuladoFinanceiro: 21.6 },
-  { mes: "Abr", fisico: 9.1, financeiro: 8.5, acumuladoFisico: 31.6, acumuladoFinanceiro: 30.1 },
-  { mes: "Mai", fisico: 8.0, financeiro: 7.8, acumuladoFisico: 39.6, acumuladoFinanceiro: 37.9 },
-  { mes: "Jun", fisico: 7.2, financeiro: 7.5, acumuladoFisico: 46.8, acumuladoFinanceiro: 45.4 },
-  { mes: "Jul", fisico: 6.5, financeiro: 6.0, acumuladoFisico: 53.3, acumuladoFinanceiro: 51.4 },
-  { mes: "Ago", fisico: 7.8, financeiro: 7.2, acumuladoFisico: 61.1, acumuladoFinanceiro: 58.6 },
-  { mes: "Set", fisico: 5.5, financeiro: 6.0, acumuladoFisico: 66.6, acumuladoFinanceiro: 64.6 },
-  { mes: "Out", fisico: 4.2, financeiro: 4.8, acumuladoFisico: 70.8, acumuladoFinanceiro: 69.4 },
-  { mes: "Nov", fisico: 3.5, financeiro: 3.1, acumuladoFisico: 74.3, acumuladoFinanceiro: 72.5 },
+  {
+    mes: "Jan",
+    fisico: 8.2,
+    financeiro: 6.5,
+    acumuladoFisico: 8.2,
+    acumuladoFinanceiro: 6.5,
+  },
+  {
+    mes: "Fev",
+    fisico: 6.8,
+    financeiro: 7.1,
+    acumuladoFisico: 15.0,
+    acumuladoFinanceiro: 13.6,
+  },
+  {
+    mes: "Mar",
+    fisico: 7.5,
+    financeiro: 8.0,
+    acumuladoFisico: 22.5,
+    acumuladoFinanceiro: 21.6,
+  },
+  {
+    mes: "Abr",
+    fisico: 9.1,
+    financeiro: 8.5,
+    acumuladoFisico: 31.6,
+    acumuladoFinanceiro: 30.1,
+  },
+  {
+    mes: "Mai",
+    fisico: 8.0,
+    financeiro: 7.8,
+    acumuladoFisico: 39.6,
+    acumuladoFinanceiro: 37.9,
+  },
+  {
+    mes: "Jun",
+    fisico: 7.2,
+    financeiro: 7.5,
+    acumuladoFisico: 46.8,
+    acumuladoFinanceiro: 45.4,
+  },
+  {
+    mes: "Jul",
+    fisico: 6.5,
+    financeiro: 6.0,
+    acumuladoFisico: 53.3,
+    acumuladoFinanceiro: 51.4,
+  },
+  {
+    mes: "Ago",
+    fisico: 7.8,
+    financeiro: 7.2,
+    acumuladoFisico: 61.1,
+    acumuladoFinanceiro: 58.6,
+  },
+  {
+    mes: "Set",
+    fisico: 5.5,
+    financeiro: 6.0,
+    acumuladoFisico: 66.6,
+    acumuladoFinanceiro: 64.6,
+  },
+  {
+    mes: "Out",
+    fisico: 4.2,
+    financeiro: 4.8,
+    acumuladoFisico: 70.8,
+    acumuladoFinanceiro: 69.4,
+  },
+  {
+    mes: "Nov",
+    fisico: 3.5,
+    financeiro: 3.1,
+    acumuladoFisico: 74.3,
+    acumuladoFinanceiro: 72.5,
+  },
 ];
 
 const chartConfigExecucao = {
   acumuladoFisico: { label: "Exec. Física (%)", color: "var(--chart-1)" },
-  acumuladoFinanceiro: { label: "Exec. Financeira (%)", color: "var(--chart-3)" },
+  acumuladoFinanceiro: {
+    label: "Exec. Financeira (%)",
+    color: "var(--chart-3)",
+  },
 } satisfies ChartConfig;
 
 // Medições realizadas
@@ -599,7 +670,8 @@ const fiscalizacoes = [
     conformidades: 12,
     naoConformidades: 1,
     parecer: "conforme",
-    observacao: "Base compactada dentro dos parâmetros. Uma junta de dilatação fora do alinhamento.",
+    observacao:
+      "Base compactada dentro dos parâmetros. Uma junta de dilatação fora do alinhamento.",
   },
   {
     obra: "OBR-009",
@@ -610,7 +682,8 @@ const fiscalizacoes = [
     conformidades: 15,
     naoConformidades: 0,
     parecer: "conforme",
-    observacao: "Tubulação assentada conforme projeto. Ensaios de estanqueidade aprovados.",
+    observacao:
+      "Tubulação assentada conforme projeto. Ensaios de estanqueidade aprovados.",
   },
   {
     obra: "OBR-003",
@@ -621,7 +694,8 @@ const fiscalizacoes = [
     conformidades: 8,
     naoConformidades: 4,
     parecer: "nao_conforme",
-    observacao: "Atraso no cronograma superior a 30%. Materiais estocados sem cobertura adequada.",
+    observacao:
+      "Atraso no cronograma superior a 30%. Materiais estocados sem cobertura adequada.",
   },
   {
     obra: "OBR-004",
@@ -643,7 +717,8 @@ const fiscalizacoes = [
     conformidades: 10,
     naoConformidades: 2,
     parecer: "conforme_com_ressalvas",
-    observacao: "Piso intertravado com padrão correto. Paisagismo pendente na ala leste.",
+    observacao:
+      "Piso intertravado com padrão correto. Paisagismo pendente na ala leste.",
   },
   {
     obra: "OBR-006",
@@ -654,7 +729,8 @@ const fiscalizacoes = [
     conformidades: 5,
     naoConformidades: 3,
     parecer: "paralisada",
-    observacao: "Obra paralisada por embargo ambiental. Aguardando decisão do órgão competente.",
+    observacao:
+      "Obra paralisada por embargo ambiental. Aguardando decisão do órgão competente.",
   },
 ];
 
@@ -749,37 +825,6 @@ const metasObras = [
 ];
 
 // Alertas
-const alertasObras = [
-  {
-    tipo: "warning" as const,
-    titulo: "Obra com atraso superior a 30%",
-    badge: "Cronograma",
-    descricao:
-      "A Reforma da Escola Municipal Rui Barbosa (OBR-003) apresenta execução física de 42% contra 72% previsto no cronograma. Medição reprovada em outubro.",
-  },
-  {
-    tipo: "warning" as const,
-    titulo: "Obra paralisada há mais de 5 meses",
-    badge: "Paralisação",
-    descricao:
-      "A Ponte sobre o Rio Tarumã (OBR-006) está paralisada desde junho/2024 por embargo ambiental. Valor contratado: R$ 8,5 milhões.",
-  },
-  {
-    tipo: "info" as const,
-    titulo: "Medição pendente de análise",
-    badge: "Medição",
-    descricao:
-      "A 9ª medição do Sistema de Esgotamento Sanitário (OBR-009) no valor de R$ 680 mil aguarda parecer técnico do fiscal.",
-  },
-  {
-    tipo: "success" as const,
-    titulo: "3 obras concluídas no exercício",
-    badge: "Conclusão",
-    descricao:
-      "UBS Vila Nova, Ampliação do CRAS Zona Norte e Recapeamento da Rua das Flores foram entregues dentro do prazo e do orçamento previsto.",
-  },
-];
-
 // Eventos recentes (Timeline)
 const eventosRecentes = [
   {
@@ -874,31 +919,6 @@ const rankingConstrutoras = [
     conformidade: 62.5,
   },
 ];
-
-// Indicadores calculados para Resumo Analítico
-const taxaConclusao = Number(
-  ((obrasConcluidas / obras.length) * 100).toFixed(1),
-);
-const desvioOrcamentario = Number(
-  (
-    ((aditivos.reduce((a, b) => a + b.valorAcrescido, 0) / totalContratado) *
-      100)
-  ).toFixed(1),
-);
-const totalConformidades = fiscalizacoes.reduce(
-  (a, b) => a + b.conformidades,
-  0,
-);
-const totalItens = fiscalizacoes.reduce(
-  (a, b) => a + b.conformidades + b.naoConformidades,
-  0,
-);
-const indiceConformidade = Number(
-  ((totalConformidades / totalItens) * 100).toFixed(1),
-);
-const aderenciaCronograma = Number(
-  (100 - ((obrasAtrasadas + obrasParalisadas) / obras.length) * 100).toFixed(1),
-);
 
 // Status helpers
 function statusLabel(s: StatusObra) {
@@ -1018,12 +1038,8 @@ export function Obras() {
           footer={
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <span>Pago:</span>
-              <span className="font-medium">
-                {formatCurrency(totalPago)}
-              </span>
-              <span>
-                ({((totalPago / totalContratado) * 100).toFixed(1)}%)
-              </span>
+              <span className="font-medium">{formatCurrency(totalPago)}</span>
+              <span>({((totalPago / totalContratado) * 100).toFixed(1)}%)</span>
             </div>
           }
         />
@@ -1078,7 +1094,14 @@ export function Obras() {
               </CardDescription>
             </div>
             <Badge variant="secondary">
-              Físico: {formatPercent(execucaoMensal[execucaoMensal.length - 1].acumuladoFisico)} | Financeiro: {formatPercent(execucaoMensal[execucaoMensal.length - 1].acumuladoFinanceiro)}
+              Físico:{" "}
+              {formatPercent(
+                execucaoMensal[execucaoMensal.length - 1].acumuladoFisico,
+              )}{" "}
+              | Financeiro:{" "}
+              {formatPercent(
+                execucaoMensal[execucaoMensal.length - 1].acumuladoFinanceiro,
+              )}
             </Badge>
           </div>
         </CardHeader>
@@ -1316,7 +1339,9 @@ export function Obras() {
                 </TableBody>
                 <TableFooter>
                   <TableRow>
-                    <TableCell colSpan={4}>Total — {obras.length} obras</TableCell>
+                    <TableCell colSpan={4}>
+                      Total — {obras.length} obras
+                    </TableCell>
                     <TableCell className="text-right font-bold">
                       {formatCurrency(totalContratado)}
                     </TableCell>
@@ -1324,9 +1349,7 @@ export function Obras() {
                       {formatPercent(execucaoFisicaMedia)}
                     </TableCell>
                     <TableCell className="text-center font-bold">
-                      {formatPercent(
-                        (totalPago / totalContratado) * 100,
-                      )}
+                      {formatPercent((totalPago / totalContratado) * 100)}
                     </TableCell>
                     <TableCell colSpan={2} />
                   </TableRow>
@@ -1570,9 +1593,7 @@ export function Obras() {
                   {fiscalizacoes.map((fisc, index) => (
                     <TableRow key={index}>
                       <TableCell className="max-w-[160px]">
-                        <p className="font-medium truncate">
-                          {fisc.nomeObra}
-                        </p>
+                        <p className="font-medium truncate">{fisc.nomeObra}</p>
                         <p className="text-xs text-muted-foreground font-mono">
                           {fisc.obra}
                         </p>
@@ -1691,10 +1712,7 @@ export function Obras() {
                           </Badge>
                         </div>
                       </div>
-                      <Progress
-                        value={emp.execucaoMedia}
-                        className="h-1.5"
-                      />
+                      <Progress value={emp.execucaoMedia} className="h-1.5" />
                       <p className="text-xs text-muted-foreground">
                         Execução média: {formatPercent(emp.execucaoMedia)}
                       </p>
@@ -1799,9 +1817,7 @@ export function Obras() {
                   type="number"
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(v) =>
-                    `${(v / 1000000).toFixed(0)}M`
-                  }
+                  tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`}
                 />
                 <ChartTooltip
                   content={
@@ -1834,9 +1850,7 @@ export function Obras() {
               />
               Situação das Obras
             </CardTitle>
-            <CardDescription>
-              Distribuição por status atual
-            </CardDescription>
+            <CardDescription>Distribuição por status atual</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -1882,9 +1896,7 @@ export function Obras() {
               />
               Execução Física × Financeira
             </CardTitle>
-            <CardDescription>
-              Comparativo por obra ativa
-            </CardDescription>
+            <CardDescription>Comparativo por obra ativa</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -2018,425 +2030,6 @@ export function Obras() {
           </div>
         </CardContent>
       </Card>
-
-      {/* ======================================================= */}
-      {/* SEPARADOR ANÁLISES                                       */}
-      {/* ======================================================= */}
-      <div className="relative py-4">
-        <Separator />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-muted px-4 dark:bg-background">
-          <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            Análises
-          </span>
-        </div>
-      </div>
-
-      <div className="space-y-6">
-        {/* Resumo Analítico */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={Target01Icon} strokeWidth={2} className="size-5" />
-              Resumo analítico
-            </CardTitle>
-            <CardDescription>
-              Indicadores consolidados da gestão de obras públicas municipais
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Taxa de conclusão</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-green-600 dark:text-green-500">
-                    {taxaConclusao}%
-                  </span>
-                </div>
-                <Progress
-                  value={Math.min(taxaConclusao, 100)}
-                  className="h-2 [&>div]:bg-green-500"
-                />
-                <p className="text-xs text-muted-foreground">
-                  {obrasConcluidas} de {obras.length} obras finalizadas no exercício
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Aderência ao cronograma</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-green-600 dark:text-green-500">
-                    {aderenciaCronograma}%
-                  </span>
-                </div>
-                <Progress
-                  value={aderenciaCronograma}
-                  className="h-2 [&>div]:bg-green-500"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Obras sem atraso ou paralisação — meta: 85%
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Desvio orçamentário</p>
-                <div className="flex items-baseline gap-2">
-                  <span className={cn(
-                    "text-3xl font-bold",
-                    desvioOrcamentario <= 5
-                      ? "text-green-600 dark:text-green-500"
-                      : "text-amber-600 dark:text-amber-400",
-                  )}>
-                    {desvioOrcamentario}%
-                  </span>
-                </div>
-                <Progress
-                  value={Math.min(desvioOrcamentario * 4, 100)}
-                  className={cn(
-                    "h-2",
-                    desvioOrcamentario <= 5 ? "[&>div]:bg-green-500" : "[&>div]:bg-amber-500",
-                  )}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Aditivos de valor sobre o total contratado — limite: 25%
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Índice de conformidade</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-green-600 dark:text-green-500">
-                    {indiceConformidade}%
-                  </span>
-                </div>
-                <Progress
-                  value={indiceConformidade}
-                  className="h-2 [&>div]:bg-green-500"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Itens conformes nas {fiscalizacoes.length} vistorias realizadas
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Análise Inteligente */}
-        <Card className="border-l-4 border-l-primary bg-gradient-to-br from-primary/5 via-background to-background">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
-                <HugeiconsIcon icon={BulbIcon} strokeWidth={2} className="size-5 text-primary" />
-              </div>
-              <div>
-                <CardTitle>Análise inteligente de obras</CardTitle>
-                <CardDescription>
-                  Leitura dos indicadores de execução, prazos e conformidade
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              <p className="text-foreground leading-relaxed">
-                No exercício de <strong>{periodoSelecionado}</strong>, o portfólio municipal conta com{" "}
-                <strong>{obras.length} obras</strong> que somam{" "}
-                <strong>{formatCurrency(totalContratado)}</strong> em valor contratado. A execução física
-                média das obras ativas situa-se em <strong>{formatPercent(execucaoFisicaMedia)}</strong>,
-                com execução financeira equivalente de{" "}
-                <strong>{formatPercent((totalPago / totalContratado) * 100)}</strong> — indicando
-                equilíbrio entre avanço físico e desembolsos. Foram concluídas{" "}
-                <strong>{obrasConcluidas} obras</strong> dentro do prazo e do orçamento, enquanto{" "}
-                <strong>{obrasAtrasadas + obrasParalisadas}</strong> apresentam situação crítica
-                (atraso ou paralisação) que demanda intervenção da gestão. O desvio orçamentário
-                acumulado por aditivos de valor é de <strong>{desvioOrcamentario}%</strong>, dentro do
-                limite legal de 25%, e o índice de conformidade das fiscalizações alcança{" "}
-                <strong>{indiceConformidade}%</strong>.
-              </p>
-            </div>
-
-            <Separator />
-
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="execucao-fisico-financeira">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon icon={ChartLineData02Icon} strokeWidth={2} className="size-4 text-green-600" />
-                    <span>Execução físico-financeira</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={CheckmarkCircle02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-green-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Curva S consistente:</strong> a evolução
-                        mensal das execuções física e financeira acompanham trajetórias próximas, sem
-                        descolamentos significativos — sinal de que as medições refletem o avanço real
-                        das obras e que os pagamentos seguem o cronograma de desembolso.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={InformationCircleIcon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-blue-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Concentração de investimento:</strong> as
-                        obras de Saneamento e Ponte/Viaduto concentram{" "}
-                        <strong>{formatCurrency(12800000 + 8500000)}</strong> (52% do portfólio),
-                        exigindo atenção redobrada em fiscalização e liberação de recursos por se
-                        tratar de fontes vinculadas (Financiamento CEF e Convênio Federal).
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={Alert02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-amber-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Medição pendente:</strong> a 9ª medição do
-                        Sistema de Esgotamento Sanitário (R$ 680 mil) aguarda parecer técnico — o
-                        atraso na aprovação pode impactar o fluxo de pagamentos e gerar encargos
-                        contratuais.
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="aditivos-prazos">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon icon={Flag01Icon} strokeWidth={2} className="size-4 text-green-600" />
-                    <span>Aditivos e prazos contratuais</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={CheckmarkCircle02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-green-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Aditivos sob controle:</strong> a média de{" "}
-                        {(aditivos.length / obras.length).toFixed(1)} aditivos por obra está dentro do
-                        parâmetro aceitável. O valor acrescido de{" "}
-                        <strong>{formatCurrency(aditivos.reduce((a, b) => a + b.valorAcrescido, 0))}</strong>{" "}
-                        ({desvioOrcamentario}% do contratado) não compromete o limite de 25% previsto
-                        na Lei de Licitações.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={Alert02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-amber-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Ponte sobre o Rio Tarumã (OBR-006):</strong>{" "}
-                        acumula 3 aditivos e está paralisada há mais de 5 meses por embargo ambiental.
-                        Representa <strong>{formatCurrency(8500000)}</strong> em valor contratado com
-                        apenas 28% de execução — recomenda-se ação junto ao órgão ambiental e avaliação
-                        de rescisão contratual caso a situação persista.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={Alert02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-amber-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Escola Rui Barbosa (OBR-003):</strong> já
-                        com 2 aditivos (prazo e valor) e medição reprovada, apresenta atraso de mais de
-                        30% no cronograma. A construtora responsável (Alfa Construções) possui o menor
-                        índice de conformidade do ranking (78,5%).
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="fiscalizacao-conformidade">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon icon={SecurityCheckIcon} strokeWidth={2} className="size-4 text-green-600" />
-                    <span>Fiscalização e conformidade</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={CheckmarkCircle02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-green-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Índice de conformidade elevado:</strong> com{" "}
-                        {indiceConformidade}% de itens conformes nas vistorias de campo, o programa de
-                        fiscalização demonstra efetividade. As construtoras com melhor desempenho
-                        (Engenharia Beta — 98%, Hidro Engenharia — 96,2%) concentram as obras de maior
-                        complexidade técnica.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={InformationCircleIcon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-blue-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Diversidade de fiscais:</strong> quatro
-                        engenheiros fiscais atuam no portfólio, evitando concentração excessiva. O
-                        rodízio entre obras de diferentes tipos fortalece o controle interno e reduz
-                        riscos de conflito de interesse.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={Alert02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-amber-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Não-conformidades concentradas:</strong> a
-                        Escola Rui Barbosa e a Ponte Rio Tarumã acumulam 7 das 10 não-conformidades
-                        registradas — sugere-se regime de fiscalização intensificado para essas obras
-                        até regularização dos apontamentos.
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="recomendacoes-obras">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon icon={BulbIcon} strokeWidth={2} className="size-4 text-amber-600" />
-                    <span>Recomendações prioritárias</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="rounded-lg border bg-green-50/50 p-3 dark:bg-green-950/20">
-                      <p className="mb-1 text-sm font-medium text-foreground">
-                        1. Destravar a Ponte sobre o Rio Tarumã
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Articular com o órgão ambiental para definir cronograma de retomada ou, se
-                        inviável no curto prazo, iniciar processo de rescisão contratual e
-                        reprogramação dos recursos federais.
-                      </p>
-                    </div>
-                    <div className="rounded-lg border bg-amber-50/50 p-3 dark:bg-amber-950/20">
-                      <p className="mb-1 text-sm font-medium text-foreground">
-                        2. Intensificar fiscalização na Escola Rui Barbosa
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Notificar formalmente a construtora Alfa Construções e estabelecer plano de
-                        recuperação de cronograma com prazos intermediários e penalidades previstas em
-                        contrato.
-                      </p>
-                    </div>
-                    <div className="rounded-lg border bg-green-50/50 p-3 dark:bg-green-950/20">
-                      <p className="mb-1 text-sm font-medium text-foreground">
-                        3. Aprovar a 9ª medição do Esgotamento Sanitário
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Priorizar a análise técnica pendente para evitar atrasos em cascata nos
-                        pagamentos e manter o fluxo contratual junto à Caixa Econômica Federal.
-                      </p>
-                    </div>
-                    <div className="rounded-lg border bg-green-50/50 p-3 dark:bg-green-950/20">
-                      <p className="mb-1 text-sm font-medium text-foreground">
-                        4. Preparar a mobilização da Quadra Poliesportiva
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        A OBR-005 está com Ordem de Serviço emitida e prazo iniciando em dezembro.
-                        Garantir que a emenda parlamentar esteja empenhada e a construtora mobilizada
-                        para evitar mais um atraso no portfólio.
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-
-            <Separator />
-
-            <div className="rounded-lg border bg-muted/50 p-4">
-              <div className="flex gap-3">
-                <HugeiconsIcon
-                  icon={InformationCircleIcon}
-                  strokeWidth={2}
-                  className="mt-0.5 size-5 shrink-0 text-primary"
-                />
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-foreground">Conclusão da análise</p>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    A gestão de obras do município demonstra <strong>bom controle orçamentário</strong>{" "}
-                    (desvio de {desvioOrcamentario}%) e <strong>alto índice de conformidade</strong>{" "}
-                    ({indiceConformidade}%), com {obrasConcluidas} obras entregues no exercício. Os
-                    principais riscos concentram-se em <strong>duas obras específicas</strong> (Ponte
-                    Rio Tarumã e Escola Rui Barbosa) que demandam ação imediata. O equilíbrio entre
-                    execução física e financeira na Curva S confirma que os desembolsos acompanham o
-                    avanço real, reforçando a transparência na prestação de contas. Com as ações
-                    recomendadas, o município pode elevar a taxa de conclusão e reduzir a exposição a
-                    atrasos no portfólio.
-                  </p>
-                  <p className="mt-3 border-t pt-3 text-xs text-muted-foreground">
-                    Análise gerada em {new Date().toLocaleDateString("pt-BR")} às{" "}
-                    {new Date().toLocaleTimeString("pt-BR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}{" "}
-                    | Dados referentes ao exercício de {periodoSelecionado}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Alertas e notificações */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-foreground">Alertas e notificações</h3>
-          {alertasObras.map((alerta, index) => (
-            <Alert
-              key={index}
-              variant={alerta.tipo === "warning" ? "destructive" : "default"}
-            >
-              <HugeiconsIcon
-                icon={
-                  alerta.tipo === "warning"
-                    ? Alert02Icon
-                    : alerta.tipo === "success"
-                      ? CheckmarkCircle02Icon
-                      : InformationCircleIcon
-                }
-                strokeWidth={2}
-                className="size-4"
-              />
-              <AlertTitle className="flex flex-wrap items-center gap-2">
-                {alerta.titulo}
-                <Badge variant="outline" className="text-xs">
-                  {alerta.badge}
-                </Badge>
-              </AlertTitle>
-              <AlertDescription>{alerta.descricao}</AlertDescription>
-            </Alert>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

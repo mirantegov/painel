@@ -13,9 +13,7 @@ import {
   ChartIcon,
   FolderOpenIcon,
   JusticeScale01Icon,
-  Analytics01Icon,
 } from "@hugeicons/core-free-icons";
-import { AnalisePrevidencia } from "./analise-previdencia";
 
 export function Previdencia() {
   const [activeTab, setActiveTab] = useState("gestao-beneficios");
@@ -66,13 +64,6 @@ export function Previdencia() {
             <HugeiconsIcon icon={JusticeScale01Icon} className="h-4 w-4" />
             <span className="hidden sm:inline">Atuarial</span>
           </TabsTrigger>
-          <TabsTrigger
-            value="analise"
-            className="flex items-center gap-2 py-2.5"
-          >
-            <HugeiconsIcon icon={Analytics01Icon} className="h-4 w-4" />
-            <span className="hidden sm:inline">Análise</span>
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="gestao-beneficios" className="mt-6">
@@ -89,10 +80,6 @@ export function Previdencia() {
 
         <TabsContent value="balanco-atuarial" className="mt-6">
           <BalancoAtuarial />
-        </TabsContent>
-
-        <TabsContent value="analise" className="mt-6">
-          <AnalisePrevidencia />
         </TabsContent>
       </Tabs>
     </div>

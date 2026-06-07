@@ -42,7 +42,16 @@ export function ModuleVisibilityProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [disabled, setDisabled] = React.useState<Set<string>>(readDisabled);
+  // Inicia vazio para que o primeiro render do cliente case com o do servidor
+  // (localStorage só existe no cliente). O valor real é carregado após a
+  // montagem, evitando erro de hidratação.
+  const [disabled, setDisabled] = React.useState<Set<string>>(
+    () => new Set(),
+  );
+
+  React.useEffect(() => {
+    setDisabled(readDisabled());
+  }, []);
 
   const persist = React.useCallback((next: Set<string>) => {
     setDisabled(next);

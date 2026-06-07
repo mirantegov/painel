@@ -65,15 +65,6 @@ import {
 } from "@hugeicons/core-free-icons";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BulbIcon } from "@hugeicons/core-free-icons";
 
 const formatNumber = (num: number) => num.toLocaleString("pt-BR");
 const formatPercent = (num: number) => `${num.toFixed(1)}%`;
@@ -94,7 +85,12 @@ const tiposProcesso = [
   { tipo: "Termo de Referência", area: "Compras", sla: 20, qtd: 34 },
   { tipo: "Aditivo Contratual", area: "Contratos", sla: 15, qtd: 41 },
   { tipo: "Prestação Contas Convênio", area: "Contratos", sla: 30, qtd: 19 },
-  { tipo: "Abertura Crédito Adicional", area: "Contabilidade", sla: 20, qtd: 8 },
+  {
+    tipo: "Abertura Crédito Adicional",
+    area: "Contabilidade",
+    sla: 20,
+    qtd: 8,
+  },
   { tipo: "Licença Ambiental", area: "Meio Ambiente", sla: 45, qtd: 15 },
   { tipo: "Auto de Infração", area: "Fiscalização", sla: 30, qtd: 27 },
   { tipo: "Baixa Patrimonial", area: "Patrimônio", sla: 15, qtd: 22 },
@@ -287,44 +283,6 @@ const COLORS = [
   "var(--chart-5)",
 ];
 
-const alertasProcessos = [
-  {
-    tipo: "warning",
-    titulo: "Processos atrasados acima da meta",
-    descricao:
-      "98 processos estão atrasados (21.5% do total em tramitação), superando a meta de 15%. É necessário revisar a alocação de recursos e priorizar processos críticos.",
-    categoria: "SLA",
-  },
-  {
-    tipo: "warning",
-    titulo: "Habite-se com tempo médio elevado",
-    descricao:
-      "O tempo médio de conclusão de processos de Habite-se está em 18.7 dias, acima do SLA de 30 dias mas próximo do limite. Recomenda-se monitoramento próximo.",
-    categoria: "URBANISMO",
-  },
-  {
-    tipo: "info",
-    titulo: "Aumento de solicitações LAI/e-SIC",
-    descricao:
-      "Houve aumento de 23% nas solicitações de acesso à informação (LAI/e-SIC) no último trimestre. Considere reforço na equipe de Controle Interno.",
-    categoria: "TRANSPARÊNCIA",
-  },
-  {
-    tipo: "success",
-    titulo: "Taxa de conversão estável",
-    descricao:
-      "A taxa de conversão de Solicitação para Processo está em 34.2%, dentro da faixa esperada de 30-40%, indicando triagem adequada.",
-    categoria: "GESTÃO",
-  },
-  {
-    tipo: "info",
-    titulo: "Backlog concentrado em Tributação",
-    descricao:
-      "A área de Tributação concentra 29.4% dos processos em tramitação. Avaliar necessidade de redistribuição de demandas ou reforço de equipe.",
-    categoria: "RECURSOS",
-  },
-];
-
 export function Processos() {
   const [periodoSelecionado, setPeriodoSelecionado] = React.useState("2024");
   const [areaSelecionada, setAreaSelecionada] = React.useState("todas");
@@ -342,7 +300,10 @@ export function Processos() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Select value={periodoSelecionado} onValueChange={setPeriodoSelecionado}>
+          <Select
+            value={periodoSelecionado}
+            onValueChange={setPeriodoSelecionado}
+          >
             <SelectTrigger className="w-[140px]">
               <SelectValue />
             </SelectTrigger>
@@ -715,7 +676,7 @@ export function Processos() {
                           mov.statusPrazo === "concluido" &&
                             "bg-green-500 hover:bg-green-600",
                           mov.statusPrazo === "atencao" &&
-                            "border-amber-500 text-amber-600"
+                            "border-amber-500 text-amber-600",
                         )}
                       >
                         {mov.statusPrazo === "concluido"
@@ -765,7 +726,7 @@ export function Processos() {
                               ? "bg-blue-400"
                               : evento.tipo === "pendencia"
                                 ? "bg-amber-500"
-                                : "bg-red-500"
+                                : "bg-red-500",
                       )}
                     />
                     {index < eventosRecentes.length - 1 && (
@@ -779,12 +740,14 @@ export function Processos() {
                       </p>
                       <Badge
                         variant={
-                          evento.tipo === "atrasado" ? "destructive" : "secondary"
+                          evento.tipo === "atrasado"
+                            ? "destructive"
+                            : "secondary"
                         }
                         className={cn(
                           "text-xs",
                           evento.tipo === "concluido" &&
-                            "bg-green-500 hover:bg-green-600 text-white"
+                            "bg-green-500 hover:bg-green-600 text-white",
                         )}
                       >
                         {evento.tipo === "concluido"
@@ -846,7 +809,9 @@ export function Processos() {
                     {formatNumber(item.total)}
                   </TableCell>
                   <TableCell className="text-right">
-                    {formatPercent((item.total / kpiData.processosEmTramitacao) * 100)}
+                    {formatPercent(
+                      (item.total / kpiData.processosEmTramitacao) * 100,
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -902,525 +867,6 @@ export function Processos() {
           </div>
         </CardContent>
       </Card>
-
-      {/* ======================================================= */}
-      {/* SEPARADOR ANÁLISES                                       */}
-      {/* ======================================================= */}
-      <div className="relative py-4">
-        <Separator />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-muted px-4 dark:bg-background">
-          <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            Análises
-          </span>
-        </div>
-      </div>
-
-      <div className="space-y-6">
-        {/* Resumo Analítico */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon
-                icon={Target01Icon}
-                strokeWidth={2}
-                className="size-5"
-              />
-              Resumo Analítico
-            </CardTitle>
-            <CardDescription>
-              Indicadores consolidados da gestão de processos
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Conformidade SLA
-                </p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-green-600">
-                    {formatPercent(kpiData.dentroDoPrazo)}
-                  </span>
-                  <Badge variant="secondary" className="text-xs bg-green-600">
-                    <HugeiconsIcon
-                      icon={ArrowUp01Icon}
-                      strokeWidth={2}
-                      className="size-3"
-                    />
-                    +3.2%
-                  </Badge>
-                </div>
-                <Progress value={kpiData.dentroDoPrazo} className="h-2" />
-                <p className="text-xs text-muted-foreground">
-                  Meta: 85% | Atual: {formatPercent(kpiData.dentroDoPrazo)}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Tempo Médio Conclusão
-                </p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-green-600">
-                    {kpiData.tempoMedioConclusao}d
-                  </span>
-                </div>
-                <Progress
-                  value={(kpiData.tempoMedioConclusao / 15) * 100}
-                  className="h-2 [&>div]:bg-green-500"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Meta: 10 dias | Atual: {kpiData.tempoMedioConclusao} dias
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Produtividade
-                </p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold">23.4</span>
-                </div>
-                <Progress value={78} className="h-2" />
-                <p className="text-xs text-muted-foreground">
-                  Processos concluídos/servidor/mês
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Taxa de Retrabalho
-                </p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-green-600">2.0%</span>
-                </div>
-                <Progress value={8} className="h-2 [&>div]:bg-green-500" />
-                <p className="text-xs text-muted-foreground">
-                  18 reaberturas — meta: &lt;5%
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Análise Inteligente */}
-        <Card className="border-l-4 border-l-primary bg-gradient-to-br from-primary/5 via-background to-background">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
-                <HugeiconsIcon
-                  icon={BulbIcon}
-                  strokeWidth={2}
-                  className="size-5 text-primary"
-                />
-              </div>
-              <div>
-                <CardTitle>Análise Inteligente de Processos</CardTitle>
-                <CardDescription>
-                  Insights sobre a gestão de processos e solicitações municipais
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Visão Geral */}
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              <p className="text-foreground leading-relaxed">
-                A análise da gestão de processos do município no exercício de{" "}
-                {periodoSelecionado} demonstra
-                <strong> desempenho satisfatório</strong> com{" "}
-                <strong>{formatPercent(kpiData.dentroDoPrazo)}</strong> dos
-                processos dentro do SLA, próximo à meta de 85%. O tempo médio de
-                conclusão de <strong>{kpiData.tempoMedioConclusao} dias</strong>{" "}
-                está abaixo da meta de 10 dias, indicando eficiência operacional.
-                Foram abertas <strong>{formatNumber(kpiData.solicitacoesAbertas)}</strong>{" "}
-                solicitações no mês, com{" "}
-                <strong>{formatNumber(kpiData.processosEmTramitacao)}</strong>{" "}
-                processos em tramitação. A área de Tributação concentra a maior
-                parte das demandas (29.4%), seguida por Urbanismo (21.5%).
-              </p>
-            </div>
-
-            <Separator />
-
-            {/* Acordeão de Análises */}
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="sla">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon
-                      icon={Clock01Icon}
-                      strokeWidth={2}
-                      className="size-4 text-green-600"
-                    />
-                    <span>Análise de Prazos e SLA</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={CheckmarkCircle02Icon}
-                        strokeWidth={2}
-                        className="size-4 mt-0.5 text-green-600 shrink-0"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">
-                          Conformidade próxima à meta:
-                        </strong>{" "}
-                        A taxa de {formatPercent(kpiData.dentroDoPrazo)} de
-                        processos dentro do SLA está próxima da meta de 85%,
-                        demonstrando boa gestão de prazos na maioria das áreas.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={Alert02Icon}
-                        strokeWidth={2}
-                        className="size-4 mt-0.5 text-amber-600 shrink-0"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">
-                          Processos atrasados requerem atenção:
-                        </strong>{" "}
-                        {kpiData.atrasados} processos estão atrasados (21.5% do
-                        total), com tempo médio de atraso de{" "}
-                        {kpiData.tempoMedioAtraso} dias. É necessário priorizar
-                        esses casos e revisar gargalos.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={CheckmarkCircle02Icon}
-                        strokeWidth={2}
-                        className="size-4 mt-0.5 text-green-600 shrink-0"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">
-                          Tempo médio otimizado:
-                        </strong>{" "}
-                        O tempo médio de conclusão de{" "}
-                        {kpiData.tempoMedioConclusao} dias está 15% abaixo da
-                        meta, indicando eficiência nos processos mais simples
-                        (certidões, pareceres rápidos).
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="areas">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon
-                      icon={Building01Icon}
-                      strokeWidth={2}
-                      className="size-4 text-blue-600"
-                    />
-                    <span>Análise por Área/Secretaria</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={InformationCircleIcon}
-                        strokeWidth={2}
-                        className="size-4 mt-0.5 text-blue-600 shrink-0"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">
-                          Tributação concentra maior volume:
-                        </strong>{" "}
-                        A área de Tributação responde por 29.4% dos processos em
-                        tramitação (134 processos), principalmente certidões e
-                        parcelamentos. Considerar reforço de equipe ou automação.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={InformationCircleIcon}
-                        strokeWidth={2}
-                        className="size-4 mt-0.5 text-blue-600 shrink-0"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">
-                          Urbanismo com processos complexos:
-                        </strong>{" "}
-                        Urbanismo (21.5% do total) possui processos com maior
-                        tempo médio (Habite-se: 18.7 dias, Alvará: 12.5 dias),
-                        devido à complexidade técnica e vistorias necessárias.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={CheckmarkCircle02Icon}
-                        strokeWidth={2}
-                        className="size-4 mt-0.5 text-green-600 shrink-0"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">
-                          RH e Procuradoria com bom desempenho:
-                        </strong>{" "}
-                        As áreas de RH (20.4%) e Procuradoria (16.0%) mantêm
-                        prazos médios adequados e baixo índice de retrabalho.
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="transparencia">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon
-                      icon={InformationCircleIcon}
-                      strokeWidth={2}
-                      className="size-4 text-purple-600"
-                    />
-                    <span>Transparência e Controle</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={ArrowUp01Icon}
-                        strokeWidth={2}
-                        className="size-4 mt-0.5 text-amber-600 shrink-0"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">
-                          Aumento de pedidos LAI/e-SIC:
-                        </strong>{" "}
-                        Houve crescimento de 23% nas solicitações de acesso à
-                        informação no último trimestre (67 processos ativos),
-                        refletindo maior engajamento da sociedade.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={CheckmarkCircle02Icon}
-                        strokeWidth={2}
-                        className="size-4 mt-0.5 text-green-600 shrink-0"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">
-                          Ouvidoria com alta demanda:
-                        </strong>{" "}
-                        89 processos de Ouvidoria (reclamações/denúncias) estão
-                        em andamento, com tempo médio de resposta de 6.4 dias,
-                        dentro do SLA de 10 dias.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={InformationCircleIcon}
-                        strokeWidth={2}
-                        className="size-4 mt-0.5 text-blue-600 shrink-0"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">
-                          Controle Interno ativo:
-                        </strong>{" "}
-                        5 auditorias internas em andamento (SLA de 60 dias),
-                        demonstrando atuação preventiva e de conformidade.
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="recomendacoes">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon
-                      icon={BulbIcon}
-                      strokeWidth={2}
-                      className="size-4 text-amber-600"
-                    />
-                    <span>Recomendações Estratégicas</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="rounded-lg border bg-amber-50/50 dark:bg-amber-950/20 p-3">
-                      <p className="text-sm font-medium text-foreground mb-1">
-                        1. Priorizar processos atrasados
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Criar força-tarefa para reduzir o estoque de{" "}
-                        {kpiData.atrasados} processos atrasados, priorizando
-                        aqueles com maior impacto social (Habite-se, alvarás,
-                        certidões).
-                      </p>
-                    </div>
-                    <div className="rounded-lg border bg-amber-50/50 dark:bg-amber-950/20 p-3">
-                      <p className="text-sm font-medium text-foreground mb-1">
-                        2. Redistribuir demandas de Tributação
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Avaliar automação de certidões negativas e parcelamentos
-                        simples, liberando equipe para processos mais complexos.
-                        Considerar portal de autoatendimento.
-                      </p>
-                    </div>
-                    <div className="rounded-lg border bg-green-50/50 dark:bg-green-950/20 p-3">
-                      <p className="text-sm font-medium text-foreground mb-1">
-                        3. Reforçar equipe de Controle Interno
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Diante do aumento de 23% em pedidos LAI/e-SIC, alocar
-                        mais recursos para garantir atendimento dentro do prazo
-                        legal de 20 dias.
-                      </p>
-                    </div>
-                    <div className="rounded-lg border bg-green-50/50 dark:bg-green-950/20 p-3">
-                      <p className="text-sm font-medium text-foreground mb-1">
-                        4. Implementar sistema de alertas
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Criar notificações automáticas para processos próximos do
-                        vencimento do SLA (5 dias antes), permitindo ação
-                        preventiva e reduzindo atrasos.
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="projecoes">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon
-                      icon={ChartLineData02Icon}
-                      strokeWidth={2}
-                      className="size-4 text-purple-600"
-                    />
-                    <span>Projeções para o Próximo Período</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4 pl-6">
-                    <p className="text-sm text-muted-foreground">
-                      Com base na tendência histórica e no desempenho atual,
-                      projeta-se para o próximo trimestre:
-                    </p>
-                    <div className="grid gap-3 sm:grid-cols-3">
-                      <div className="rounded-lg border p-3 text-center">
-                        <p className="text-2xl font-bold text-green-600">
-                          2.850
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Cenário Otimista
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Solicitações/mês
-                        </p>
-                      </div>
-                      <div className="rounded-lg border p-3 text-center bg-primary/5">
-                        <p className="text-2xl font-bold text-primary">2.680</p>
-                        <p className="text-xs text-muted-foreground">
-                          Cenário Provável
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Solicitações/mês
-                        </p>
-                      </div>
-                      <div className="rounded-lg border p-3 text-center">
-                        <p className="text-2xl font-bold text-amber-600">
-                          2.400
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Cenário Conservador
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Solicitações/mês
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-xs text-muted-foreground italic">
-                      * Projeções consideram sazonalidade e tendência de
-                      crescimento de 8.3% ao mês.
-                    </p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-
-            <Separator />
-
-            {/* Conclusão */}
-            <div className="rounded-lg border bg-muted/50 p-4">
-              <div className="flex gap-3">
-                <HugeiconsIcon
-                  icon={InformationCircleIcon}
-                  strokeWidth={2}
-                  className="size-5 text-primary shrink-0 mt-0.5"
-                />
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-foreground">
-                    Conclusão da Análise
-                  </p>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    A gestão de processos municipais apresenta desempenho
-                    satisfatório, com {formatPercent(kpiData.dentroDoPrazo)} de
-                    conformidade ao SLA e tempo médio de conclusão de{" "}
-                    {kpiData.tempoMedioConclusao} dias. Os pontos de atenção
-                    identificados referem-se aos {kpiData.atrasados} processos
-                    atrasados e à concentração de demandas em Tributação (29.4%).
-                    Com as ações recomendadas — priorização de atrasados,
-                    automação de processos simples e reforço em áreas críticas —
-                    o município tem condições de elevar a conformidade para 85% e
-                    reduzir o tempo médio para 7 dias, garantindo melhor
-                    atendimento ao cidadão e maior eficiência administrativa.
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-3 pt-3 border-t">
-                    Análise gerada em {new Date().toLocaleDateString("pt-BR")} às{" "}
-                    {new Date().toLocaleTimeString("pt-BR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}{" "}
-                    | Dados referentes ao período de {periodoSelecionado}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Alertas e Notificações */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-foreground">
-            Alertas e Notificações
-          </h3>
-          {alertasProcessos.map((alerta, index) => (
-            <Alert
-              key={index}
-              variant={alerta.tipo === "warning" ? "destructive" : "default"}
-            >
-              <HugeiconsIcon
-                icon={
-                  alerta.tipo === "warning"
-                    ? Alert02Icon
-                    : alerta.tipo === "success"
-                      ? CheckmarkCircle02Icon
-                      : InformationCircleIcon
-                }
-                strokeWidth={2}
-                className="size-4"
-              />
-              <AlertTitle className="flex items-center gap-2">
-                {alerta.titulo}
-                <Badge variant="outline" className="text-xs">
-                  {alerta.categoria}
-                </Badge>
-              </AlertTitle>
-              <AlertDescription>{alerta.descricao}</AlertDescription>
-            </Alert>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
