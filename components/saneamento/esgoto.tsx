@@ -214,6 +214,8 @@ function CapacidadePorTecnologiaChart() {
               cy="50%"
               innerRadius={60}
               outerRadius={100}
+              label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+              labelLine={false}
             >
               {chartData.map((_, index) => (
                 <Cell

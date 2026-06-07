@@ -4447,6 +4447,8 @@ export function TributacaoMunicipal() {
                       innerRadius={60}
                       outerRadius={100}
                       paddingAngle={2}
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
                     >
                       {envelhecimentoDivida.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.cor} />

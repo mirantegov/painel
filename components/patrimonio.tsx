@@ -67,6 +67,7 @@ import {
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
+  ChartPieValueLegend,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -699,15 +700,26 @@ export function Patrimonio() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ChartContainer config={chartConfigComposicao} className="mx-auto aspect-square max-h-[320px]">
+                <ChartContainer config={chartConfigComposicao} className="mx-auto aspect-auto h-[320px] w-full">
                   <PieChart>
-                    <ChartTooltip content={<ChartTooltipContent nameKey="categoria" hideLabel />} />
-                    <Pie data={composicaoPatrimonio} dataKey="valor" nameKey="categoria" innerRadius={70} outerRadius={110}>
+                    <ChartTooltip content={<ChartTooltipContent nameKey="categoria" formatter={(value) => formatCurrency(Number(value))} hideLabel />} />
+                    <Pie data={composicaoPatrimonio} dataKey="valor" nameKey="categoria" innerRadius={70} outerRadius={110} label={({ percent }) => `${(percent * 100).toFixed(0)}%`} labelLine={false}>
                       {composicaoPatrimonio.map((item) => (
                         <Cell key={item.categoria} fill={item.fill} />
                       ))}
                     </Pie>
-                    <ChartLegend content={<ChartLegendContent nameKey="categoria" />} />
+                    <ChartLegend
+                      layout="vertical"
+                      align="right"
+                      verticalAlign="middle"
+                      content={
+                        <ChartPieValueLegend
+                          nameKey="categoria"
+                          valueKey="valor"
+                          valueFormatter={formatCurrency}
+                        />
+                      }
+                    />
                   </PieChart>
                 </ChartContainer>
               </CardContent>

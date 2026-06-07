@@ -374,6 +374,8 @@ function DistribuicaoLigacoesChart() {
               cy="50%"
               innerRadius={60}
               outerRadius={100}
+              label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+              labelLine={false}
             >
               {DATA_DISTRIBUICAO_LIGACOES.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index]} />

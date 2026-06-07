@@ -17,6 +17,7 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  ChartPieValueLegend,
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
@@ -445,16 +446,26 @@ function CarteiraInvestimentosDonut() {
       <CardContent>
         <ChartContainer
           config={carteiraConfig}
-          className="mx-auto aspect-square h-[280px]"
+          className="mx-auto aspect-auto h-[300px] w-full"
         >
           <PieChart>
-            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  formatter={(value) => formatCurrencyCompact(Number(value))}
+                  hideLabel
+                />
+              }
+            />
             <Pie
               data={DATA_CARTEIRA_INVESTIMENTOS}
               dataKey="valor"
               nameKey="classe"
               innerRadius={60}
+              outerRadius={100}
               strokeWidth={4}
+              label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+              labelLine={false}
             >
               {DATA_CARTEIRA_INVESTIMENTOS.map((item, index) => (
                 <Cell
@@ -464,8 +475,16 @@ function CarteiraInvestimentosDonut() {
               ))}
             </Pie>
             <ChartLegend
-              content={<ChartLegendContent nameKey="classe" />}
-              className="flex-wrap gap-2"
+              layout="vertical"
+              align="right"
+              verticalAlign="middle"
+              content={
+                <ChartPieValueLegend
+                  nameKey="classe"
+                  valueKey="valor"
+                  valueFormatter={formatCurrencyCompact}
+                />
+              }
             />
           </PieChart>
         </ChartContainer>

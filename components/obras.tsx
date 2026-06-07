@@ -1751,7 +1751,8 @@ export function Obras() {
                   innerRadius={50}
                   outerRadius={100}
                   paddingAngle={3}
-                  label={({ tipo, quantidade }) => `${tipo}: ${quantidade}`}
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
                 />
                 <ChartLegend content={<ChartLegendContent nameKey="tipo" />} />
               </PieChart>
@@ -1859,9 +1860,8 @@ export function Obras() {
                   innerRadius={50}
                   outerRadius={100}
                   paddingAngle={3}
-                  label={({ status, quantidade }) =>
-                    `${status}: ${quantidade}`
-                  }
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
                 />
                 <ChartLegend
                   content={<ChartLegendContent nameKey="status" />}

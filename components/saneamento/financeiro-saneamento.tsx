@@ -27,6 +27,7 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  ChartPieValueLegend,
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
@@ -227,7 +228,7 @@ function AgingContasReceberChart() {
               acima90: { label: "Acima 90 dias", color: "var(--chart-5)" },
             } satisfies ChartConfig
           }
-          className="mx-auto aspect-square h-[280px]"
+          className="mx-auto aspect-auto h-[300px] w-full"
         >
           <PieChart>
             <ChartTooltip
@@ -245,12 +246,25 @@ function AgingContasReceberChart() {
               cy="50%"
               innerRadius={60}
               outerRadius={100}
+              label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+              labelLine={false}
             >
               {chartData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index]} />
               ))}
             </Pie>
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend
+              layout="vertical"
+              align="right"
+              verticalAlign="middle"
+              content={
+                <ChartPieValueLegend
+                  nameKey="name"
+                  valueKey="value"
+                  valueFormatter={formatCurrencyCompact}
+                />
+              }
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>
