@@ -92,6 +92,13 @@ import {
   type TipoObrigacao,
   type VencimentoAgenda,
 } from "@/lib/demo-agenda-obrigacoes";
+import {
+  dadosMSC,
+  entidadeMSC,
+  contasMSC,
+  historicoMSC,
+  type ContaMSC,
+} from "@/lib/demo-msc";
 
 // ==========================================
 // DADOS DO CAUC
@@ -1235,6 +1242,14 @@ export function PrestacaoContas() {
               className="size-4"
             />
             Agenda de Obrigações
+          </TabsTrigger>
+          <TabsTrigger value="msc" className="gap-2">
+            <HugeiconsIcon
+              icon={ChartLineData02Icon}
+              strokeWidth={2}
+              className="size-4"
+            />
+            MSC
           </TabsTrigger>
         </TabsList>
 
@@ -2487,6 +2502,550 @@ export function PrestacaoContas() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Tab: MSC — Monitor de Situação Contábil */}
+        <TabsContent value="msc" className="space-y-6">
+          {/* KPIs */}
+          {(() => {
+            const enviados2025 = historicoMSC.filter((h) => h.enviou).length;
+            const totalMeses2025 = historicoMSC.length;
+            const conformidadeMSC = Math.round(
+              (enviados2025 / totalMeses2025) * 100,
+            );
+            const isPendente =
+              entidadeMSC.situacao === "Pendência encontrada";
+
+            return (
+              <>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                  <KpiCard
+                    iconElement={
+                      <div
+                        className={`size-2 rounded-full ${isPendente ? "bg-red-500" : "bg-green-500"}`}
+                      />
+                    }
+                    title="Situação"
+                    value={isPendente ? "Pendência" : "Regular"}
+                    borderColor={
+                      isPendente ? "border-l-red-500" : "border-l-green-500"
+                    }
+                    footer={
+                      <p className="text-xs text-muted-foreground">
+                        Extrato do SICONFI
+                      </p>
+                    }
+                  />
+
+                  <KpiCard
+                    iconElement={
+                      <div className="size-2 rounded-full bg-red-500" />
+                    }
+                    title="Atraso"
+                    value={`${entidadeMSC.mesesAtraso} meses`}
+                    borderColor="border-l-red-500"
+                    footer={
+                      <p className="text-xs text-red-600 font-medium">
+                        Requer regularização
+                      </p>
+                    }
+                  />
+
+                  <KpiCard
+                    icon={Calendar01Icon}
+                    title="Última entrega"
+                    value="Jan/2026"
+                    borderColor="border-l-blue-500"
+                    footer={
+                      <p className="text-xs text-muted-foreground">
+                        {entidadeMSC.ultimaEntrega}
+                      </p>
+                    }
+                  />
+
+                  <KpiCard
+                    icon={Clock01Icon}
+                    title="Competência esperada"
+                    value="Abr/2026"
+                    borderColor="border-l-amber-500"
+                    footer={
+                      <p className="text-xs text-amber-600 font-medium">
+                        Período em aberto
+                      </p>
+                    }
+                  />
+
+                  <KpiCard
+                    icon={Target01Icon}
+                    title="Conformidade 2025"
+                    value={<>{conformidadeMSC}%</>}
+                    borderColor="border-l-purple-500"
+                    footer={
+                      <>
+                        <Progress value={conformidadeMSC} className="h-2" />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {enviados2025}/{totalMeses2025} meses enviados
+                        </p>
+                      </>
+                    }
+                  />
+                </div>
+
+                {/* Alerta de pendência */}
+                {isPendente && (
+                  <Alert variant="destructive">
+                    <HugeiconsIcon
+                      icon={Alert02Icon}
+                      strokeWidth={2}
+                      className="size-4"
+                    />
+                    <AlertTitle>Pendência SICONFI detectada</AlertTitle>
+                    <AlertDescription>
+                      Balancete contábil pendente há{" "}
+                      {entidadeMSC.mesesAtraso} meses. Competência esperada:{" "}
+                      {entidadeMSC.competenciaEsperada}. Regularize o envio
+                      da MSC no portal SICONFI para evitar restrições no CAUC.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Sub-tabs */}
+                <Tabs defaultValue="consulta" className="space-y-4">
+                  <TabsList>
+                    <TabsTrigger value="consulta" className="gap-2">
+                      <HugeiconsIcon
+                        icon={Search01Icon}
+                        strokeWidth={2}
+                        className="size-4"
+                      />
+                      Consulta MSC
+                    </TabsTrigger>
+                    <TabsTrigger value="balancete" className="gap-2">
+                      <HugeiconsIcon
+                        icon={FileValidationIcon}
+                        strokeWidth={2}
+                        className="size-4"
+                      />
+                      Balancete
+                    </TabsTrigger>
+                    <TabsTrigger value="historico-msc" className="gap-2">
+                      <HugeiconsIcon
+                        icon={ChartLineData02Icon}
+                        strokeWidth={2}
+                        className="size-4"
+                      />
+                      Histórico
+                    </TabsTrigger>
+                  </TabsList>
+
+                  {/* Sub-tab: Consulta MSC */}
+                  <TabsContent value="consulta" className="space-y-4">
+                    {/* Card de resumo — replica layout da UI SICONFI */}
+                    <Card>
+                      <CardContent className="pt-6">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                              <HugeiconsIcon
+                                icon={Building01Icon}
+                                strokeWidth={2}
+                                className="size-5 text-primary"
+                              />
+                            </div>
+                            <div>
+                              <p className="font-semibold">
+                                {dadosMSC.municipio}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {dadosMSC.totalEntidades} entidade(s) monitorada(s) — SICONFI
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-xs gap-1"
+                            >
+                              <span className="font-bold">
+                                {entidadeMSC.tipo}
+                              </span>
+                              MSC - {entidadeMSC.tipo}
+                            </Badge>
+                            <Badge
+                              className={`${isPendente ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"} text-white`}
+                            >
+                              {entidadeMSC.situacao}
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Consulta da MSC */}
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                          Consulta da MSC
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-wrap gap-2 mb-6">
+                          <Badge
+                            variant="outline"
+                            className={`text-xs ${isPendente ? "border-red-300 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300" : "border-green-300 bg-green-50 text-green-700"}`}
+                          >
+                            {isPendente
+                              ? "Extrato do Siconfi aponta pendencia"
+                              : "Extrato do Siconfi sem pendências"}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            Esperada: {entidadeMSC.competenciaEsperada}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            Última entrega:{" "}
+                            {entidadeMSC.ultimaCompetencia}
+                          </Badge>
+                        </div>
+
+                        {/* Detalhes Oficiais */}
+                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+                          Detalhes Oficiais
+                        </p>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="w-1/3">Campo</TableHead>
+                              <TableHead>Valor</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                Entidade
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="text-xs">
+                                  {entidadeMSC.nome}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                Situação
+                              </TableCell>
+                              <TableCell>
+                                <Badge
+                                  className={`text-xs ${isPendente ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"} text-white`}
+                                >
+                                  {entidadeMSC.situacao}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                Última entrega
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="text-xs">
+                                  {entidadeMSC.ultimaEntrega}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                Resumo
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="text-xs">
+                                  {entidadeMSC.resumo}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  {/* Sub-tab: Balancete */}
+                  <TabsContent value="balancete" className="space-y-4">
+                    <Card>
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <CardTitle>Balancete Contábil — PCASP</CardTitle>
+                            <CardDescription>
+                              Plano de Contas Aplicado ao Setor Público —{" "}
+                              {dadosMSC.municipio}/{dadosMSC.uf}
+                            </CardDescription>
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className="font-mono text-xs"
+                          >
+                            Competência: Jan/2026
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        {(() => {
+                          const grupos = [
+                            "Ativo Circulante",
+                            "Ativo Não Circulante",
+                            "Passivo Circulante",
+                            "Variações Patrimoniais",
+                            "Controle Orçamentário",
+                          ] as ContaMSC["grupo"][];
+
+                          const grupoCores: Record<
+                            ContaMSC["grupo"],
+                            string
+                          > = {
+                            "Ativo Circulante": "bg-blue-50 dark:bg-blue-950/30",
+                            "Ativo Não Circulante":
+                              "bg-indigo-50 dark:bg-indigo-950/30",
+                            "Passivo Circulante":
+                              "bg-red-50 dark:bg-red-950/30",
+                            "Variações Patrimoniais":
+                              "bg-orange-50 dark:bg-orange-950/30",
+                            "Controle Orçamentário":
+                              "bg-zinc-50 dark:bg-zinc-900/30",
+                          };
+
+                          const formatBRL = (v: number) =>
+                            v.toLocaleString("pt-BR", {
+                              style: "currency",
+                              currency: "BRL",
+                            });
+
+                          return (
+                            <div className="space-y-6">
+                              {grupos.map((grupo) => {
+                                const contas = contasMSC.filter(
+                                  (c) => c.grupo === grupo,
+                                );
+                                if (contas.length === 0) return null;
+                                const totalSaldoFinal = contas.reduce(
+                                  (acc, c) => acc + c.saldoFinal,
+                                  0,
+                                );
+                                return (
+                                  <div key={grupo}>
+                                    <div
+                                      className={`flex items-center justify-between rounded-t-md px-3 py-2 ${grupoCores[grupo]}`}
+                                    >
+                                      <span className="text-xs font-semibold uppercase tracking-wide">
+                                        {grupo}
+                                      </span>
+                                      <span className="text-xs font-mono font-medium">
+                                        Total: {formatBRL(totalSaldoFinal)}
+                                      </span>
+                                    </div>
+                                    <Table>
+                                      <TableHeader>
+                                        <TableRow>
+                                          <TableHead className="text-xs">
+                                            Conta
+                                          </TableHead>
+                                          <TableHead className="text-xs">
+                                            Descrição
+                                          </TableHead>
+                                          <TableHead className="text-xs text-right">
+                                            Saldo Inicial
+                                          </TableHead>
+                                          <TableHead className="text-xs text-right">
+                                            Débitos
+                                          </TableHead>
+                                          <TableHead className="text-xs text-right">
+                                            Créditos
+                                          </TableHead>
+                                          <TableHead className="text-xs text-right">
+                                            Saldo Final
+                                          </TableHead>
+                                        </TableRow>
+                                      </TableHeader>
+                                      <TableBody>
+                                        {contas.map((conta) => (
+                                          <TableRow key={conta.conta}>
+                                            <TableCell className="font-mono text-xs">
+                                              {conta.conta}
+                                            </TableCell>
+                                            <TableCell className="text-sm">
+                                              {conta.descricao}
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono text-xs">
+                                              {formatBRL(conta.saldoInicial)}
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono text-xs text-blue-600">
+                                              {formatBRL(conta.debitos)}
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono text-xs text-red-600">
+                                              {formatBRL(conta.creditos)}
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono text-xs font-semibold">
+                                              {formatBRL(conta.saldoFinal)}
+                                            </TableCell>
+                                          </TableRow>
+                                        ))}
+                                      </TableBody>
+                                    </Table>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })()}
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  {/* Sub-tab: Histórico */}
+                  <TabsContent value="historico-msc" className="space-y-4">
+                    {/* Gráfico */}
+                    {(() => {
+                      const chartDataMSC = historicoMSC.map((h) => ({
+                        mes: h.mes,
+                        enviados: h.enviou ? 1 : 0,
+                        naoEnviados: h.enviou ? 0 : 1,
+                      }));
+
+                      return (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Histórico de Envios SICONFI</CardTitle>
+                            <CardDescription>
+                              Entregas mensais do balancete contábil — 2025
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <ChartContainer
+                              config={
+                                {
+                                  enviados: {
+                                    label: "Enviado",
+                                    color: "var(--chart-2)",
+                                  },
+                                  naoEnviados: {
+                                    label: "Não enviado",
+                                    color: "var(--chart-1)",
+                                  },
+                                } satisfies ChartConfig
+                              }
+                              className="h-[220px] w-full"
+                            >
+                              <BarChart
+                                data={chartDataMSC}
+                                margin={{ left: 12, right: 12 }}
+                              >
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                  dataKey="mes"
+                                  tickLine={false}
+                                  axisLine={false}
+                                  tickMargin={8}
+                                />
+                                <YAxis
+                                  tickLine={false}
+                                  axisLine={false}
+                                  tickMargin={8}
+                                />
+                                <ChartTooltip
+                                  content={<ChartTooltipContent />}
+                                />
+                                <Bar
+                                  dataKey="enviados"
+                                  stackId="msc"
+                                  fill="var(--color-enviados)"
+                                  radius={[0, 0, 0, 0]}
+                                />
+                                <Bar
+                                  dataKey="naoEnviados"
+                                  stackId="msc"
+                                  fill="var(--color-naoEnviados)"
+                                  radius={[2, 2, 0, 0]}
+                                />
+                                <ChartLegend
+                                  content={<ChartLegendContent />}
+                                />
+                              </BarChart>
+                            </ChartContainer>
+                          </CardContent>
+                        </Card>
+                      );
+                    })()}
+
+                    {/* Tabela */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Registro de Entregas</CardTitle>
+                        <CardDescription>
+                          Detalhe mês a mês dos envios ao SICONFI
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Mês</TableHead>
+                              <TableHead>Competência</TableHead>
+                              <TableHead>Situação</TableHead>
+                              <TableHead>Data de Envio</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {historicoMSC.map((h) => (
+                              <TableRow key={h.mes}>
+                                <TableCell className="font-medium">
+                                  {h.mes}
+                                </TableCell>
+                                <TableCell className="text-sm text-muted-foreground">
+                                  {h.competencia}
+                                </TableCell>
+                                <TableCell>
+                                  {h.enviou ? (
+                                    <div className="flex items-center gap-1.5">
+                                      <div className="flex size-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                                        <HugeiconsIcon
+                                          icon={CheckmarkCircle02Icon}
+                                          strokeWidth={2}
+                                          className="size-3 text-green-700 dark:text-green-300"
+                                        />
+                                      </div>
+                                      <span className="text-xs font-medium text-green-700 dark:text-green-400">
+                                        Enviado
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center gap-1.5">
+                                      <div className="flex size-5 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
+                                        <HugeiconsIcon
+                                          icon={Cancel01Icon}
+                                          strokeWidth={2}
+                                          className="size-3 text-red-700 dark:text-red-300"
+                                        />
+                                      </div>
+                                      <span className="text-xs font-medium text-red-700 dark:text-red-400">
+                                        Não enviado
+                                      </span>
+                                    </div>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-sm text-muted-foreground">
+                                  {h.dataEnvio ?? (
+                                    <span className="text-red-500">—</span>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
+              </>
+            );
+          })()}
         </TabsContent>
       </Tabs>
     </div>
