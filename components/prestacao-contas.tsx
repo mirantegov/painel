@@ -1177,47 +1177,6 @@ export function PrestacaoContas() {
         </div>
       </div>
 
-      {/* Info do Município */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
-                <HugeiconsIcon
-                  icon={Building01Icon}
-                  strokeWidth={2}
-                  className="size-5 text-primary"
-                />
-              </div>
-              <div>
-                <p className="font-semibold">{dadosMunicipio.nome}</p>
-                <p className="text-sm text-muted-foreground">
-                  CNPJ: {dadosMunicipio.cnpj} — UF: {dadosMunicipio.uf}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <HugeiconsIcon
-                  icon={Calendar01Icon}
-                  strokeWidth={2}
-                  className="size-4"
-                />
-                <span>Data: {dadosMunicipio.dataExtrato}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <HugeiconsIcon
-                  icon={Clock01Icon}
-                  strokeWidth={2}
-                  className="size-4"
-                />
-                <span>Hora: {dadosMunicipio.horaExtrato}</span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Abas Internas */}
       <Tabs defaultValue="cauc" className="space-y-6">
         <TabsList>
@@ -3324,6 +3283,47 @@ export function PrestacaoContas() {
           })()}
         </TabsContent>
       </Tabs>
+
+      {/* Info do Município */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                <HugeiconsIcon
+                  icon={Building01Icon}
+                  strokeWidth={2}
+                  className="size-5 text-primary"
+                />
+              </div>
+              <div>
+                <p className="font-semibold">{dadosMunicipio.nome}</p>
+                <p className="text-sm text-muted-foreground">
+                  CNPJ: {dadosMunicipio.cnpj} — UF: {dadosMunicipio.uf}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <HugeiconsIcon
+                  icon={Calendar01Icon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
+                <span>Data: {dadosMunicipio.dataExtrato}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <HugeiconsIcon
+                  icon={Clock01Icon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
+                <span>Hora: {dadosMunicipio.horaExtrato}</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
