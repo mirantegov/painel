@@ -1124,7 +1124,7 @@ export function Saude() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           title="População Atendida"
           icon={UserMultipleIcon}
@@ -1313,7 +1313,7 @@ export function Saude() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-2xl border bg-muted/40 p-4">
               <p className="text-sm text-muted-foreground">
                 Receita de Impostos
@@ -1663,7 +1663,7 @@ export function Saude() {
         </TabsContent>
 
         <TabsContent value="atendimento" className="mt-6 space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {kpisSaude.map((kpi) => (
               <KpiCard
                 key={kpi.indicador}
@@ -1701,7 +1701,7 @@ export function Saude() {
           </div>
 
           {/* Mortality & ICSAP Indicators */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Mortalidade Infantil"
               icon={HeartCheckIcon}
@@ -1890,7 +1890,7 @@ export function Saude() {
 
         {/* NEW TAB: Regulação e Filas */}
         <TabsContent value="regulacao" className="mt-6 space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Fila de Consultas"
               icon={Clock01Icon}
@@ -2138,7 +2138,7 @@ export function Saude() {
 
         {/* NEW TAB: Vigilância Epidemiológica */}
         <TabsContent value="vigilancia" className="mt-6 space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Notificações SINAN"
               icon={Alert02Icon}
@@ -2404,7 +2404,7 @@ export function Saude() {
 
         <TabsContent value="profissionais" className="mt-6 space-y-6">
           {/* Workforce Summary KPIs */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Total de Profissionais"
               icon={Stethoscope02Icon}
@@ -3010,7 +3010,7 @@ export function Saude() {
                 <h4 className="mb-3 text-sm font-semibold">
                   ISF — Índice Sintético Final
                 </h4>
-                <div className="grid gap-4 md:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   <div className="rounded-2xl border bg-emerald-50/50 p-4 text-center dark:bg-emerald-950/20">
                     <p className="text-sm text-muted-foreground">Nota ISF</p>
                     <p className="mt-2 text-3xl font-bold text-emerald-700 dark:text-emerald-400">

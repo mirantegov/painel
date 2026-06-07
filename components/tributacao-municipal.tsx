@@ -1155,7 +1155,7 @@ export function TributacaoMunicipal() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
                     Valor Lançado
@@ -1277,7 +1277,7 @@ export function TributacaoMunicipal() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
                     Arrecadado Total
@@ -2035,7 +2035,7 @@ export function TributacaoMunicipal() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 sm:grid-cols-4 mb-6">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
                 <div className="rounded-lg border p-4 space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
                     Empresas Cadastradas

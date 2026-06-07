@@ -57,7 +57,7 @@ function DespesasKpis() {
   const restam = LIMITE_GASTO_PESSOAL - GASTO_PESSOAL_PORCENTO;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <KpiCard
         title="Orçamento do Legislativo"
         icon={BankIcon}

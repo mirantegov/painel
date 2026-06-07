@@ -1075,7 +1075,7 @@ export function Educacao() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           title="Alunos Matriculados"
           icon={UserMultipleIcon}
@@ -1597,7 +1597,7 @@ export function Educacao() {
 
         {/* ── Tab: Censo e Matrículas ── */}
         <TabsContent value="censo" className="mt-6 space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Total de Matrículas 2024"
               icon={UserMultipleIcon}
@@ -1919,7 +1919,7 @@ export function Educacao() {
 
         {/* ── Tab: Frequência e Busca Ativa ── */}
         <TabsContent value="frequencia" className="mt-6 space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Alunos Infrequentes"
               icon={Alert02Icon}
@@ -2391,7 +2391,7 @@ export function Educacao() {
             </Card>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {kpisEducacao.map((kpi) => (
               <KpiCard
                 key={kpi.indicador}
