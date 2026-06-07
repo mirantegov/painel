@@ -183,7 +183,7 @@ function ComissoesStats() {
   const ativas = DATA_COMISSOES.filter((c) => c.ativo).length;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <KpiCard
         title="Comissões Ativas"
         icon={UserMultipleIcon}
@@ -292,7 +292,7 @@ export function Comissoes() {
 
       <ComissoesStats />
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {DATA_COMISSOES.map((comissao) => (
           <ComissaoCard key={comissao.id} comissao={comissao} />
         ))}

@@ -97,7 +97,7 @@ function VereadoresKpis() {
   const comEmail = DATA_VEREADORES.filter((vereador) => vereador.email).length;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <KpiCard
         title="Parlamentares"
         icon={UserMultipleIcon}
@@ -332,7 +332,7 @@ export function Vereadores() {
 
       <Separator />
 
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {DATA_VEREADORES.map((vereador) => (
           <VereadorCard key={vereador.id} vereador={vereador} />
         ))}

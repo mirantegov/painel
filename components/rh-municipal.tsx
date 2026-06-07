@@ -1807,7 +1807,7 @@ export function RHMunicipal() {
             </CardHeader>
           </Card>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {/* Distribuição por Sexo */}
             <Card>
               <CardHeader>

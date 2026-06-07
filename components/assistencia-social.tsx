@@ -1351,7 +1351,7 @@ export function AssistenciaSocial() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           title="Orçamento Atualizado"
           icon={Wallet01Icon}
@@ -1867,7 +1867,7 @@ export function AssistenciaSocial() {
         </TabsContent>
 
         <TabsContent value="protecao-basica" className="mt-6 space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="CRAS em Funcionamento"
               icon={BankIcon}
@@ -2352,7 +2352,7 @@ export function AssistenciaSocial() {
         </TabsContent>
 
         <TabsContent value="transferencia-renda" className="mt-6 space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Famílias no CadÚnico"
               icon={UserMultipleIcon}
@@ -2659,7 +2659,7 @@ export function AssistenciaSocial() {
         </TabsContent>
 
         <TabsContent value="primeira-infancia" className="mt-6 space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Crianças no PCF (Criança Feliz)"
               icon={UserMultipleIcon}
@@ -2945,7 +2945,7 @@ export function AssistenciaSocial() {
         </TabsContent>
 
         <TabsContent value="vigilancia" className="mt-6 space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Famílias em Vulnerabilidade"
               icon={AlertCircleIcon}
@@ -3394,7 +3394,7 @@ export function AssistenciaSocial() {
         </TabsContent>
 
         <TabsContent value="protecao" className="mt-6 space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Famílias no CREAS"
               icon={UserMultipleIcon}
@@ -3931,7 +3931,7 @@ export function AssistenciaSocial() {
         </TabsContent>
 
         <TabsContent value="patrimonio" className="mt-6 space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Bens Ativos da Rede"
               icon={Wallet01Icon}

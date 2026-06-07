@@ -175,7 +175,7 @@ function PropositurasStats() {
   const taxaAprovacao = Math.round((aprovadas / total) * 100);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <KpiCard
         title="Total Apresentado"
         icon={FileValidationIcon}
