@@ -12,6 +12,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { KpiCard } from "@/components/ui/kpi-card";
 import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { Bar, BarChart, Cell, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
   DATA_VEREADORES,
   calcularPresencaVereador,
   calcularPresencaGeral,
@@ -76,9 +83,6 @@ function PresencaStats() {
   );
 
   const acima90 = presencasPorVereador.filter((p) => p.presenca >= 90).length;
-  const entre70e89 = presencasPorVereador.filter(
-    (p) => p.presenca >= 70 && p.presenca < 90,
-  ).length;
   const abaixo70 = presencasPorVereador.filter((p) => p.presenca < 70).length;
 
   return (
@@ -178,15 +182,15 @@ function QuorumCard() {
 function PresencaDistribuicao() {
   const presencasPorVereador = DATA_VEREADORES.map((v) => ({
     id: v.id,
-    nome: v.nome,
+    nome: v.nome.split(" ")[0],
     partido: v.partido,
     presenca: calcularPresencaVereador(v.id),
   })).sort((a, b) => b.presenca - a.presenca);
 
   const getBarColor = (pct: number) => {
-    if (pct >= 90) return "bg-green-500";
-    if (pct >= 70) return "bg-yellow-500";
-    return "bg-red-500";
+    if (pct >= 90) return "var(--chart-2)";
+    if (pct >= 70) return "var(--chart-4)";
+    return "var(--chart-5)";
   };
 
   return (
@@ -196,22 +200,47 @@ function PresencaDistribuicao() {
         <CardDescription>Índice de comparecimento às sessões</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
-          {presencasPorVereador.map(({ id, nome, presenca }) => (
-            <div key={id} className="flex items-center gap-3">
-              <div className="w-40 text-sm font-medium truncate">{nome}</div>
-              <div className="flex-1 bg-muted rounded-full h-6 overflow-hidden">
-                <div
-                  className={`h-full ${getBarColor(presenca)} rounded-full transition-all`}
-                  style={{ width: `${presenca}%` }}
-                />
-              </div>
-              <div className="w-12 text-sm text-right font-medium">
-                {presenca}%
-              </div>
-            </div>
-          ))}
-        </div>
+        <ChartContainer
+          config={
+            {
+              presenca: { label: "Presença", color: "var(--chart-2)" },
+            } satisfies ChartConfig
+          }
+          className="h-[320px] w-full"
+        >
+          <BarChart
+            data={presencasPorVereador}
+            layout="vertical"
+            margin={{ left: 12, right: 16 }}
+          >
+            <CartesianGrid horizontal={false} />
+            <XAxis
+              type="number"
+              domain={[0, 100]}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(v) => `${v}%`}
+            />
+            <YAxis
+              dataKey="nome"
+              type="category"
+              tickLine={false}
+              axisLine={false}
+              width={90}
+              tickMargin={8}
+            />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent formatter={(value) => `${value}%`} />
+              }
+            />
+            <Bar dataKey="presenca" radius={[0, 4, 4, 0]}>
+              {presencasPorVereador.map((entry) => (
+                <Cell key={entry.id} fill={getBarColor(entry.presenca)} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

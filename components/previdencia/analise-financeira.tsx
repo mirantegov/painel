@@ -12,6 +12,24 @@ import { KpiCard } from "@/components/ui/kpi-card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import {
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Cell,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
   RECEITA_CONTRIBUICOES,
   RECEITA_INVESTIMENTOS,
   RECEITA_TOTAL,
@@ -330,6 +348,132 @@ function DemonstrativoReceitas() {
   );
 }
 
+function ReceitasMensaisAreaChart() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Evolução das Receitas</CardTitle>
+        <CardDescription>
+          Contribuições e investimentos ao longo de 2025
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={
+            {
+              contribuicoes: {
+                label: "Contribuições",
+                color: "var(--chart-1)",
+              },
+              investimentos: {
+                label: "Investimentos",
+                color: "var(--chart-2)",
+              },
+            } satisfies ChartConfig
+          }
+          className="h-[280px] w-full"
+        >
+          <AreaChart
+            data={DATA_RECEITAS_MENSAL}
+            margin={{ left: 12, right: 12 }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="mes"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(v) => formatCurrencyCompact(Number(v))}
+              width={70}
+            />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Area
+              dataKey="contribuicoes"
+              type="monotone"
+              stackId="1"
+              fill="var(--color-contribuicoes)"
+              fillOpacity={0.4}
+              stroke="var(--color-contribuicoes)"
+            />
+            <Area
+              dataKey="investimentos"
+              type="monotone"
+              stackId="1"
+              fill="var(--color-investimentos)"
+              fillOpacity={0.4}
+              stroke="var(--color-investimentos)"
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+          </AreaChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+const CARTEIRA_CORES = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+];
+
+function CarteiraInvestimentosDonut() {
+  const carteiraConfig = DATA_CARTEIRA_INVESTIMENTOS.reduce(
+    (acc, item, index) => {
+      acc[item.classe] = {
+        label: item.classe,
+        color: CARTEIRA_CORES[index % CARTEIRA_CORES.length],
+      };
+      return acc;
+    },
+    {} as ChartConfig,
+  );
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Alocação da Carteira</CardTitle>
+        <CardDescription>Distribuição por classe de ativo</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={carteiraConfig}
+          className="mx-auto aspect-square h-[280px]"
+        >
+          <PieChart>
+            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+            <Pie
+              data={DATA_CARTEIRA_INVESTIMENTOS}
+              dataKey="valor"
+              nameKey="classe"
+              innerRadius={60}
+              strokeWidth={4}
+            >
+              {DATA_CARTEIRA_INVESTIMENTOS.map((item, index) => (
+                <Cell
+                  key={item.classe}
+                  fill={CARTEIRA_CORES[index % CARTEIRA_CORES.length]}
+                />
+              ))}
+            </Pie>
+            <ChartLegend
+              content={<ChartLegendContent nameKey="classe" />}
+              className="flex-wrap gap-2"
+            />
+          </PieChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
 function CarteiraInvestimentos() {
   return (
     <Card>
@@ -500,6 +644,11 @@ export function AnaliseFinanceira() {
       <div className="grid gap-6 lg:grid-cols-2">
         <DespesasSeparadas />
         <RentabilidadeChart />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ReceitasMensaisAreaChart />
+        <CarteiraInvestimentosDonut />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

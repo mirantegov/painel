@@ -20,6 +20,13 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
   TOTAL_PARTICIPANTES_ATIVOS,
   TOTAL_APOSENTADOS,
   TOTAL_PENSIONISTAS,
@@ -286,30 +293,49 @@ function PensionistasTable() {
 }
 
 function DistribuicaoEtariaChart() {
-  const max = Math.max(...DATA_DISTRIBUICAO_ETARIA.map((d) => d.quantidade));
-
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Distribuição Etária</CardTitle>
-        <CardDescription>Pirâmide dos participantes ativos</CardDescription>
+        <CardDescription>Participantes ativos por faixa etária</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex items-end gap-2 h-[200px]">
-          {DATA_DISTRIBUICAO_ETARIA.map(({ faixa, quantidade }) => (
-            <div
-              key={faixa}
-              className="flex-1 flex flex-col items-center gap-1"
-            >
-              <span className="text-xs font-medium">{quantidade}</span>
-              <div
-                className="w-full bg-emerald-500 rounded-t transition-all"
-                style={{ height: `${(quantidade / max) * 160}px` }}
-              />
-              <span className="text-xs text-muted-foreground">{faixa}</span>
-            </div>
-          ))}
-        </div>
+        <ChartContainer
+          config={
+            {
+              quantidade: {
+                label: "Participantes",
+                color: "var(--chart-1)",
+              },
+            } satisfies ChartConfig
+          }
+          className="h-[280px] w-full"
+        >
+          <BarChart
+            data={DATA_DISTRIBUICAO_ETARIA}
+            margin={{ left: 12, right: 12 }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="faixa"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              width={40}
+            />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Bar
+              dataKey="quantidade"
+              fill="var(--color-quantidade)"
+              radius={[4, 4, 0, 0]}
+            />
+          </BarChart>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

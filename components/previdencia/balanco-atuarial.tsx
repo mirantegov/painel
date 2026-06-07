@@ -12,6 +12,22 @@ import { KpiCard } from "@/components/ui/kpi-card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  ReferenceLine,
+} from "recharts";
+import {
   PATRIMONIO_LIQUIDO,
   PROVISOES_MATEMATICAS,
   INDICE_SOLVENCIA,
@@ -95,6 +111,128 @@ function ProjecaoAtuarialChart() {
             <span className="text-xs text-muted-foreground">Passivo</span>
           </div>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ProjecaoAtuarialLineChart() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Projeção de Longo Prazo</CardTitle>
+        <CardDescription>
+          Evolução do ativo e passivo atuarial 2025-2032
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={
+            {
+              ativo: { label: "Ativo", color: "var(--chart-2)" },
+              passivo: { label: "Passivo", color: "var(--chart-4)" },
+            } satisfies ChartConfig
+          }
+          className="h-[280px] w-full"
+        >
+          <LineChart
+            data={DATA_PROJECAO_ATUARIAL}
+            margin={{ left: 12, right: 12 }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="ano"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(v) => formatCurrencyCompact(Number(v))}
+              width={70}
+            />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Line
+              dataKey="ativo"
+              type="monotone"
+              stroke="var(--color-ativo)"
+              strokeWidth={2}
+              dot={false}
+            />
+            <Line
+              dataKey="passivo"
+              type="monotone"
+              stroke="var(--color-passivo)"
+              strokeWidth={2}
+              dot={false}
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+          </LineChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+function EvolucaoSolvenciaLineChart() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">
+          Trajetória do Índice de Solvência
+        </CardTitle>
+        <CardDescription>
+          Projeção do índice de cobertura 2025-2032
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={
+            {
+              indice: { label: "Índice de Solvência", color: "var(--chart-1)" },
+            } satisfies ChartConfig
+          }
+          className="h-[280px] w-full"
+        >
+          <LineChart data={DATA_SOLVENCIA} margin={{ left: 12, right: 12 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="ano"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              domain={[80, 120]}
+              tickFormatter={(v) => `${v}%`}
+              width={48}
+            />
+            <ReferenceLine
+              y={100}
+              stroke="var(--muted-foreground)"
+              strokeDasharray="4 4"
+              label={{
+                value: "Mínimo legal (100%)",
+                position: "insideTopRight",
+                fontSize: 11,
+                fill: "var(--muted-foreground)",
+              }}
+            />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Line
+              dataKey="indice"
+              type="monotone"
+              stroke="var(--color-indice)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          </LineChart>
+        </ChartContainer>
       </CardContent>
     </Card>
   );
@@ -592,6 +730,11 @@ export function BalancoAtuarial() {
             </>
           }
         />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ProjecaoAtuarialLineChart />
+        <EvolucaoSolvenciaLineChart />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

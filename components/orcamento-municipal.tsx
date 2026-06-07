@@ -30,6 +30,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   Bar,
   BarChart,
   CartesianGrid,
@@ -53,6 +59,8 @@ import {
   BulbIcon,
   CheckmarkCircle02Icon,
   ArrowRight01Icon,
+  Flag01Icon,
+  AlertCircleIcon,
 } from "@hugeicons/core-free-icons";
 import {
   receitaPrevista,
@@ -312,27 +320,6 @@ const resumoAnalitico = [
     titulo: "Cobertura Receita/Despesa",
     valor: coberturaReceitaDespesa,
     descricao: "Percentual da despesa coberta pela receita atualizada",
-  },
-];
-
-const analisesInteligentes = [
-  {
-    titulo: "Dependência de Transferências",
-    status: "atenção",
-    insight:
-      "Transferências correntes e federais representam a maior parcela da receita, elevando sensibilidade a variações de repasse.",
-  },
-  {
-    titulo: "Pressão em Investimentos",
-    status: "oportunidade",
-    insight:
-      "Investimentos e urbanismo concentram suplementações, indicando oportunidade para revisão do cronograma físico-financeiro.",
-  },
-  {
-    titulo: "Rigidez de Despesa Corrente",
-    status: "monitorar",
-    insight:
-      "Pessoal e outras correntes seguem com alto peso no orçamento, exigindo controle para preservar margem de capital.",
   },
 ];
 
@@ -1288,43 +1275,256 @@ export function OrcamentoMunicipal() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* Seção de Análise Inteligente - Estilo IA */}
+        <Card className="border-l-4 border-l-primary bg-gradient-to-br from-primary/5 via-background to-background">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon
-                icon={BulbIcon}
-                strokeWidth={2}
-                className="size-5"
-              />
-              Análises inteligentes do Orçamento (Receitas e despesas)
-            </CardTitle>
-            <CardDescription>
-              Leituras estratégicas para decisão gerencial
-            </CardDescription>
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                <HugeiconsIcon
+                  icon={BulbIcon}
+                  strokeWidth={2}
+                  className="size-5 text-primary"
+                />
+              </div>
+              <div>
+                <CardTitle>
+                  Análise Inteligente do Orçamento (Receitas e Despesas)
+                </CardTitle>
+                <CardDescription>
+                  Leituras estratégicas geradas com base nos dados do exercício
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {analisesInteligentes.map((analise) => (
-              <div key={analise.titulo} className="rounded-lg border p-4">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <p className="font-medium text-foreground">
-                    {analise.titulo}
+          <CardContent className="space-y-6">
+            {/* Visão Geral */}
+            <div className="prose prose-sm dark:prose-invert max-w-none">
+              <p className="text-foreground leading-relaxed">
+                A leitura consolidada do orçamento aponta para uma{" "}
+                <strong>cobertura global ainda adequada</strong> entre receitas
+                e despesas, sustentada por{" "}
+                <strong>receitas próprias em expansão</strong> frente ao orçado.
+                Persistem, contudo, uma{" "}
+                <strong>elevada dependência de transferências</strong> e a{" "}
+                <strong>rigidez da despesa corrente</strong>, que pressionam a
+                margem de capital e exigem disciplina nas suplementações até o
+                encerramento do exercício.
+              </p>
+            </div>
+
+            <Separator />
+
+            {/* Pontos de Destaque */}
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="destaques">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={Flag01Icon}
+                      strokeWidth={2}
+                      className="size-4 text-green-600"
+                    />
+                    <span>Pontos de Destaque Positivo</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pl-6">
+                    <div className="flex gap-2">
+                      <HugeiconsIcon
+                        icon={CheckmarkCircle02Icon}
+                        strokeWidth={2}
+                        className="mt-0.5 size-4 shrink-0 text-green-600"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">
+                          Receitas próprias em expansão:
+                        </strong>{" "}
+                        Impostos e taxas registram variação positiva frente ao
+                        orçado, reduzindo a dependência de transferências e
+                        ampliando o grau de autonomia fiscal do município.
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <HugeiconsIcon
+                        icon={CheckmarkCircle02Icon}
+                        strokeWidth={2}
+                        className="mt-0.5 size-4 shrink-0 text-green-600"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">
+                          Cobertura global adequada:
+                        </strong>{" "}
+                        A relação receita/despesa permanece em patamar de
+                        cobertura aceitável para o exercício, preservando o
+                        equilíbrio orçamentário previsto na LOA.
+                      </p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="atencao">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={AlertCircleIcon}
+                      strokeWidth={2}
+                      className="size-4 text-amber-600"
+                    />
+                    <span>Pontos de Atenção</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pl-6">
+                    <div className="flex gap-2">
+                      <HugeiconsIcon
+                        icon={AlertCircleIcon}
+                        strokeWidth={2}
+                        className="mt-0.5 size-4 shrink-0 text-amber-600"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">
+                          Dependência de transferências:
+                        </strong>{" "}
+                        Transferências correntes e federais representam a maior
+                        parcela da receita, elevando a sensibilidade do
+                        orçamento a variações de repasse intergovernamental.
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <HugeiconsIcon
+                        icon={AlertCircleIcon}
+                        strokeWidth={2}
+                        className="mt-0.5 size-4 shrink-0 text-amber-600"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">
+                          Rigidez da despesa corrente:
+                        </strong>{" "}
+                        Pessoal e outras despesas correntes seguem com alto peso
+                        no orçamento, comprimindo a margem disponível para
+                        investimentos e despesas de capital.
+                      </p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="recomendacoes">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={BulbIcon}
+                      strokeWidth={2}
+                      className="size-4 text-blue-600"
+                    />
+                    <span>Recomendações Estratégicas</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pl-6">
+                    <div className="rounded-lg border bg-blue-50/50 p-3 dark:bg-blue-950/20">
+                      <p className="mb-1 text-sm font-medium text-foreground">
+                        1. Revisão do cronograma de investimentos
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Investimentos e urbanismo concentram suplementações;
+                        revisar o cronograma físico-financeiro para alinhar
+                        execução à capacidade de caixa e evitar abertura de
+                        créditos sem lastro de receita.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border bg-blue-50/50 p-3 dark:bg-blue-950/20">
+                      <p className="mb-1 text-sm font-medium text-foreground">
+                        2. Controle da despesa corrente
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Monitorar o avanço de pessoal e outras correntes para
+                        preservar margem de capital e manter o cumprimento dos
+                        limites de gasto da LRF.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border bg-blue-50/50 p-3 dark:bg-blue-950/20">
+                      <p className="mb-1 text-sm font-medium text-foreground">
+                        3. Fortalecimento da arrecadação própria
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Consolidar a expansão de impostos e taxas com ações de
+                        recuperação de crédito e atualização cadastral,
+                        reduzindo a exposição a oscilações de repasse.
+                      </p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="projecoes">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={ChartLineData02Icon}
+                      strokeWidth={2}
+                      className="size-4 text-violet-600"
+                    />
+                    <span>Projeções e Cenários</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pl-6">
+                    <div className="rounded-lg border bg-violet-50/50 p-3 dark:bg-violet-950/20">
+                      <p className="mb-1 text-sm font-medium text-foreground">
+                        Cenário Base — Equilíbrio Preservado
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Mantida a arrecadação própria em expansão e a disciplina
+                        nas suplementações, projeta-se o encerramento do
+                        exercício com a relação receita/despesa em cobertura
+                        global positiva.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border bg-amber-50/50 p-3 dark:bg-amber-950/20">
+                      <p className="mb-1 text-sm font-medium text-foreground">
+                        Cenário de Risco — Compressão de Caixa
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        A abertura de novas suplementações sem incremento de
+                        receita pode levar o equilíbrio global a patamar
+                        negativo no fechamento, exigindo contingenciamento de
+                        despesas correntes.
+                      </p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+            <Separator />
+
+            {/* Conclusão */}
+            <div className="rounded-lg border bg-muted/50 p-4">
+              <div className="flex gap-3">
+                <HugeiconsIcon
+                  icon={InformationCircleIcon}
+                  strokeWidth={2}
+                  className="mt-0.5 size-5 shrink-0 text-primary"
+                />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-foreground">
+                    Conclusão Analítica
                   </p>
-                  <Badge variant="outline" className="text-xs capitalize">
-                    {analise.status}
-                  </Badge>
-                </div>
-                <div className="flex items-start gap-2">
-                  <HugeiconsIcon
-                    icon={ArrowRight01Icon}
-                    strokeWidth={2}
-                    className="mt-0.5 size-4 text-muted-foreground"
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    {analise.insight}
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    O orçamento municipal mantém{" "}
+                    <strong>equilíbrio global adequado</strong>, ancorado na{" "}
+                    <strong>expansão das receitas próprias</strong>. A
+                    sustentação desse cenário no encerramento do exercício
+                    depende do <strong>controle da despesa corrente</strong> e
+                    da disciplina na abertura de créditos suplementares,
+                    evitando a compressão de caixa diante da{" "}
+                    <strong>dependência de transferências</strong>.
                   </p>
                 </div>
               </div>
-            ))}
+            </div>
           </CardContent>
         </Card>
 

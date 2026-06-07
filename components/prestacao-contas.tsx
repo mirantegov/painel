@@ -65,6 +65,23 @@ import {
 } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { KpiCard } from "@/components/ui/kpi-card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 // ==========================================
 // DADOS DO CAUC
@@ -823,6 +840,161 @@ function getGrupoSituacaoResumo(grupo: GrupoCAUC) {
 }
 
 // ==========================================
+// GRÁFICOS
+// ==========================================
+
+function EvolucaoCAUCChart() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <HugeiconsIcon
+            icon={ChartLineData02Icon}
+            strokeWidth={2}
+            className="size-5"
+          />
+          Evolução Mensal da Situação CAUC
+        </CardTitle>
+        <CardDescription>
+          Distribuição dos itens por situação ao longo dos últimos meses
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={
+            {
+              regulares: { label: "Regular", color: "var(--chart-2)" },
+              aComprovar: { label: "A Comprovar", color: "var(--chart-4)" },
+              irregulares: { label: "Irregular", color: "var(--chart-1)" },
+              desativados: { label: "Desativado", color: "var(--chart-5)" },
+            } satisfies ChartConfig
+          }
+          className="h-[280px] w-full"
+        >
+          <AreaChart data={historicoCAUC} margin={{ left: 12, right: 12 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="periodo"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
+            <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Area
+              dataKey="regulares"
+              type="monotone"
+              stackId="cauc"
+              fill="var(--color-regulares)"
+              stroke="var(--color-regulares)"
+              fillOpacity={0.4}
+            />
+            <Area
+              dataKey="aComprovar"
+              type="monotone"
+              stackId="cauc"
+              fill="var(--color-aComprovar)"
+              stroke="var(--color-aComprovar)"
+              fillOpacity={0.4}
+            />
+            <Area
+              dataKey="irregulares"
+              type="monotone"
+              stackId="cauc"
+              fill="var(--color-irregulares)"
+              stroke="var(--color-irregulares)"
+              fillOpacity={0.4}
+            />
+            <Area
+              dataKey="desativados"
+              type="monotone"
+              stackId="cauc"
+              fill="var(--color-desativados)"
+              stroke="var(--color-desativados)"
+              fillOpacity={0.4}
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+          </AreaChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ConformidadePorGrupoChart() {
+  const dados = gruposCAUC.map((grupo) => {
+    const resumo = getGrupoSituacaoResumo(grupo);
+    return {
+      grupo: `Grupo ${grupo.numero}`,
+      regulares: resumo.regular,
+      aComprovar: resumo.aComprovar,
+      irregulares: resumo.irregular,
+    };
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <HugeiconsIcon
+            icon={ChartLineData02Icon}
+            strokeWidth={2}
+            className="size-5"
+          />
+          Conformidade por Grupo CAUC
+        </CardTitle>
+        <CardDescription>
+          Itens regulares, a comprovar e irregulares em cada grupo
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={
+            {
+              regulares: { label: "Regular", color: "var(--chart-2)" },
+              aComprovar: { label: "A Comprovar", color: "var(--chart-4)" },
+              irregulares: { label: "Irregular", color: "var(--chart-1)" },
+            } satisfies ChartConfig
+          }
+          className="h-[280px] w-full"
+        >
+          <BarChart data={dados} margin={{ left: 12, right: 12 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="grupo"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
+            <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Bar
+              dataKey="regulares"
+              stackId="grupo"
+              fill="var(--color-regulares)"
+              radius={[0, 0, 0, 0]}
+            />
+            <Bar
+              dataKey="aComprovar"
+              stackId="grupo"
+              fill="var(--color-aComprovar)"
+              radius={[0, 0, 0, 0]}
+            />
+            <Bar
+              dataKey="irregulares"
+              stackId="grupo"
+              fill="var(--color-irregulares)"
+              radius={[2, 2, 0, 0]}
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ==========================================
 // COMPONENTE PRINCIPAL
 // ==========================================
 
@@ -846,7 +1018,9 @@ export function PrestacaoContas() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Prestação de Contas</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Prestação de Contas
+          </h2>
           <p className="text-muted-foreground">
             Acompanhamento de prestação de contas, CAUC e julgamento pelo TCE/PR
           </p>
@@ -1368,6 +1542,11 @@ export function PrestacaoContas() {
 
             {/* Tab: Histórico */}
             <TabsContent value="historico" className="space-y-4">
+              <div className="grid gap-4 lg:grid-cols-2">
+                <EvolucaoCAUCChart />
+                <ConformidadePorGrupoChart />
+              </div>
+
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">

@@ -18,6 +18,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
   DATA_PROPOSITURAS,
   type Propositura,
   type TipoPropositura,
@@ -271,20 +278,9 @@ function DistribuicaoTipoChart() {
     {} as Record<string, number>,
   );
 
-  const cores: Record<string, string> = {
-    "Projeto de Lei": "bg-blue-500",
-    "Projeto de Resolução": "bg-green-500",
-    "Projeto de Decreto": "bg-teal-500",
-    Indicação: "bg-yellow-500",
-    Moção: "bg-purple-500",
-    Requerimento: "bg-orange-500",
-  };
-
-  const data = Object.entries(tipoCount).map(([tipo, count]) => ({
-    tipo,
-    count,
-    color: cores[tipo] || "bg-gray-500",
-  }));
+  const data = Object.entries(tipoCount)
+    .map(([tipo, count]) => ({ tipo, count }))
+    .sort((a, b) => b.count - a.count);
 
   return (
     <Card>
@@ -293,24 +289,37 @@ function DistribuicaoTipoChart() {
         <CardDescription>Distribuição das proposituras</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
-          {data.map(({ tipo, count, color }) => (
-            <div key={tipo} className="flex items-center gap-3">
-              <div className="w-32 text-sm font-medium">{tipo}</div>
-              <div className="flex-1 bg-muted rounded-full h-6 overflow-hidden">
-                <div
-                  className={`h-full ${color} rounded-full`}
-                  style={{
-                    width: `${(count / DATA_PROPOSITURAS.length) * 100}%`,
-                  }}
-                />
-              </div>
-              <div className="w-8 text-sm text-muted-foreground text-right">
-                {count}
-              </div>
-            </div>
-          ))}
-        </div>
+        <ChartContainer
+          config={
+            {
+              count: { label: "Proposituras", color: "var(--chart-1)" },
+            } satisfies ChartConfig
+          }
+          className="h-[280px] w-full"
+        >
+          <BarChart
+            data={data}
+            layout="vertical"
+            margin={{ left: 12, right: 16 }}
+          >
+            <CartesianGrid horizontal={false} />
+            <XAxis type="number" tickLine={false} axisLine={false} />
+            <YAxis
+              dataKey="tipo"
+              type="category"
+              tickLine={false}
+              axisLine={false}
+              width={140}
+              tickMargin={8}
+            />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Bar
+              dataKey="count"
+              fill="var(--color-count)"
+              radius={[0, 4, 4, 0]}
+            />
+          </BarChart>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

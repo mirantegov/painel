@@ -12,6 +12,23 @@ import { KpiCard } from "@/components/ui/kpi-card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
   ORCAMENTO_LEGISLATIVO,
   DESPESA_EMPENHADA_LEGISLATIVO,
   TOTAL_DIARIAS_LEGISLATIVO,
@@ -178,8 +195,6 @@ function ResumoDespesas() {
 }
 
 function DiariasPorMesChart() {
-  const maxValor = Math.max(...DATA_DIARIAS_MES.map((m) => m.valor));
-
   return (
     <Card>
       <CardHeader>
@@ -187,17 +202,115 @@ function DiariasPorMesChart() {
         <CardDescription>Valores pagos em diárias em 2025</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex items-end gap-2 h-[200px]">
-          {DATA_DIARIAS_MES.map(({ mes, valor }) => (
-            <div key={mes} className="flex-1 flex flex-col items-center gap-1">
-              <div
-                className="w-full bg-orange-500 rounded-t transition-all"
-                style={{ height: `${(valor / maxValor) * 160}px` }}
-              />
-              <span className="text-xs text-muted-foreground">{mes}</span>
-            </div>
-          ))}
-        </div>
+        <ChartContainer
+          config={
+            {
+              valor: { label: "Diárias", color: "var(--chart-3)" },
+            } satisfies ChartConfig
+          }
+          className="h-[280px] w-full"
+        >
+          <AreaChart data={DATA_DIARIAS_MES} margin={{ left: 12, right: 12 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="mes"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              width={56}
+              tickFormatter={(v) => formatCurrency(v as number)}
+            />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  formatter={(value) => formatCurrency(value as number)}
+                />
+              }
+            />
+            <Area
+              dataKey="valor"
+              type="monotone"
+              fill="var(--color-valor)"
+              fillOpacity={0.2}
+              stroke="var(--color-valor)"
+              strokeWidth={2}
+            />
+          </AreaChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+function DespesasPorCategoriaChart() {
+  const data = DATA_DESPESAS_CATEGORIAS.map((c) => ({
+    categoria: c.nome,
+    empenhado: c.empenhado,
+    pago: c.pago,
+  }));
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">
+          Empenhado x Pago por Categoria
+        </CardTitle>
+        <CardDescription>
+          Comparativo da execução orçamentária por categoria de despesa
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={
+            {
+              empenhado: { label: "Empenhado", color: "var(--chart-1)" },
+              pago: { label: "Pago", color: "var(--chart-2)" },
+            } satisfies ChartConfig
+          }
+          className="h-[300px] w-full"
+        >
+          <BarChart data={data} margin={{ left: 12, right: 12, bottom: 8 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="categoria"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              interval={0}
+              tick={{ fontSize: 11 }}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              width={56}
+              tickFormatter={(v) => formatCurrency(v as number)}
+            />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  formatter={(value) => formatCurrency(value as number)}
+                />
+              }
+            />
+            <Bar
+              dataKey="empenhado"
+              fill="var(--color-empenhado)"
+              radius={[2, 2, 0, 0]}
+            />
+            <Bar
+              dataKey="pago"
+              fill="var(--color-pago)"
+              radius={[2, 2, 0, 0]}
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+          </BarChart>
+        </ChartContainer>
       </CardContent>
     </Card>
   );
@@ -306,6 +419,8 @@ export function DespesasLegislativo() {
         <ResumoDespesas />
         <DiariasPorMesChart />
       </div>
+
+      <DespesasPorCategoriaChart />
 
       <PainelExecutivoFinanceiro />
     </div>
