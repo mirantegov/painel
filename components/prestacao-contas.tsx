@@ -2123,42 +2123,6 @@ export function PrestacaoContas() {
             />
           </div>
 
-          {/* Legenda das obrigações */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <HugeiconsIcon
-                  icon={InformationCircleIcon}
-                  strokeWidth={2}
-                  className="size-5"
-                />
-                Legenda das Obrigações
-              </CardTitle>
-              <CardDescription>
-                Compromissos do município junto ao TCE/PR —{" "}
-                {dadosAgenda.municipio}/{dadosAgenda.uf},{" "}
-                {dadosAgenda.bimestreAtual}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {tiposObrigacao.map((tipo) => (
-                  <div key={tipo.codigo} className="flex items-start gap-2">
-                    <Badge
-                      variant="outline"
-                      className="font-mono text-xs shrink-0"
-                    >
-                      {tipo.codigo}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      {tipo.descricao}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Tabs de Conteúdo */}
           <Tabs defaultValue="matriz" className="space-y-4">
             <TabsList>
@@ -2487,6 +2451,42 @@ export function PrestacaoContas() {
               </Card>
             </TabsContent>
           </Tabs>
+
+          {/* Legenda das obrigações — referência ao final da página */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={InformationCircleIcon}
+                  strokeWidth={2}
+                  className="size-5"
+                />
+                Legenda das Obrigações
+              </CardTitle>
+              <CardDescription>
+                Compromissos do município junto ao TCE/PR —{" "}
+                {dadosAgenda.municipio}/{dadosAgenda.uf},{" "}
+                {dadosAgenda.bimestreAtual}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {tiposObrigacao.map((tipo) => (
+                  <div key={tipo.codigo} className="flex items-start gap-2">
+                    <Badge
+                      variant="outline"
+                      className="font-mono text-xs shrink-0"
+                    >
+                      {tipo.codigo}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {tipo.descricao}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
