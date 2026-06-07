@@ -71,7 +71,6 @@ import {
   Download01Icon,
   FileValidationIcon,
   FilterIcon,
-  InformationCircleIcon,
   MoneySend01Icon,
   PieChart02Icon,
   RefreshIcon,
@@ -79,16 +78,7 @@ import {
   Target01Icon,
   AlertCircleIcon,
   UserMultipleIcon,
-  BulbIcon,
-  Alert02Icon,
 } from "@hugeicons/core-free-icons";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { cn } from "@/lib/utils";
 
@@ -105,13 +95,6 @@ const formatNumber = (value: number) =>
 const formatKm = (value: number) =>
   `${new Intl.NumberFormat("pt-BR").format(value)} km`;
 
-function labelPeriodoFrotas(periodo: string) {
-  if (periodo === "3m") return "últimos três meses";
-  if (periodo === "6m") return "últimos seis meses";
-  if (periodo === "12m") return "últimos doze meses";
-  return "exercício 2024";
-}
-
 function pontuacaoSaudeFrota(
   disponibilidadePct: number,
   preventivaPct: number,
@@ -121,37 +104,6 @@ function pontuacaoSaudeFrota(
     disponibilidadePct * 0.45 + preventivaPct * 0.35 + conferenciaNfPct * 0.2,
   );
 }
-
-const alertasFrotas = [
-  {
-    tipo: "success" as const,
-    titulo: "Disponibilidade acima da meta institucional",
-    badge: "Operação",
-    descricao:
-      "A taxa de disponibilidade da frota supera os 90% definidos como referência, com baixo tempo médio de parada para manutenção corretiva.",
-  },
-  {
-    tipo: "info" as const,
-    titulo: "Eficiência energética em trajetória favorável",
-    badge: "Custo",
-    descricao:
-      "O consumo médio de 9,1 km/L está acima da meta de 8,5 km/L para frota mista, contribuindo para conter o custo operacional por quilômetro.",
-  },
-  {
-    tipo: "warning" as const,
-    titulo: "Pendências na conferência de NF-e de abastecimento",
-    badge: "Conformidade",
-    descricao:
-      "Dois lançamentos aguardam vínculo formal entre nota fiscal e leitura de hodômetro. Regularize para fechar o relatório mensal de abastecimento.",
-  },
-  {
-    tipo: "warning" as const,
-    titulo: "Órgãos com custo por km acima da média",
-    badge: "Gestão",
-    descricao:
-      "Defesa Civil e Infraestrutura concentram custo/km elevado por perfil de uso (4x4, deslocamentos emergenciais). Avalie roteirização e contratos de locação.",
-  },
-];
 
 /** Composição da frota: veículos próprios, cedidos e locados (prestação de contas / governança). */
 const composicaoPatrimonio = [
@@ -438,11 +390,7 @@ const checklistConformidade = [
   },
 ];
 
-function StatusVeiculoBadge({
-  status,
-}: {
-  status: Veiculo["status"];
-}) {
+function StatusVeiculoBadge({ status }: { status: Veiculo["status"] }) {
   const map = {
     disponivel: {
       className:
@@ -466,14 +414,16 @@ function StatusVeiculoBadge({
     },
   };
   const c = map[status];
-  return <Badge variant="outline" className={cn("font-normal", c.className)}>{c.label}</Badge>;
+  return (
+    <Badge variant="outline" className={cn("font-normal", c.className)}>
+      {c.label}
+    </Badge>
+  );
 }
 
 function PatrimonioBadge({ p }: { p: Veiculo["patrimonio"] }) {
   const labels = { proprio: "Próprio", cedido: "Cedido", locado: "Locado" };
-  return (
-    <span className="text-xs text-muted-foreground">{labels[p]}</span>
-  );
+  return <span className="text-xs text-muted-foreground">{labels[p]}</span>;
 }
 
 /** Faixa empilhada — visão rápida da composição patrimonial (órgãos públicos). */
@@ -501,7 +451,8 @@ function ComposicaoFrotaStrip() {
               className="size-2.5 shrink-0 rounded-sm"
               style={{ background: seg.fill }}
             />
-            {seg.tipo}: <strong className="text-foreground">{seg.quantidade}</strong>
+            {seg.tipo}:{" "}
+            <strong className="text-foreground">{seg.quantidade}</strong>
           </span>
         ))}
       </div>
@@ -519,12 +470,20 @@ function IndiceSaudeFrota({
   preventivaPct: number;
   conferenciaNfPct: number;
 }) {
-  const score = pontuacaoSaudeFrota(disponibilidadePct, preventivaPct, conferenciaNfPct);
+  const score = pontuacaoSaudeFrota(
+    disponibilidadePct,
+    preventivaPct,
+    conferenciaNfPct,
+  );
   return (
     <Card className="border-dashed">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-base">
-          <HugeiconsIcon icon={Target01Icon} strokeWidth={2} className="size-5 text-primary" />
+          <HugeiconsIcon
+            icon={Target01Icon}
+            strokeWidth={2}
+            className="size-5 text-primary"
+          />
           Índice de saúde da frota
         </CardTitle>
         <CardDescription>
@@ -534,15 +493,21 @@ function IndiceSaudeFrota({
       <CardContent className="space-y-4">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-4xl font-bold tabular-nums text-foreground">{score}</p>
+            <p className="text-4xl font-bold tabular-nums text-foreground">
+              {score}
+            </p>
             <p className="text-xs text-muted-foreground">de 100 pontos</p>
           </div>
           <Badge
             variant="secondary"
             className={cn(
-              score >= 85 && "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100",
-              score >= 70 && score < 85 && "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-100",
-              score < 70 && "bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-100",
+              score >= 85 &&
+                "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100",
+              score >= 70 &&
+                score < 85 &&
+                "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-100",
+              score < 70 &&
+                "bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-100",
             )}
           >
             {score >= 85 ? "Excelente" : score >= 70 ? "Atenção" : "Crítico"}
@@ -551,18 +516,33 @@ function IndiceSaudeFrota({
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">Disponibilidade</p>
-            <Progress value={disponibilidadePct} className="h-2 [&>div]:bg-emerald-500" />
-            <p className="text-xs font-medium tabular-nums">{disponibilidadePct}%</p>
+            <Progress
+              value={disponibilidadePct}
+              className="h-2 [&>div]:bg-emerald-500"
+            />
+            <p className="text-xs font-medium tabular-nums">
+              {disponibilidadePct}%
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">OS preventivas / total</p>
-            <Progress value={preventivaPct} className="h-2 [&>div]:bg-emerald-500" />
+            <p className="text-xs text-muted-foreground">
+              OS preventivas / total
+            </p>
+            <Progress
+              value={preventivaPct}
+              className="h-2 [&>div]:bg-emerald-500"
+            />
             <p className="text-xs font-medium tabular-nums">{preventivaPct}%</p>
           </div>
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">NF conferidas</p>
-            <Progress value={conferenciaNfPct} className="h-2 [&>div]:bg-emerald-500" />
-            <p className="text-xs font-medium tabular-nums">{conferenciaNfPct}%</p>
+            <Progress
+              value={conferenciaNfPct}
+              className="h-2 [&>div]:bg-emerald-500"
+            />
+            <p className="text-xs font-medium tabular-nums">
+              {conferenciaNfPct}%
+            </p>
           </div>
         </div>
       </CardContent>
@@ -572,11 +552,15 @@ function IndiceSaudeFrota({
 
 export function Frotas() {
   const [periodo, setPeriodo] = React.useState("12m");
-  const [secretariaFiltro, setSecretariaFiltro] = React.useState<string>("todas");
+  const [secretariaFiltro, setSecretariaFiltro] =
+    React.useState<string>("todas");
   const [buscaPlaca, setBuscaPlaca] = React.useState("");
   const [somenteProprios, setSomenteProprios] = React.useState(false);
 
-  const totaisPatrimonio = composicaoPatrimonio.reduce((s, x) => s + x.quantidade, 0);
+  const totaisPatrimonio = composicaoPatrimonio.reduce(
+    (s, x) => s + x.quantidade,
+    0,
+  );
   const disponiveisPainel = frotaResumo.disponiveis;
   const emManutencaoPainel = frotaResumo.manutencao;
   const disponibilidadePct =
@@ -588,31 +572,33 @@ export function Frotas() {
   const sinistralidade = 1.8;
   const ytdCombustivel = 1_742_000;
   const conferenciaNfPct = 94;
-  const indiceSaudeFrota = pontuacaoSaudeFrota(
-    disponibilidadePct,
-    pctPreventiva,
-    conferenciaNfPct,
-  );
 
   const veiculosFiltrados = veiculos.filter((v) => {
-    if (secretariaFiltro !== "todas" && v.secretaria !== secretariaFiltro) return false;
+    if (secretariaFiltro !== "todas" && v.secretaria !== secretariaFiltro)
+      return false;
     if (somenteProprios && v.patrimonio !== "proprio") return false;
     if (buscaPlaca.trim()) {
       const q = buscaPlaca.trim().toUpperCase();
-      if (!v.placa.includes(q) && !v.tipo.toUpperCase().includes(q)) return false;
+      if (!v.placa.includes(q) && !v.tipo.toUpperCase().includes(q))
+        return false;
     }
     return true;
   });
 
-  const secretarias = Array.from(new Set(veiculos.map((v) => v.secretaria))).sort();
+  const secretarias = Array.from(
+    new Set(veiculos.map((v) => v.secretaria)),
+  ).sort();
 
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Gestão de frotas</h2>
+          <h2 className="text-2xl font-bold text-foreground">
+            Gestão de frotas
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Indicadores de custo, eficiência, manutenção e conformidade para veículos oficiais
+            Indicadores de custo, eficiência, manutenção e conformidade para
+            veículos oficiais
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -641,15 +627,33 @@ export function Frotas() {
             </SelectContent>
           </Select>
           <Button variant="outline" size="sm" type="button">
-            <HugeiconsIcon icon={FilterIcon} strokeWidth={2} className="mr-2 size-4" />
+            <HugeiconsIcon
+              icon={FilterIcon}
+              strokeWidth={2}
+              className="mr-2 size-4"
+            />
             Filtros
           </Button>
           <Button variant="outline" size="sm" type="button">
-            <HugeiconsIcon icon={Download01Icon} strokeWidth={2} className="mr-2 size-4" />
+            <HugeiconsIcon
+              icon={Download01Icon}
+              strokeWidth={2}
+              className="mr-2 size-4"
+            />
             Exportar
           </Button>
-          <Button variant="outline" size="icon" className="size-9" type="button" aria-label="Atualizar">
-            <HugeiconsIcon icon={RefreshIcon} strokeWidth={2} className="size-4" />
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9"
+            type="button"
+            aria-label="Atualizar"
+          >
+            <HugeiconsIcon
+              icon={RefreshIcon}
+              strokeWidth={2}
+              className="size-4"
+            />
           </Button>
         </div>
       </div>
@@ -663,11 +667,15 @@ export function Frotas() {
           footer={
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">
-                {formatNumber(disponiveisPainel)} disponíveis · {formatNumber(emManutencaoPainel)} em
-                manutenção
+                {formatNumber(disponiveisPainel)} disponíveis ·{" "}
+                {formatNumber(emManutencaoPainel)} em manutenção
               </p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} className="size-3 text-emerald-600" />
+                <HugeiconsIcon
+                  icon={ArrowUp01Icon}
+                  strokeWidth={2}
+                  className="size-3 text-emerald-600"
+                />
                 <span className="text-emerald-600">+3 unidades</span>
                 <span>vs. ano anterior</span>
               </div>
@@ -681,7 +689,9 @@ export function Frotas() {
           borderColor="border-l-emerald-500"
           footer={
             <div className="space-y-2">
-              <p className="text-xs text-muted-foreground">Meta institucional: 90%</p>
+              <p className="text-xs text-muted-foreground">
+                Meta institucional: 90%
+              </p>
               <Progress
                 value={Math.min(disponibilidadePct, 100)}
                 className="h-1.5 [&>div]:bg-emerald-500"
@@ -696,9 +706,15 @@ export function Frotas() {
           borderColor="border-l-violet-500"
           footer={
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Meta de eficiência: 8,5 km/L (frota mista)</p>
+              <p className="text-xs text-muted-foreground">
+                Meta de eficiência: 8,5 km/L (frota mista)
+              </p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} className="size-3 text-emerald-600" />
+                <HugeiconsIcon
+                  icon={ArrowUp01Icon}
+                  strokeWidth={2}
+                  className="size-3 text-emerald-600"
+                />
                 <span className="text-emerald-600">+0,3 km/L</span>
                 <span>vs. trimestre anterior (quanto maior, melhor)</span>
               </div>
@@ -712,9 +728,15 @@ export function Frotas() {
           borderColor="border-l-amber-500"
           footer={
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Combustível + manutenção + pneus (média)</p>
+              <p className="text-xs text-muted-foreground">
+                Combustível + manutenção + pneus (média)
+              </p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} className="size-3 text-emerald-600" />
+                <HugeiconsIcon
+                  icon={ArrowDown01Icon}
+                  strokeWidth={2}
+                  className="size-3 text-emerald-600"
+                />
                 <span className="text-emerald-600">−3,1%</span>
                 <span>vs. mês anterior</span>
               </div>
@@ -728,8 +750,13 @@ export function Frotas() {
           borderColor="border-l-cyan-500"
           footer={
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Horas em serviço / horas úteis da frota</p>
-              <Progress value={utilizacaoHorasPct} className="h-1.5 [&>div]:bg-emerald-500" />
+              <p className="text-xs text-muted-foreground">
+                Horas em serviço / horas úteis da frota
+              </p>
+              <Progress
+                value={utilizacaoHorasPct}
+                className="h-1.5 [&>div]:bg-emerald-500"
+              />
             </div>
           }
         />
@@ -740,9 +767,15 @@ export function Frotas() {
           borderColor="border-l-teal-500"
           footer={
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Das ordens de serviço no período</p>
+              <p className="text-xs text-muted-foreground">
+                Das ordens de serviço no período
+              </p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} className="size-3 text-emerald-600" />
+                <HugeiconsIcon
+                  icon={ArrowUp01Icon}
+                  strokeWidth={2}
+                  className="size-3 text-emerald-600"
+                />
                 <span className="text-emerald-600">+4 pts</span>
                 <span>vs. semestre anterior</span>
               </div>
@@ -756,9 +789,15 @@ export function Frotas() {
           borderColor="border-l-red-400"
           footer={
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Eventos com vítima ou dano relevante</p>
+              <p className="text-xs text-muted-foreground">
+                Eventos com vítima ou dano relevante
+              </p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} className="size-3 text-emerald-600" />
+                <HugeiconsIcon
+                  icon={ArrowDown01Icon}
+                  strokeWidth={2}
+                  className="size-3 text-emerald-600"
+                />
                 <span className="text-emerald-600">−0,4</span>
                 <span>vs. ano anterior (quanto menor, melhor)</span>
               </div>
@@ -772,9 +811,15 @@ export function Frotas() {
           borderColor="border-l-orange-500"
           footer={
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Inclui postos credenciados e cartão frota</p>
+              <p className="text-xs text-muted-foreground">
+                Inclui postos credenciados e cartão frota
+              </p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} className="size-3 text-amber-600" />
+                <HugeiconsIcon
+                  icon={ArrowUp01Icon}
+                  strokeWidth={2}
+                  className="size-3 text-amber-600"
+                />
                 <span className="text-amber-600">+5,8%</span>
                 <span>vs. mesmo período (km rodados +6,2%)</span>
               </div>
@@ -787,18 +832,25 @@ export function Frotas() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-              <HugeiconsIcon icon={Building04Icon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={Building04Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
               Composição patrimonial da frota
             </CardTitle>
             <CardDescription>
-              Distribuição entre veículos próprios, cedidos e locados — base para relatórios e controle
-              patrimonial
+              Distribuição entre veículos próprios, cedidos e locados — base
+              para relatórios e controle patrimonial
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6 md:grid-cols-2">
             <ComposicaoFrotaStrip />
             <div className="min-h-[200px]">
-              <ChartContainer config={chartConfigComposicao} className="mx-auto aspect-square max-h-[220px] w-full">
+              <ChartContainer
+                config={chartConfigComposicao}
+                className="mx-auto aspect-square max-h-[220px] w-full"
+              >
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <ChartTooltip content={<ChartTooltipContent hideLabel />} />
@@ -834,21 +886,40 @@ export function Frotas() {
       </div>
 
       <Tabs defaultValue="operacao" className="w-full">
-        <TabsList variant="line" className="w-full flex-wrap justify-start gap-1">
+        <TabsList
+          variant="line"
+          className="w-full flex-wrap justify-start gap-1"
+        >
           <TabsTrigger value="operacao" className="gap-1.5">
-            <HugeiconsIcon icon={ChartLineData02Icon} strokeWidth={2} className="size-4" />
+            <HugeiconsIcon
+              icon={ChartLineData02Icon}
+              strokeWidth={2}
+              className="size-4"
+            />
             Operação e custos
           </TabsTrigger>
           <TabsTrigger value="veiculos" className="gap-1.5">
-            <HugeiconsIcon icon={DeliveryTruck01Icon} strokeWidth={2} className="size-4" />
+            <HugeiconsIcon
+              icon={DeliveryTruck01Icon}
+              strokeWidth={2}
+              className="size-4"
+            />
             Veículos
           </TabsTrigger>
           <TabsTrigger value="manutencao" className="gap-1.5">
-            <HugeiconsIcon icon={ConstructionIcon} strokeWidth={2} className="size-4" />
+            <HugeiconsIcon
+              icon={ConstructionIcon}
+              strokeWidth={2}
+              className="size-4"
+            />
             Manutenção e segurança
           </TabsTrigger>
           <TabsTrigger value="conformidade" className="gap-1.5">
-            <HugeiconsIcon icon={FileValidationIcon} strokeWidth={2} className="size-4" />
+            <HugeiconsIcon
+              icon={FileValidationIcon}
+              strokeWidth={2}
+              className="size-4"
+            />
             Conformidade
           </TabsTrigger>
         </TabsList>
@@ -858,19 +929,38 @@ export function Frotas() {
             <Card>
               <CardHeader>
                 <CardTitle>Custo de combustível e km rodados</CardTitle>
-                <CardDescription>Evolução mensal — correlacionar litros, valores e utilização</CardDescription>
+                <CardDescription>
+                  Evolução mensal — correlacionar litros, valores e utilização
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfigCusto}>
                   <ResponsiveContainer width="100%" height={300}>
                     <AreaChart data={custoCombustivelMensal}>
                       <defs>
-                        <linearGradient id="fillValorFrotas" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="var(--chart-1)" stopOpacity={0.4} />
-                          <stop offset="100%" stopColor="var(--chart-1)" stopOpacity={0} />
+                        <linearGradient
+                          id="fillValorFrotas"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="var(--chart-1)"
+                            stopOpacity={0.4}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="var(--chart-1)"
+                            stopOpacity={0}
+                          />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        className="stroke-border/50"
+                      />
                       <XAxis dataKey="mes" tickLine={false} axisLine={false} />
                       <YAxis
                         yAxisId="left"
@@ -890,8 +980,13 @@ export function Frotas() {
                           <ChartTooltipContent
                             formatter={(value, name) => {
                               const n = String(name);
-                              if (n === "valor") return [formatCurrency(Number(value)), "Combustível"];
-                              if (n === "km") return [formatKm(Number(value)), "Km rodados"];
+                              if (n === "valor")
+                                return [
+                                  formatCurrency(Number(value)),
+                                  "Combustível",
+                                ];
+                              if (n === "km")
+                                return [formatKm(Number(value)), "Km rodados"];
                               return [value, name];
                             }}
                           />
@@ -911,7 +1006,11 @@ export function Frotas() {
                         dataKey="km"
                         stroke="var(--chart-2)"
                         strokeWidth={2}
-                        dot={{ r: 3, fill: "var(--chart-2)", stroke: "var(--background)" }}
+                        dot={{
+                          r: 3,
+                          fill: "var(--chart-2)",
+                          stroke: "var(--background)",
+                        }}
                       />
                     </AreaChart>
                   </ResponsiveContainer>
@@ -922,14 +1021,29 @@ export function Frotas() {
             <Card>
               <CardHeader>
                 <CardTitle>Utilização por secretaria</CardTitle>
-                <CardDescription>Percentual de uso programado x realizado e custo médio por km</CardDescription>
+                <CardDescription>
+                  Percentual de uso programado x realizado e custo médio por km
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfigUtil}>
                   <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={utilizacaoPorSecretaria} layout="vertical" margin={{ left: 8 }}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
-                      <XAxis type="number" domain={[0, 100]} tickLine={false} axisLine={false} unit="%" />
+                    <BarChart
+                      data={utilizacaoPorSecretaria}
+                      layout="vertical"
+                      margin={{ left: 8 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        className="stroke-border/50"
+                      />
+                      <XAxis
+                        type="number"
+                        domain={[0, 100]}
+                        tickLine={false}
+                        axisLine={false}
+                        unit="%"
+                      />
                       <YAxis
                         type="category"
                         dataKey="secretaria"
@@ -942,7 +1056,8 @@ export function Frotas() {
                         content={
                           <ChartTooltipContent
                             formatter={(value, name, item) => {
-                              const payload = item.payload as (typeof utilizacaoPorSecretaria)[0];
+                              const payload =
+                                item.payload as (typeof utilizacaoPorSecretaria)[0];
                               if (name === "utilizacaoPct") {
                                 return [
                                   `${value}% (custo/km ${formatCurrency(payload.custoKm)})`,
@@ -970,11 +1085,16 @@ export function Frotas() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <HugeiconsIcon icon={SecurityCheckIcon} strokeWidth={2} className="size-5" />
+                <HugeiconsIcon
+                  icon={SecurityCheckIcon}
+                  strokeWidth={2}
+                  className="size-5"
+                />
                 Últimos abastecimentos registrados
               </CardTitle>
               <CardDescription>
-                Hodômetro, NF-e e posto credenciado — rastreabilidade para auditoria
+                Hodômetro, NF-e e posto credenciado — rastreabilidade para
+                auditoria
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -994,19 +1114,31 @@ export function Frotas() {
                   <TableBody>
                     {abastecimentos.map((a, i) => (
                       <TableRow key={i}>
-                        <TableCell className="whitespace-nowrap font-medium">{a.data}</TableCell>
+                        <TableCell className="whitespace-nowrap font-medium">
+                          {a.data}
+                        </TableCell>
                         <TableCell>
                           <Badge variant="outline" className="font-mono">
                             {a.placa}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">{a.combustivel}</TableCell>
-                        <TableCell className="text-right tabular-nums">{a.litros} L</TableCell>
-                        <TableCell className="text-right tabular-nums">{formatCurrency(a.valor)}</TableCell>
-                        <TableCell className="text-right tabular-nums">{formatNumber(a.hodometro)}</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {a.combustivel}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {a.litros} L
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {formatCurrency(a.valor)}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {formatNumber(a.hodometro)}
+                        </TableCell>
                         <TableCell>
                           <span className="text-sm">{a.posto}</span>
-                          <p className="text-xs text-muted-foreground">{a.nf}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {a.nf}
+                          </p>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -1041,7 +1173,10 @@ export function Frotas() {
                   />
                 </div>
                 <div className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2">
-                  <Label htmlFor="switch-proprios" className="text-xs font-normal leading-snug">
+                  <Label
+                    htmlFor="switch-proprios"
+                    className="text-xs font-normal leading-snug"
+                  >
                     Somente veículos próprios
                   </Label>
                   <Switch
@@ -1064,21 +1199,28 @@ export function Frotas() {
                       <TableHead>Status</TableHead>
                       <TableHead className="text-right">Km atual</TableHead>
                       <TableHead className="text-right">Km/L (12 m)</TableHead>
-                      <TableHead className="text-right">Próx. revisão</TableHead>
+                      <TableHead className="text-right">
+                        Próx. revisão
+                      </TableHead>
                       <TableHead>Condutor / responsável</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {veiculosFiltrados.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
+                        <TableCell
+                          colSpan={9}
+                          className="h-24 text-center text-muted-foreground"
+                        >
                           Nenhum veículo com os filtros atuais.
                         </TableCell>
                       </TableRow>
                     ) : (
                       veiculosFiltrados.map((v) => (
                         <TableRow key={v.placa}>
-                          <TableCell className="font-mono font-medium">{v.placa}</TableCell>
+                          <TableCell className="font-mono font-medium">
+                            {v.placa}
+                          </TableCell>
                           <TableCell>{v.tipo}</TableCell>
                           <TableCell>{v.secretaria}</TableCell>
                           <TableCell>
@@ -1087,8 +1229,12 @@ export function Frotas() {
                           <TableCell>
                             <StatusVeiculoBadge status={v.status} />
                           </TableCell>
-                          <TableCell className="text-right tabular-nums">{formatNumber(v.kmAtual)}</TableCell>
-                          <TableCell className="text-right tabular-nums">{v.kmL12m.toFixed(1)}</TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {formatNumber(v.kmAtual)}
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {v.kmL12m.toFixed(1)}
+                          </TableCell>
                           <TableCell className="text-right tabular-nums text-muted-foreground">
                             {formatNumber(v.proximaRevisaoKm)}
                           </TableCell>
@@ -1111,15 +1257,23 @@ export function Frotas() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <HugeiconsIcon icon={PieChart02Icon} strokeWidth={2} className="size-5" />
+                  <HugeiconsIcon
+                    icon={PieChart02Icon}
+                    strokeWidth={2}
+                    className="size-5"
+                  />
                   Preventiva × corretiva
                 </CardTitle>
                 <CardDescription>
-                  Equilíbrio recomendado: maior peso em preventiva para reduzir paradas e custo total
+                  Equilíbrio recomendado: maior peso em preventiva para reduzir
+                  paradas e custo total
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ChartContainer config={chartConfigManut} className="mx-auto aspect-auto h-[280px] w-full">
+                <ChartContainer
+                  config={chartConfigManut}
+                  className="mx-auto aspect-auto h-[280px] w-full"
+                >
                   <PieChart>
                     <ChartTooltip
                       content={
@@ -1163,38 +1317,65 @@ export function Frotas() {
             <Card>
               <CardHeader>
                 <CardTitle>Indicadores de segurança viária</CardTitle>
-                <CardDescription>Consolidado do período selecionado (dados ilustrativos)</CardDescription>
+                <CardDescription>
+                  Consolidado do período selecionado (dados ilustrativos)
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-xl border bg-card p-4">
-                    <p className="text-xs text-muted-foreground">Treinamentos defensivos</p>
+                    <p className="text-xs text-muted-foreground">
+                      Treinamentos defensivos
+                    </p>
                     <p className="text-2xl font-bold tabular-nums">186</p>
-                    <p className="text-xs text-muted-foreground">condutores atualizados</p>
+                    <p className="text-xs text-muted-foreground">
+                      condutores atualizados
+                    </p>
                   </div>
                   <div className="rounded-xl border bg-card p-4">
-                    <p className="text-xs text-muted-foreground">Infrações gravíssimas</p>
-                    <p className="text-2xl font-bold tabular-nums text-amber-700 dark:text-amber-400">7</p>
-                    <p className="text-xs text-muted-foreground">em análise disciplinar</p>
+                    <p className="text-xs text-muted-foreground">
+                      Infrações gravíssimas
+                    </p>
+                    <p className="text-2xl font-bold tabular-nums text-amber-700 dark:text-amber-400">
+                      7
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      em análise disciplinar
+                    </p>
                   </div>
                   <div className="rounded-xl border bg-card p-4">
-                    <p className="text-xs text-muted-foreground">Dias médios parados (OS)</p>
+                    <p className="text-xs text-muted-foreground">
+                      Dias médios parados (OS)
+                    </p>
                     <p className="text-2xl font-bold tabular-nums">4,2</p>
-                    <p className="text-xs text-muted-foreground">após abertura</p>
+                    <p className="text-xs text-muted-foreground">
+                      após abertura
+                    </p>
                   </div>
                   <div className="rounded-xl border bg-card p-4">
-                    <p className="text-xs text-muted-foreground">Check-list pré-viagem</p>
-                    <p className="text-2xl font-bold tabular-nums text-emerald-600">91%</p>
-                    <p className="text-xs text-muted-foreground">preenchimento no app frota</p>
+                    <p className="text-xs text-muted-foreground">
+                      Check-list pré-viagem
+                    </p>
+                    <p className="text-2xl font-bold tabular-nums text-emerald-600">
+                      91%
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      preenchimento no app frota
+                    </p>
                   </div>
                 </div>
                 <Separator />
                 <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <HugeiconsIcon icon={UserMultipleIcon} strokeWidth={2} className="mt-0.5 size-4 shrink-0" />
+                  <HugeiconsIcon
+                    icon={UserMultipleIcon}
+                    strokeWidth={2}
+                    className="mt-0.5 size-4 shrink-0"
+                  />
                   <p>
-                    Programas de <strong>capacitação</strong> e controle de <strong>infrações</strong> reduzem
-                    sinistralidade e custos com terceiros — alinhado a modelos de gestão por indicadores em
-                    frotas públicas.
+                    Programas de <strong>capacitação</strong> e controle de{" "}
+                    <strong>infrações</strong> reduzem sinistralidade e custos
+                    com terceiros — alinhado a modelos de gestão por indicadores
+                    em frotas públicas.
                   </p>
                 </div>
               </CardContent>
@@ -1204,7 +1385,9 @@ export function Frotas() {
           <Card>
             <CardHeader>
               <CardTitle>Ordens de serviço em andamento e recentes</CardTitle>
-              <CardDescription>Oficina credenciada, tipo de intervenção e situação</CardDescription>
+              <CardDescription>
+                Oficina credenciada, tipo de intervenção e situação
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -1222,15 +1405,25 @@ export function Frotas() {
                 <TableBody>
                   {ordensServico.map((o) => (
                     <TableRow key={o.os}>
-                      <TableCell className="font-mono text-sm">{o.os}</TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {o.os}
+                      </TableCell>
                       <TableCell className="font-mono">{o.placa}</TableCell>
                       <TableCell>
-                        <Badge variant={o.tipo === "Preventiva" ? "secondary" : "outline"}>{o.tipo}</Badge>
+                        <Badge
+                          variant={
+                            o.tipo === "Preventiva" ? "secondary" : "outline"
+                          }
+                        >
+                          {o.tipo}
+                        </Badge>
                       </TableCell>
                       <TableCell className="max-w-[200px] text-sm text-muted-foreground">
                         {o.descricao}
                       </TableCell>
-                      <TableCell className="text-right tabular-nums">{formatCurrency(o.valor)}</TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {formatCurrency(o.valor)}
+                      </TableCell>
                       <TableCell>
                         <span className="text-xs capitalize text-muted-foreground">
                           {o.status.replace(/_/g, " ")}
@@ -1250,11 +1443,16 @@ export function Frotas() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} className="size-5" />
+                  <HugeiconsIcon
+                    icon={Calendar01Icon}
+                    strokeWidth={2}
+                    className="size-5"
+                  />
                   Checklist de governança
                 </CardTitle>
                 <CardDescription>
-                  Itens frequentemente exigidos em auditorias e cartilhas de controle de frota municipal
+                  Itens frequentemente exigidos em auditorias e cartilhas de
+                  controle de frota municipal
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -1263,17 +1461,26 @@ export function Frotas() {
                     key={c.item}
                     className={cn(
                       "flex gap-3 rounded-lg border p-3",
-                      c.ok ? "border-border/80 bg-muted/20" : "border-amber-500/40 bg-amber-500/5",
+                      c.ok
+                        ? "border-border/80 bg-muted/20"
+                        : "border-amber-500/40 bg-amber-500/5",
                     )}
                   >
                     <HugeiconsIcon
                       icon={c.ok ? CheckmarkCircle02Icon : AlertCircleIcon}
                       strokeWidth={2}
-                      className={cn("mt-0.5 size-5 shrink-0", c.ok ? "text-emerald-600" : "text-amber-600")}
+                      className={cn(
+                        "mt-0.5 size-5 shrink-0",
+                        c.ok ? "text-emerald-600" : "text-amber-600",
+                      )}
                     />
                     <div className="min-w-0 flex-1 space-y-0.5">
-                      <p className="text-sm font-medium leading-snug">{c.item}</p>
-                      <p className="text-xs text-muted-foreground">{c.detalhe}</p>
+                      <p className="text-sm font-medium leading-snug">
+                        {c.item}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {c.detalhe}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -1283,26 +1490,39 @@ export function Frotas() {
             <Card>
               <CardHeader>
                 <CardTitle>Próximas ações sugeridas</CardTitle>
-                <CardDescription>Priorização com base nos gargalos do painel</CardDescription>
+                <CardDescription>
+                  Priorização com base nos gargalos do painel
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="space-y-3 text-sm text-muted-foreground">
                   <li className="flex gap-2">
                     <span className="font-semibold text-foreground">1.</span>
-                    Concluir conferência das NF-e pendentes e amarrar ao hodômetro no sistema.
+                    Concluir conferência das NF-e pendentes e amarrar ao
+                    hodômetro no sistema.
                   </li>
                   <li className="flex gap-2">
                     <span className="font-semibold text-foreground">2.</span>
-                    Revisar contratos de locação com custo/km acima da média (ex.: Def. Civil).
+                    Revisar contratos de locação com custo/km acima da média
+                    (ex.: Def. Civil).
                   </li>
                   <li className="flex gap-2">
                     <span className="font-semibold text-foreground">3.</span>
-                    Antecipar preventivas da frota SEMSA com km acima de 125 mil.
+                    Antecipar preventivas da frota SEMSA com km acima de 125
+                    mil.
                   </li>
                 </ul>
                 <Separator />
-                <Button variant="outline" className="w-full sm:w-auto" type="button">
-                  <HugeiconsIcon icon={Download01Icon} strokeWidth={2} className="mr-2 size-4" />
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  type="button"
+                >
+                  <HugeiconsIcon
+                    icon={Download01Icon}
+                    strokeWidth={2}
+                    className="mr-2 size-4"
+                  />
                   Gerar pacote para prestação de contas (PDF)
                 </Button>
               </CardContent>
@@ -1310,356 +1530,6 @@ export function Frotas() {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* ======================================================= */}
-      {/* SEPARADOR ANÁLISES                                       */}
-      {/* ======================================================= */}
-      <div className="relative py-4">
-        <Separator />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-muted px-4 dark:bg-background">
-          <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            Análises
-          </span>
-        </div>
-      </div>
-
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon icon={Target01Icon} strokeWidth={2} className="size-5" />
-              Resumo analítico
-            </CardTitle>
-            <CardDescription>
-              Indicadores consolidados da gestão de frotas municipais
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Disponibilidade da frota</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-green-600 dark:text-green-500">
-                    {disponibilidadePct}%
-                  </span>
-                </div>
-                <Progress
-                  value={Math.min(disponibilidadePct, 100)}
-                  className="h-2 [&>div]:bg-green-500"
-                />
-                <p className="text-xs text-muted-foreground">Meta: 90% — frota de {formatNumber(frotaResumo.total)} veículos</p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Custo operacional / km</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-green-600 dark:text-green-500">
-                    {formatCurrency(custoPorKm)}
-                  </span>
-                </div>
-                <Progress value={72} className="h-2 [&>div]:bg-green-500" />
-                <p className="text-xs text-muted-foreground">
-                  Redução de 3,1% no mês — dentro da faixa esperada para o período
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">OS preventivas</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-green-600 dark:text-green-500">
-                    {pctPreventiva}%
-                  </span>
-                </div>
-                <Progress value={pctPreventiva} className="h-2 [&>div]:bg-green-500" />
-                <p className="text-xs text-muted-foreground">Participação das preventivas sobre o total de ordens de serviço</p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Índice de saúde da frota</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-green-600 dark:text-green-500">
-                    {indiceSaudeFrota}
-                  </span>
-                  <Badge variant="secondary" className="text-xs">
-                    / 100
-                  </Badge>
-                </div>
-                <Progress value={indiceSaudeFrota} className="h-2 [&>div]:bg-green-500" />
-                <p className="text-xs text-muted-foreground">
-                  Composto por disponibilidade, preventivas e conferência de NF-e
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-primary bg-gradient-to-br from-primary/5 via-background to-background">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
-                <HugeiconsIcon icon={BulbIcon} strokeWidth={2} className="size-5 text-primary" />
-              </div>
-              <div>
-                <CardTitle>Análise inteligente da frota</CardTitle>
-                <CardDescription>
-                  Leitura dos indicadores de custo, eficiência e conformidade
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              <p className="text-foreground leading-relaxed">
-                No período de <strong>{labelPeriodoFrotas(periodo)}</strong>, a frota municipal de{" "}
-                <strong>{formatNumber(frotaResumo.total)}</strong> veículos apresenta{" "}
-                <strong>desempenho estável</strong>: disponibilidade de{" "}
-                <strong>{disponibilidadePct}%</strong>, consumo médio de{" "}
-                <strong>{kmLMedio.toFixed(1)} km/L</strong> (acima da meta de 8,5 km/L) e custo
-                operacional de <strong>{formatCurrency(custoPorKm)}</strong> por km, em tendência de
-                melhora frente ao mês anterior. O gasto acumulado com combustível de{" "}
-                <strong>{formatCurrency(ytdCombustivel)}</strong> acompanha o aumento de{" "}
-                <strong>6,2%</strong> nos km rodados, sugerindo uso intensivo porém razoavelmente
-                eficiente em termos de consumo. A proporção de{" "}
-                <strong>{pctPreventiva}%</strong> de manutenções preventivas reforça política de
-                redução de paradas emergenciais; ainda assim, o{" "}
-                <strong>índice de sinistralidade ({sinistralidade} / 100 mil km)</strong> merece
-                monitoramento contínuo junto ao programa de direção defensiva.
-              </p>
-            </div>
-
-            <Separator />
-
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="custo-combustivel">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon icon={CoinsDollarIcon} strokeWidth={2} className="size-4 text-green-600" />
-                    <span>Custo, combustível e utilização</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={CheckmarkCircle02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-green-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Correlação custo × km:</strong> a série
-                        mensal mostra combustível e quilometragem evoluindo em conjunto, sem saltos
-                        inexplicáveis — sinal de controle razoável de abastecimento e de registro de
-                        hodômetro.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={InformationCircleIcon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-blue-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Órgãos com maior utilização:</strong>{" "}
-                        SEMSA e SEMINF concentram taxas de uso elevadas; vale cruzar com indicadores
-                        de serviço (atendimentos, obras) para validar se o padrão reflete demanda real.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={Alert02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-amber-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Locação e custo/km:</strong> unidades como
-                        Defesa Civil apresentam custo por km mais alto por perfil operacional —
-                        avaliar renovação de contratos e compartilhamento de veículos entre missões.
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="manutencao-seguranca">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon icon={ConstructionIcon} strokeWidth={2} className="size-4 text-green-600" />
-                    <span>Manutenção e segurança viária</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={CheckmarkCircle02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-green-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Peso da preventiva:</strong> com{" "}
-                        {pctPreventiva}% das OS classificadas como preventivas, a frota caminha no
-                        sentido recomendado pela literatura de gestão pública para reduzir custo total
-                        e tempo parado.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={Alert02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-amber-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Veículos em fim de ciclo:</strong> unidades
-                        com quilometragem muito alta (ex.: micro-ônibus em avaliação para baixa)
-                        elevam risco de corretivas caras — priorizar substituição ou remanejamento.
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="conformidade-docs">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon icon={FileValidationIcon} strokeWidth={2} className="size-4 text-green-600" />
-                    <span>Conformidade e prestação de contas</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={CheckmarkCircle02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-green-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Composição patrimonial:</strong> a
-                        discriminação entre próprios ({formatNumber(composicaoPatrimonio[0].quantidade)}
-                        ), cedidos ({formatNumber(composicaoPatrimonio[1].quantidade)}) e locados (
-                        {formatNumber(composicaoPatrimonio[2].quantidade)}) atende ao tipo de
-                        informação usual em relatórios e auditorias de frota.
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <HugeiconsIcon
-                        icon={Alert02Icon}
-                        strokeWidth={2}
-                        className="mt-0.5 size-4 shrink-0 text-amber-600"
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Conferência documental:</strong> com{" "}
-                        {conferenciaNfPct}% das NF conferidas, restam exceções que devem ser zeradas
-                        antes do fechamento do mês para evitar ressalvas de controle interno.
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="recomendacoes-frota">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon icon={BulbIcon} strokeWidth={2} className="size-4 text-amber-600" />
-                    <span>Recomendações prioritárias</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pl-6">
-                    <div className="rounded-lg border bg-green-50/50 p-3 dark:bg-green-950/20">
-                      <p className="mb-1 text-sm font-medium text-foreground">
-                        1. Fechar lacunas de NF-e e hodômetro
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Concluir os vínculos pendentes e publicar o relatório consolidado de
-                        abastecimento no prazo interno.
-                      </p>
-                    </div>
-                    <div className="rounded-lg border bg-amber-50/50 p-3 dark:bg-amber-950/20">
-                      <p className="mb-1 text-sm font-medium text-foreground">
-                        2. Plano de substituição para veículos críticos
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Incluir no planejamento patrimonial as unidades com OS corretivas recorrentes
-                        ou km acima do padrão de vida útil.
-                      </p>
-                    </div>
-                    <div className="rounded-lg border bg-green-50/50 p-3 dark:bg-green-950/20">
-                      <p className="mb-1 text-sm font-medium text-foreground">
-                        3. Manter metas de capacitação e check-list
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Reforçar treinamento defensivo e uso do app de check-list pré-viagem para
-                        sustentar a queda de sinistralidade.
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-
-            <Separator />
-
-            <div className="rounded-lg border bg-muted/50 p-4">
-              <div className="flex gap-3">
-                <HugeiconsIcon
-                  icon={InformationCircleIcon}
-                  strokeWidth={2}
-                  className="mt-0.5 size-5 shrink-0 text-primary"
-                />
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-foreground">Conclusão da análise</p>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    A gestão da frota municipal combina <strong>bons níveis de disponibilidade</strong>{" "}
-                    e <strong>política ativa de preventiva</strong>, com espaço para aprimorar{" "}
-                    <strong>documentação de abastecimento</strong> e <strong>enfrentar custos</strong>{" "}
-                    em órgãos de uso mais intenso ou emergencial. Com as ações sugeridas, o município
-                    reforça transparência perante auditoria e mantém trajetória de eficiência
-                    operacional.
-                  </p>
-                  <p className="mt-3 border-t pt-3 text-xs text-muted-foreground">
-                    Análise gerada em {new Date().toLocaleDateString("pt-BR")} às{" "}
-                    {new Date().toLocaleTimeString("pt-BR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}{" "}
-                    | Dados referentes a {labelPeriodoFrotas(periodo)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-foreground">Alertas e notificações</h3>
-          {alertasFrotas.map((alerta, index) => (
-            <Alert
-              key={index}
-              variant={alerta.tipo === "warning" ? "destructive" : "default"}
-            >
-              <HugeiconsIcon
-                icon={
-                  alerta.tipo === "warning"
-                    ? Alert02Icon
-                    : alerta.tipo === "success"
-                      ? CheckmarkCircle02Icon
-                      : InformationCircleIcon
-                }
-                strokeWidth={2}
-                className="size-4"
-              />
-              <AlertTitle className="flex flex-wrap items-center gap-2">
-                {alerta.titulo}
-                <Badge variant="outline" className="text-xs">
-                  {alerta.badge}
-                </Badge>
-              </AlertTitle>
-              <AlertDescription>{alerta.descricao}</AlertDescription>
-            </Alert>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
