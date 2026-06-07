@@ -3208,6 +3208,55 @@ export function Educacao() {
                   </div>
                 </AccordionContent>
               </AccordionItem>
+              <AccordionItem value="projecoes">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={ChartLineData02Icon}
+                      strokeWidth={2}
+                      className="size-4 text-violet-600"
+                    />
+                    <span>Projeções e Cenários</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pl-6">
+                    <div className="rounded-lg border bg-violet-50/50 p-3 dark:bg-violet-950/20">
+                      <p className="mb-1 text-sm font-medium text-foreground">
+                        Cenário Base — Manutenção da Trajetória
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Mantidos o ritmo atual de aprendizagem e a execução do
+                        FUNDEB, projeta-se IDEB estável e cumprimento do piso do
+                        magistério, porém sem avanço relevante nos anos finais
+                        nem na correção da distorção idade-série.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border bg-emerald-50/50 p-3 dark:bg-emerald-950/20">
+                      <p className="mb-1 text-sm font-medium text-foreground">
+                        Cenário Otimista — Reforço e Correção de Fluxo
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Com tutoria nos anos finais e turmas de aceleração, o
+                        IDEB das escolas críticas pode subir acima de 5,5 e a
+                        distorção idade-série recuar abaixo de 9%, ampliando a
+                        conectividade às 10 escolas pendentes.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border bg-amber-50/50 p-3 dark:bg-amber-950/20">
+                      <p className="mb-1 text-sm font-medium text-foreground">
+                        Cenário de Risco — Sanções e Subexecução
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Não atingidos os 30% de agricultura familiar do PNAE e
+                        persistindo a subexecução dos R$ 1,84M do FUNDEB 70%, há
+                        exposição a sanções do FNDE e à devolução de recursos
+                        vinculados à educação.
+                      </p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
 
             <Separator />

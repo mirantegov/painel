@@ -3472,6 +3472,55 @@ export function Saude() {
                   </div>
                 </AccordionContent>
               </AccordionItem>
+              <AccordionItem value="projecoes">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={ChartLineData02Icon}
+                      strokeWidth={2}
+                      className="size-4 text-violet-600"
+                    />
+                    <span>Projeções e Cenários</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 pl-6">
+                    <div className="rounded-lg border bg-violet-50/50 p-3 dark:bg-violet-950/20">
+                      <p className="mb-1 text-sm font-medium text-foreground">
+                        Cenário Base — Manutenção da Trajetória
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Mantida a cobertura ESF atual e a execução orçamentária
+                        em ritmo de 92%, projeta-se o cumprimento do mínimo
+                        constitucional (15% da receita) ao fim do exercício, com
+                        resolutividade da APS estável acima de 90%.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border bg-emerald-50/50 p-3 dark:bg-emerald-950/20">
+                      <p className="mb-1 text-sm font-medium text-foreground">
+                        Cenário Otimista — Aceleração das Especialidades
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Com mutirões em cardiologia e ortopedia e credenciamento
+                        de prestadores, a fila de espera pode recuar de 18 para
+                        12 dias e a cobertura de saúde mental ultrapassar 70%,
+                        elevando a satisfação do usuário SUS.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border bg-amber-50/50 p-3 dark:bg-amber-950/20">
+                      <p className="mb-1 text-sm font-medium text-foreground">
+                        Cenário de Risco — Desabastecimento e Subexecução
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Persistindo o risco de desabastecimento de insulina e a
+                        subexecução dos 5% restantes do orçamento, há exposição
+                        à devolução de recursos federais vinculados e à
+                        descontinuidade de tratamentos crônicos.
+                      </p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
 
             <Separator />

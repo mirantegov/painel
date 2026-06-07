@@ -1,5 +1,19 @@
 # Plano de Implementação: Seção de Análises nos Módulos Pendentes
 
+> **STATUS — CONCLUÍDO (auditoria 2026-06-07).**
+> Os 4 módulos originalmente listados como pendentes (Visão Geral, Legislativo,
+> Previdência, Saneamento) **já possuem** a seção de Análises implementada — este
+> plano está desatualizado e mantido apenas como referência histórica.
+>
+> A auditoria estrutural de 2026-06-07 identificou as únicas pendências reais
+> remanescentes, agora corrigidas:
+> - `components/saude.tsx` — accordion tinha 3 seções; adicionada a 4ª "Projeções e Cenários".
+> - `components/educacao.tsx` — idem.
+>
+> Variantes intencionais (não-defeitos): `orcamento` usa lista custom em vez de
+> accordion; `licitacoes-painel` e `audiencias-publicas` têm layout próprio
+> (painel/carousel) sem o padrão de Análises.
+
 ## Contexto
 
 Todos os módulos do dashboard possuem uma seção de **Análises** ao final da página, composta por:
