@@ -97,6 +97,10 @@ import {
   entidadeMSC,
   historicoMSC,
 } from "@/lib/demo-msc";
+import {
+  certidaoAtual,
+  historicoCertidao,
+} from "@/lib/demo-certidao";
 
 // ==========================================
 // DADOS DO CAUC
@@ -1248,6 +1252,14 @@ export function PrestacaoContas() {
               className="size-4"
             />
             MSC
+          </TabsTrigger>
+          <TabsTrigger value="certidao" className="gap-2">
+            <HugeiconsIcon
+              icon={Flag01Icon}
+              strokeWidth={2}
+              className="size-4"
+            />
+            Certidão
           </TabsTrigger>
         </TabsList>
 
@@ -2895,6 +2907,412 @@ export function PrestacaoContas() {
                                 </TableCell>
                               </TableRow>
                             ))}
+                          </TableBody>
+                        </Table>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
+              </>
+            );
+          })()}
+        </TabsContent>
+
+        {/* Tab: Certidão Liberatória — TCE/PR */}
+        <TabsContent value="certidao" className="space-y-6">
+          {(() => {
+            const isApto = certidaoAtual.status === "Apto";
+            const isVencendoEmBreve = certidaoAtual.diasRestantes <= 30;
+
+            return (
+              <>
+                {/* KPIs */}
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                  <KpiCard
+                    iconElement={
+                      <div
+                        className={`size-2 rounded-full ${isApto ? "bg-green-500" : "bg-red-500"}`}
+                      />
+                    }
+                    title="Status"
+                    value={certidaoAtual.status}
+                    borderColor={
+                      isApto ? "border-l-green-500" : "border-l-red-500"
+                    }
+                    footer={
+                      <p className="text-xs text-muted-foreground">
+                        Certidão Liberatória TCE/PR
+                      </p>
+                    }
+                  />
+
+                  <KpiCard
+                    icon={Calendar01Icon}
+                    title="Válida até"
+                    value={certidaoAtual.validade}
+                    borderColor={
+                      isVencendoEmBreve
+                        ? "border-l-amber-500"
+                        : "border-l-green-500"
+                    }
+                    footer={
+                      <p
+                        className={`text-xs font-medium ${isVencendoEmBreve ? "text-amber-600" : "text-green-600"}`}
+                      >
+                        {isVencendoEmBreve
+                          ? `Vence em ${certidaoAtual.diasRestantes} dias`
+                          : "Dentro da validade"}
+                      </p>
+                    }
+                  />
+
+                  <KpiCard
+                    icon={Clock01Icon}
+                    title="Dias restantes"
+                    value={certidaoAtual.diasRestantes}
+                    borderColor={
+                      isVencendoEmBreve
+                        ? "border-l-amber-500"
+                        : "border-l-green-500"
+                    }
+                    footer={
+                      <p className="text-xs text-muted-foreground">
+                        Emitida em {certidaoAtual.emissao}
+                      </p>
+                    }
+                  />
+
+                  <KpiCard
+                    icon={Building01Icon}
+                    title="Emissão"
+                    value={certidaoAtual.emissao}
+                    borderColor="border-l-blue-500"
+                    footer={
+                      <p className="text-xs text-muted-foreground">
+                        Última certidão emitida
+                      </p>
+                    }
+                  />
+
+                  <KpiCard
+                    icon={SecurityCheckIcon}
+                    title="Cód. Controle"
+                    value={certidaoAtual.codigoControle}
+                    borderColor="border-l-purple-500"
+                    footer={
+                      <p className="text-xs text-muted-foreground">
+                        Autenticável em TCE.PR.GOV.BR
+                      </p>
+                    }
+                  />
+                </div>
+
+                {/* Alerta de vencimento próximo */}
+                {isVencendoEmBreve && isApto && (
+                  <Alert className="border-amber-500 bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200">
+                    <HugeiconsIcon
+                      icon={Alert02Icon}
+                      strokeWidth={2}
+                      className="size-4 text-amber-600"
+                    />
+                    <AlertTitle>Certidão vence em breve</AlertTitle>
+                    <AlertDescription>
+                      A Certidão Liberatória vence em{" "}
+                      {certidaoAtual.diasRestantes} dias ({certidaoAtual.validade}
+                      ). Solicite a renovação no portal do TCE/PR antes do
+                      vencimento para evitar restrições.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Sub-tabs */}
+                <Tabs defaultValue="certidao-doc" className="space-y-4">
+                  <TabsList>
+                    <TabsTrigger value="certidao-doc" className="gap-2">
+                      <HugeiconsIcon
+                        icon={Flag01Icon}
+                        strokeWidth={2}
+                        className="size-4"
+                      />
+                      Certidão
+                    </TabsTrigger>
+                    <TabsTrigger value="historico-cert" className="gap-2">
+                      <HugeiconsIcon
+                        icon={ChartLineData02Icon}
+                        strokeWidth={2}
+                        className="size-4"
+                      />
+                      Histórico
+                    </TabsTrigger>
+                  </TabsList>
+
+                  {/* Sub-tab: Certidão (documento) */}
+                  <TabsContent value="certidao-doc" className="space-y-4">
+                    {/* Cabeçalho da leitura oficial — replica layout da UI TCE */}
+                    <Card>
+                      <CardContent className="pt-6">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                              <HugeiconsIcon
+                                icon={Building01Icon}
+                                strokeWidth={2}
+                                className="size-5 text-primary"
+                              />
+                            </div>
+                            <div>
+                              <p className="font-semibold">
+                                {certidaoAtual.municipio}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                CNPJ: {certidaoAtual.cnpj}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-xs gap-1"
+                            >
+                              CL — {certidaoAtual.sistema}
+                            </Badge>
+                            <Badge
+                              className={`text-xs ${isApto ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"} text-white`}
+                            >
+                              {certidaoAtual.status}
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Documento da certidão */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <HugeiconsIcon
+                            icon={Flag01Icon}
+                            strokeWidth={2}
+                            className="size-5"
+                          />
+                          Certidão Liberatória — TCE/PR
+                        </CardTitle>
+                        <CardDescription>
+                          {certidaoAtual.leituraOficial} — válida até{" "}
+                          {certidaoAtual.validade}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {/* Descrição do status */}
+                        <div className="rounded-md border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/30">
+                          <div className="flex items-start gap-3">
+                            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                              <HugeiconsIcon
+                                icon={CheckmarkCircle02Icon}
+                                strokeWidth={2}
+                                className="size-4 text-green-700 dark:text-green-300"
+                              />
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-green-800 dark:text-green-200">
+                                {certidaoAtual.leituraOficial}
+                              </p>
+                              <p className="mt-1 text-sm text-green-700 dark:text-green-300">
+                                {certidaoAtual.descricaoStatus}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Tabela de detalhes */}
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="w-1/3">Campo</TableHead>
+                              <TableHead>Valor</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                Município
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="text-xs">
+                                  {certidaoAtual.municipio}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                CNPJ
+                              </TableCell>
+                              <TableCell className="font-mono text-sm">
+                                {certidaoAtual.cnpj}
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                Finalidade
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                {certidaoAtual.finalidade}
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                Situação
+                              </TableCell>
+                              <TableCell>
+                                <Badge
+                                  className={`text-xs ${isApto ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"} text-white`}
+                                >
+                                  {isApto ? "Regular" : "Irregular"}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                Emissão
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="text-xs">
+                                  {certidaoAtual.emissao} às 11:14:47
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                Validade
+                              </TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant="outline"
+                                  className={`text-xs ${isVencendoEmBreve ? "border-amber-400 text-amber-700" : ""}`}
+                                >
+                                  {certidaoAtual.validade}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                Código de controle
+                              </TableCell>
+                              <TableCell className="font-mono text-sm font-semibold">
+                                {certidaoAtual.codigoControle}
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                Base legal
+                              </TableCell>
+                              <TableCell className="text-sm text-muted-foreground">
+                                {certidaoAtual.baseLegal}
+                              </TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+
+                        <Separator />
+
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <HugeiconsIcon
+                            icon={InformationCircleIcon}
+                            strokeWidth={2}
+                            className="size-4 shrink-0"
+                          />
+                          <span>
+                            Certidão autenticável em{" "}
+                            <span className="font-mono">WWW.TCE.PR.GOV.BR</span>{" "}
+                            — Dados transmitidos de forma segura. Expedida com
+                            base na Instrução Normativa 68/2012.
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  {/* Sub-tab: Histórico de certidões */}
+                  <TabsContent value="historico-cert" className="space-y-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Histórico de Certidões Emitidas</CardTitle>
+                        <CardDescription>
+                          Certidões Liberatórias emitidas pelo TCE/PR para{" "}
+                          {certidaoAtual.municipio}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Código de Controle</TableHead>
+                              <TableHead>Emissão</TableHead>
+                              <TableHead>Validade</TableHead>
+                              <TableHead>Status</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {historicoCertidao.map((cert, idx) => {
+                              const apto = cert.status === "Apto";
+                              return (
+                                <TableRow
+                                  key={cert.codigoControle}
+                                  className={
+                                    idx === 0
+                                      ? "bg-green-50/50 dark:bg-green-950/20"
+                                      : ""
+                                  }
+                                >
+                                  <TableCell className="font-mono text-sm font-semibold">
+                                    {cert.codigoControle}
+                                    {idx === 0 && (
+                                      <Badge
+                                        variant="outline"
+                                        className="ml-2 text-xs text-green-700 border-green-400"
+                                      >
+                                        Atual
+                                      </Badge>
+                                    )}
+                                  </TableCell>
+                                  <TableCell className="text-sm">
+                                    {cert.emissao}
+                                  </TableCell>
+                                  <TableCell className="text-sm">
+                                    {cert.validade}
+                                  </TableCell>
+                                  <TableCell>
+                                    {apto ? (
+                                      <div className="flex items-center gap-1.5">
+                                        <div className="flex size-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                                          <HugeiconsIcon
+                                            icon={CheckmarkCircle02Icon}
+                                            strokeWidth={2}
+                                            className="size-3 text-green-700 dark:text-green-300"
+                                          />
+                                        </div>
+                                        <span className="text-xs font-medium text-green-700 dark:text-green-400">
+                                          Apto
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center gap-1.5">
+                                        <div className="flex size-5 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
+                                          <HugeiconsIcon
+                                            icon={Cancel01Icon}
+                                            strokeWidth={2}
+                                            className="size-3 text-red-700 dark:text-red-300"
+                                          />
+                                        </div>
+                                        <span className="text-xs font-medium text-red-700 dark:text-red-400">
+                                          Inapto
+                                        </span>
+                                      </div>
+                                    )}
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
                           </TableBody>
                         </Table>
                       </CardContent>
