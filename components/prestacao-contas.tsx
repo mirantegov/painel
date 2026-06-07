@@ -1178,15 +1178,23 @@ export function PrestacaoContas() {
       </div>
 
       {/* Abas Internas */}
-      <Tabs defaultValue="cauc" className="space-y-6">
+      <Tabs defaultValue="agenda" className="space-y-6">
         <TabsList>
-          <TabsTrigger value="cauc" className="gap-2">
+          <TabsTrigger value="agenda" className="gap-2">
             <HugeiconsIcon
-              icon={SecurityCheckIcon}
+              icon={Calendar01Icon}
               strokeWidth={2}
               className="size-4"
             />
-            CAUC
+            Agenda de Obrigações
+          </TabsTrigger>
+          <TabsTrigger value="certidao" className="gap-2">
+            <HugeiconsIcon
+              icon={Flag01Icon}
+              strokeWidth={2}
+              className="size-4"
+            />
+            Certidão
           </TabsTrigger>
           <TabsTrigger value="tce" className="gap-2">
             <HugeiconsIcon
@@ -1196,13 +1204,13 @@ export function PrestacaoContas() {
             />
             Contas TCE/PR
           </TabsTrigger>
-          <TabsTrigger value="agenda" className="gap-2">
+          <TabsTrigger value="cauc" className="gap-2">
             <HugeiconsIcon
-              icon={Calendar01Icon}
+              icon={SecurityCheckIcon}
               strokeWidth={2}
               className="size-4"
             />
-            Agenda de Obrigações
+            CAUC
           </TabsTrigger>
           <TabsTrigger value="msc" className="gap-2">
             <HugeiconsIcon
@@ -1211,14 +1219,6 @@ export function PrestacaoContas() {
               className="size-4"
             />
             MSC
-          </TabsTrigger>
-          <TabsTrigger value="certidao" className="gap-2">
-            <HugeiconsIcon
-              icon={Flag01Icon}
-              strokeWidth={2}
-              className="size-4"
-            />
-            Certidão
           </TabsTrigger>
         </TabsList>
 
