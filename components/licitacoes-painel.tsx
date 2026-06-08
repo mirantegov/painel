@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LICITACOES_PAINEL } from "@/lib/demo-licitacoes-painel";
+import { useSnapshot } from "@/components/use-snapshot";
 import { cn } from "@/lib/utils";
 
 const AUTOPLAY_MS = 12_000;
@@ -74,7 +75,7 @@ export function LicitacoesPainel() {
   const [paused, setPaused] = React.useState(false);
   const [fsHint, setFsHint] = React.useState<string | null>(null);
 
-  const slides = LICITACOES_PAINEL;
+  const slides = useSnapshot("licitacoes-painel", LICITACOES_PAINEL);
   const total = slides.length;
 
   React.useEffect(() => {
