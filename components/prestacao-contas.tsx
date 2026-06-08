@@ -1240,6 +1240,7 @@ export function PrestacaoContas() {
         </TabsList>
 
         {/* Tab: CAUC */}
+        {canSee("cauc") && (
         <TabsContent value="cauc" className="space-y-6">
           {/* KPIs */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -1813,8 +1814,10 @@ export function PrestacaoContas() {
             </TabsContent>
           </Tabs>
         </TabsContent>
+        )}
 
         {/* Tab: Contas TCE/PR */}
+        {canSee("tce") && (
         <TabsContent value="tce" className="space-y-6">
           {/* KPIs TCE */}
           {(() => {
@@ -2052,8 +2055,10 @@ export function PrestacaoContas() {
             );
           })()}
         </TabsContent>
+        )}
 
         {/* Tab: Agenda de Obrigações */}
+        {canSee("agenda") && (
         <TabsContent value="agenda" className="space-y-6">
           {/* KPIs */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -2489,8 +2494,10 @@ export function PrestacaoContas() {
             </CardContent>
           </Card>
         </TabsContent>
+        )}
 
         {/* Tab: MSC — Monitor de Situação Contábil */}
+        {canSee("msc") && (
         <TabsContent value="msc" className="space-y-6">
           {/* KPIs */}
           {(() => {
@@ -2893,8 +2900,10 @@ export function PrestacaoContas() {
             );
           })()}
         </TabsContent>
+        )}
 
         {/* Tab: Certidão Liberatória — TCE/PR */}
+        {canSee("certidao") && (
         <TabsContent value="certidao" className="space-y-6">
           {(() => {
             const isApto = certidaoAtual.status === "Apto";
@@ -3299,6 +3308,7 @@ export function PrestacaoContas() {
             );
           })()}
         </TabsContent>
+        )}
       </Tabs>
 
       {/* Info do Município */}
