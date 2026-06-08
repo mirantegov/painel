@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { verifySession } from "@/lib/auth/jwt"
 
-const AUTH_COOKIE_NAME = "auth"
+const COOKIE_NAME = process.env.AUTH_COOKIE_NAME ?? "mp_session"
 const LOGIN_PATH = "/login"
 const DASHBOARD_PATH = "/"
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const isAuthenticated = request.cookies.get(AUTH_COOKIE_NAME)?.value === "1"
+  const token = request.cookies.get(COOKIE_NAME)?.value
+  const isAuthenticated = (await verifySession(token)) !== null
 
   if (pathname === DASHBOARD_PATH && !isAuthenticated) {
     return NextResponse.redirect(new URL(LOGIN_PATH, request.url))
