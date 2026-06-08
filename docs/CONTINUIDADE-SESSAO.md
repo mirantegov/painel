@@ -3,6 +3,11 @@
 > Handoff para retomar em outra sessão. Estado em 2026-06-08. Branch padrão: `main`.
 > Planos detalhados: `docs/plano-fase-backend-v2.md` e `docs/clickhouse-epico5-design.md`.
 
+## ✅ STATUS: Épico 3 FECHADO · Release v2.0.0 PUBLICADA (2026-06-08)
+Toda a fila abaixo foi concluída e mergeada. Issues fechadas: **#65** (Financeiro #73, Tributos #74, Compras #75, RH #76), **#32** (Contas Públicas #77), **#58** (docs #78: README + `ARCHITECTURE.md` + `docs/banco-de-dados.md`), **#64** (seed `mod_*`). Tag/release **`v2.0.0`** em `main`. Módulos de entrega (despesa, receita, orçamento, financeiro, tributação, compras, RH, contas públicas, painel de licitações) leem do Postgres.
+**Aberto (pós-v2.0.0):** **#33** (3.7 módulos restantes/long-tail — saúde, educação, obras, frotas, patrimônio, processos, previdência, saneamento, legislativo, assistência, defesa civil — incremental). **Próximo:** usuário detalha **Épico 4** (exportador Go→Parquet→MinIO) antes de iniciar.
+A seção "FILA RESTANTE" abaixo é histórica (já cumprida) — mantida para referência do padrão.
+
 ## Objetivo da fase
 Sair do mock e servir dados do **Supabase self-hosted (Postgres)**, multi-tenant por schema, com auth custom e ACL. Pipeline real (Go→Parquet→MinIO→ClickHouse→Postgres) e scrapers TCE/SICONFI são Épicos 4–6 (depois do v2.0.0).
 
