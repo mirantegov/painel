@@ -1,13 +1,25 @@
 # ngrok — expõe o MinIO local publicamente para testes de importação (Épico 4).
 # Pré-requisito (uma vez): ngrok config add-authtoken <SEU_TOKEN>   (conta grátis em ngrok.com)
-# Subir os 2 túneis:        ngrok start --all --config infra/ngrok.yml
 #
-# Free tier: 1 agente, múltiplos túneis. As URLs públicas saem no terminal do ngrok.
-version: "2"
+# O add-authtoken grava no config GLOBAL (~/Library/Application Support/ngrok/ngrok.yml
+# no macOS). Como --config substitui o config padrão, passe os DOIS arquivos:
+#
+#   ngrok start --all \
+#     --config "$HOME/Library/Application Support/ngrok/ngrok.yml" \
+#     --config infra/ngrok.yml
+#
+# (Linux: ~/.config/ngrok/ngrok.yml)
+#
+# IMPORTANTE — free tier dá 1 URL pública por agente: ao subir os dois túneis,
+# a URL atende a API S3 (9000), que é o que importa p/ importação. O console
+# (9001) só ganha URL própria em plano pago. Para expor SÓ o console pontualmente:
+#   ngrok http 9001
+# A URL é efêmera (muda a cada restart) salvo domínio reservado (plano pago).
+version: "3"
 tunnels:
   minio-s3:
     proto: http
-    addr: 9000 # API S3 do MinIO
+    addr: 9000 # API S3 do MinIO (prioritária)
   minio-console:
     proto: http
-    addr: 9001 # Console web do MinIO
+    addr: 9001 # Console web do MinIO (URL própria só em plano pago)
