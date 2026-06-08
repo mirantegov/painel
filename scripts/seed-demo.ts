@@ -17,6 +17,7 @@ import { FINANCEIRO_SNAPSHOT } from "../lib/demo-financeiro";
 import { TRIBUTACAO_SNAPSHOT } from "../lib/demo-tributacao";
 import { COMPRAS_SNAPSHOT } from "../lib/demo-compras";
 import { RH_SNAPSHOT } from "../lib/demo-rh";
+import { CONTAS_SNAPSHOT } from "../lib/demo-prestacao-contas";
 
 const DATABASE_URL =
   process.env.DATABASE_URL ??
@@ -308,6 +309,13 @@ async function main() {
     await client.query(
       `insert into mod_rh (entidade_id, ano, dados) values ($1, $2, $3)`,
       [entidadeId, ANO, JSON.stringify(RH_SNAPSHOT)],
+    );
+
+    // Snapshot do módulo Contas Públicas (Prestação de Contas — display).
+    await client.query(`delete from mod_prestacao_contas where ano = $1`, [ANO]);
+    await client.query(
+      `insert into mod_prestacao_contas (entidade_id, ano, dados) values ($1, $2, $3)`,
+      [entidadeId, ANO, JSON.stringify(CONTAS_SNAPSHOT)],
     );
 
     // Snapshot do Painel de Licitações (lista de licitações).
