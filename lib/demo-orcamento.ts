@@ -36,3 +36,52 @@ export const comprometimentoDespesaVsAtualizada = pctShare(despesaEmpenhada, des
 export const saldoEmpenhoDisponivelPct = pctShare(despesaAtualizado - despesaEmpenhada, despesaAtualizado)
 export const gapEstruturalLoa = receitaOrcada - despesaOrcada
 export const rigidezPessoalSobreOrcado = pctShare(despesaPessoalOrcado, despesaOrcada)
+
+/**
+ * Números-base do orçamento (entradas primitivas). É o que fica no banco
+ * (mod_orcamento.dados) e o que o componente busca por ano. Os derivados
+ * são recalculados por computeOrcamento().
+ */
+export type OrcamentoBase = {
+  receitaPrevista: number
+  receitaDeduzida: number
+  receitaAlterada: number
+  despesaOrcada: number
+  despesaSuplementado: number
+  despesaReduzido: number
+  receitaArrecadada: number
+  despesaEmpenhada: number
+  metaRealizacaoReceitaPct: number
+  despesaPessoalOrcado: number
+}
+
+export const ORCAMENTO_BASE: OrcamentoBase = {
+  receitaPrevista,
+  receitaDeduzida,
+  receitaAlterada,
+  despesaOrcada,
+  despesaSuplementado,
+  despesaReduzido,
+  receitaArrecadada,
+  despesaEmpenhada,
+  metaRealizacaoReceitaPct,
+  despesaPessoalOrcado,
+}
+
+/** Recalcula todos os valores (base + derivados) a partir de uma base. */
+export function computeOrcamento(b: OrcamentoBase) {
+  const receitaOrcada = b.receitaPrevista - b.receitaDeduzida
+  const receitaAtualizada = receitaOrcada + b.receitaAlterada
+  const despesaAtualizado = b.despesaOrcada + b.despesaSuplementado - b.despesaReduzido
+  return {
+    ...b,
+    receitaOrcada,
+    receitaAtualizada,
+    despesaAtualizado,
+    realizacaoReceitaVsAtualizada: pctShare(b.receitaArrecadada, receitaAtualizada),
+    comprometimentoDespesaVsAtualizada: pctShare(b.despesaEmpenhada, despesaAtualizado),
+    saldoEmpenhoDisponivelPct: pctShare(despesaAtualizado - b.despesaEmpenhada, despesaAtualizado),
+    gapEstruturalLoa: receitaOrcada - b.despesaOrcada,
+    rigidezPessoalSobreOrcado: pctShare(b.despesaPessoalOrcado, b.despesaOrcada),
+  }
+}
