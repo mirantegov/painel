@@ -13,6 +13,7 @@ import { Pool } from "pg";
 import { DESPESA_SNAPSHOT } from "../lib/demo-despesa";
 import { RECEITA_SNAPSHOT } from "../lib/demo-receita";
 import { LICITACOES_PAINEL } from "../lib/demo-licitacoes-painel";
+import { FINANCEIRO_SNAPSHOT } from "../lib/demo-financeiro";
 
 const DATABASE_URL =
   process.env.DATABASE_URL ??
@@ -276,6 +277,13 @@ async function main() {
     await client.query(
       `insert into mod_receita (entidade_id, ano, dados) values ($1, $2, $3)`,
       [entidadeId, ANO, JSON.stringify(RECEITA_SNAPSHOT)],
+    );
+
+    // Snapshot do módulo Financeiro (display).
+    await client.query(`delete from mod_financeiro where ano = $1`, [ANO]);
+    await client.query(
+      `insert into mod_financeiro (entidade_id, ano, dados) values ($1, $2, $3)`,
+      [entidadeId, ANO, JSON.stringify(FINANCEIRO_SNAPSHOT)],
     );
 
     // Snapshot do Painel de Licitações (lista de licitações).
