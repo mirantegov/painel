@@ -5,7 +5,7 @@
  *
  * O nome da tabela é resolvido de uma allowlist (evita SQL dinâmico inseguro).
  */
-import { query } from "@/lib/db";
+import { tenantQuery } from "@/lib/db";
 
 /** slug do módulo (igual ao id em lib/modules-config) → tabela mod_*. */
 const MODULE_TABLES: Record<string, string> = {
@@ -43,15 +43,15 @@ export async function getModuloDados<T = unknown>(
   const table = MODULE_TABLES[slug];
   if (!table) throw new Error(`Módulo desconhecido: ${slug}`);
 
-  const params: unknown[] = [municipio, ano];
-  let sql = `select dados from public.${table}
-             where municipio_id_ibge = $1 and ano = $2`;
+  // Tabela resolve no schema do tenant (search_path); nome vem da allowlist.
+  const params: unknown[] = [ano];
+  let sql = `select dados from ${table} where ano = $1`;
   if (chave !== undefined) {
     params.push(chave);
-    sql += ` and chave = $3`;
+    sql += ` and chave = $2`;
   }
   sql += ` order by mes nulls first limit 1`;
 
-  const rows = await query<{ dados: T }>(sql, params);
+  const rows = await tenantQuery<{ dados: T }>(municipio, sql, params);
   return rows[0]?.dados ?? null;
 }
