@@ -28,6 +28,8 @@ import {
 import { MODULES } from "@/lib/modules-config";
 import { useModuleVisibility } from "@/components/module-visibility-provider";
 import { SubmoduleAccessProvider } from "@/components/submodule-access";
+import { YearProvider } from "@/components/year-provider";
+import { YearSelector } from "@/components/year-selector";
 
 const SCROLL_DELAY_MS = 5000;
 const SCROLL_SPEED_PX = 0.75;
@@ -153,6 +155,7 @@ export function Dashboard({
   }, [autoScrollEnabled, activeTab, modules]);
 
   return (
+    <YearProvider>
     <div className="flex min-h-screen w-full flex-col items-stretch justify-start bg-muted px-[5%] py-4 sm:py-6 dark:bg-background">
       <div className="w-full space-y-8">
         {/* Header */}
@@ -255,6 +258,7 @@ export function Dashboard({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <YearSelector />
             <ThemeSelector />
           </div>
         </div>
@@ -287,5 +291,6 @@ export function Dashboard({
         </SubmoduleAccessProvider>
       </div>
     </div>
+    </YearProvider>
   );
 }
