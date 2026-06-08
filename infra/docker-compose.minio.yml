@@ -1,0 +1,19 @@
+# MinIO (camada S3 self-hosted) — usado a partir do Épico 4 (exportador Go → Parquet).
+# Placeholder nesta fase. Subir com: docker compose -f infra/docker-compose.minio.yml up -d
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: mirante-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000" # API S3
+      - "9001:9001" # Console
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-minioadmin}
+    volumes:
+      - minio-data:/data
+    restart: unless-stopped
+
+volumes:
+  minio-data:
