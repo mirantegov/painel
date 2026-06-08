@@ -19,6 +19,9 @@ export async function getAllowedSubmodules(
     `select s.modulo_id, s.slug
        from public.usuario_submodulos us
        join public.submodulos s on s.id = us.submodulo_id
+       -- só submódulos cujo módulo o usuário também acessa (evita grants órfãos)
+       join public.usuario_modulos um
+         on um.modulo_id = s.modulo_id and um.usuario_id = us.usuario_id
       where us.usuario_id = $1`,
     [userId],
   );
