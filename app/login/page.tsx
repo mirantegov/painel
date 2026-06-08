@@ -3,39 +3,45 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Analytics01Icon, LockIcon, UserIcon } from "@hugeicons/core-free-icons"
+import { Analytics01Icon, City01Icon, LockIcon, UserIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-const AUTH_COOKIE_NAME = "auth"
-const AUTH_USERNAME = "admin"
-const AUTH_PASSWORD = "admin"
-
 export default function LoginPage() {
   const router = useRouter()
-  const [username, setUsername] = React.useState("")
-  const [password, setPassword] = React.useState("")
+  const [municipio, setMunicipio] = React.useState("")
+  const [cpf, setCpf] = React.useState("")
+  const [senha, setSenha] = React.useState("")
   const [error, setError] = React.useState("")
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError("")
     setIsSubmitting(true)
 
-    const isValid = username === AUTH_USERNAME && password === AUTH_PASSWORD
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ municipio, cpf, senha }),
+      })
 
-    if (!isValid) {
-      setError("Usuário ou senha inválidos.")
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as { error?: string } | null
+        setError(data?.error ?? "Não foi possível entrar.")
+        setIsSubmitting(false)
+        return
+      }
+
+      router.replace("/")
+    } catch {
+      setError("Falha de conexão. Tente novamente.")
       setIsSubmitting(false)
-      return
     }
-
-    document.cookie = `${AUTH_COOKIE_NAME}=1; path=/; max-age=28800; samesite=lax`
-    router.replace("/")
   }
 
   return (
@@ -56,34 +62,50 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="username" className="inline-flex items-center gap-2">
-                <HugeiconsIcon icon={UserIcon} strokeWidth={2} className="size-4" />
-                Usuário
+              <Label htmlFor="municipio" className="inline-flex items-center gap-2">
+                <HugeiconsIcon icon={City01Icon} strokeWidth={2} className="size-4" />
+                Cliente
               </Label>
               <Input
-                id="username"
-                name="username"
-                autoComplete="username"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                placeholder="admin"
+                id="municipio"
+                name="municipio"
+                inputMode="numeric"
+                value={municipio}
+                onChange={(event) => setMunicipio(event.target.value.replace(/\D/g, ""))}
+                placeholder="Código IBGE do município"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="inline-flex items-center gap-2">
+              <Label htmlFor="cpf" className="inline-flex items-center gap-2">
+                <HugeiconsIcon icon={UserIcon} strokeWidth={2} className="size-4" />
+                Usuário (CPF)
+              </Label>
+              <Input
+                id="cpf"
+                name="cpf"
+                inputMode="numeric"
+                autoComplete="username"
+                value={cpf}
+                onChange={(event) => setCpf(event.target.value)}
+                placeholder="000.000.000-00"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="senha" className="inline-flex items-center gap-2">
                 <HugeiconsIcon icon={LockIcon} strokeWidth={2} className="size-4" />
                 Senha
               </Label>
               <Input
-                id="password"
-                name="password"
+                id="senha"
+                name="senha"
                 type="password"
                 autoComplete="current-password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="admin"
+                value={senha}
+                onChange={(event) => setSenha(event.target.value)}
                 required
               />
             </div>
@@ -91,7 +113,7 @@ export default function LoginPage() {
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              Entrar
+              {isSubmitting ? "Entrando..." : "Entrar"}
             </Button>
           </form>
         </CardContent>
