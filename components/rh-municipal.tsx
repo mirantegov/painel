@@ -797,56 +797,6 @@ export function RHMunicipal() {
 
   return (
     <div className="space-y-8">
-      {/* Header com filtros */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">
-            Gestão de RH Municipal
-          </h2>
-          <p className="text-muted-foreground">
-            Recursos Humanos e Folha de Pagamento
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Select
-            value={periodoSelecionado}
-            onValueChange={setPeriodoSelecionado}
-          >
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Período" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="2024">2024</SelectItem>
-              <SelectItem value="2023">2023</SelectItem>
-              <SelectItem value="2022">2022</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" size="sm">
-            <HugeiconsIcon
-              icon={FilterIcon}
-              strokeWidth={2}
-              className="mr-2 size-4"
-            />
-            Filtros
-          </Button>
-          <Button variant="outline" size="sm">
-            <HugeiconsIcon
-              icon={Download01Icon}
-              strokeWidth={2}
-              className="mr-2 size-4"
-            />
-            Exportar
-          </Button>
-          <Button variant="outline" size="icon" className="size-8">
-            <HugeiconsIcon
-              icon={RefreshIcon}
-              strokeWidth={2}
-              className="size-4"
-            />
-          </Button>
-        </div>
-      </div>
-
       {/* KPIs Principais */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard

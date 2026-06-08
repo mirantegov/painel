@@ -290,58 +290,6 @@ export function Processos() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">
-            Gestão de Processos
-          </h2>
-          <p className="text-muted-foreground">
-            Controle de solicitações e processos administrativos municipais
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Select
-            value={periodoSelecionado}
-            onValueChange={setPeriodoSelecionado}
-          >
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="2024">2024</SelectItem>
-              <SelectItem value="2023">2023</SelectItem>
-              <SelectItem value="2022">2022</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={areaSelecionada} onValueChange={setAreaSelecionada}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todas">Todas as Áreas</SelectItem>
-              <SelectItem value="urbanismo">Urbanismo</SelectItem>
-              <SelectItem value="tributacao">Tributação</SelectItem>
-              <SelectItem value="rh">RH</SelectItem>
-              <SelectItem value="procuradoria">Procuradoria</SelectItem>
-              <SelectItem value="controle">Controle Interno</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" size="icon" className="size-8">
-            <HugeiconsIcon
-              icon={FilterIcon}
-              strokeWidth={2}
-              className="size-4"
-            />
-          </Button>
-          <Button variant="outline" size="icon" className="size-8">
-            <HugeiconsIcon
-              icon={RefreshIcon}
-              strokeWidth={2}
-              className="size-4"
-            />
-          </Button>
-        </div>
-      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard

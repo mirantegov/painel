@@ -1321,35 +1321,6 @@ export function AssistenciaSocial() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">
-            Assistência Social
-          </h2>
-          <p className="text-muted-foreground">
-            Gestão orçamentária, financeira e monitoramento dos programas
-            socioassistenciais.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Select
-            value={periodoSelecionado}
-            onValueChange={setPeriodoSelecionado}
-          >
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="2024">2024</SelectItem>
-              <SelectItem value="2023">2023</SelectItem>
-              <SelectItem value="2022">2022</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" size="sm">
-            Atualizar painel
-          </Button>
-        </div>
-      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard

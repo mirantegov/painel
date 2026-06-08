@@ -174,3 +174,91 @@ export const MODULES: ModuleConfig[] = [
 ];
 
 export const MODULE_IDS = MODULES.map((m) => m.id);
+
+/** Título e subtítulo padronizados, exibidos na faixa abaixo do menu. */
+export const MODULE_HEADERS: Record<string, { titulo: string; subtitulo: string }> = {
+  "visao-geral": {
+    titulo: "Visão Geral",
+    subtitulo: "Panorama consolidado do município",
+  },
+  despesa: {
+    titulo: "Despesas",
+    subtitulo: "Execução orçamentária da despesa",
+  },
+  receita: {
+    titulo: "Receitas",
+    subtitulo: "Arrecadação e previsão de receitas",
+  },
+  financeiro: {
+    titulo: "Financeiro",
+    subtitulo: "Disponibilidades e fluxo de caixa",
+  },
+  tributacao: {
+    titulo: "Tributos",
+    subtitulo: "Arrecadação tributária e dívida ativa",
+  },
+  orcamento: {
+    titulo: "Planejamento",
+    subtitulo: "Orçamento: receita e despesa (LOA)",
+  },
+  "prestacao-contas": {
+    titulo: "Contas Públicas",
+    subtitulo: "Obrigações, certidões e conformidade (TCE/PR, SICONFI)",
+  },
+  compras: {
+    titulo: "Licitações e Contratos",
+    subtitulo: "Compras, licitações e contratos",
+  },
+  rh: {
+    titulo: "Recursos Humanos",
+    subtitulo: "Servidores, folha e quadro de pessoal",
+  },
+  saude: {
+    titulo: "Saúde",
+    subtitulo: "Atenção, produção e indicadores de saúde",
+  },
+  educacao: {
+    titulo: "Educação",
+    subtitulo: "Rede, matrículas e indicadores educacionais",
+  },
+  "assistencia-social": {
+    titulo: "Assistência Social",
+    subtitulo: "Programas, benefícios e equipamentos sociais",
+  },
+  "defesa-civil": {
+    titulo: "Defesa Civil",
+    subtitulo: "Ocorrências, riscos e ações de proteção",
+  },
+  obras: {
+    titulo: "Obras",
+    subtitulo: "Obras públicas e execução de intervenções",
+  },
+  frotas: {
+    titulo: "Frotas",
+    subtitulo: "Veículos, manutenção e consumo",
+  },
+  patrimonio: {
+    titulo: "Patrimônio",
+    subtitulo: "Bens, inventário e depreciação",
+  },
+  processos: {
+    titulo: "Processos",
+    subtitulo: "Processos administrativos e tramitação",
+  },
+  previdencia: {
+    titulo: "Previdência",
+    subtitulo: "RPPS — benefícios e equilíbrio atuarial",
+  },
+  saneamento: {
+    titulo: "Saneamento",
+    subtitulo: "Água, esgoto e drenagem urbana",
+  },
+  legislativo: {
+    titulo: "Legislativo",
+    subtitulo: "Câmara: vereadores, sessões e proposituras",
+  },
+  "licitacoes-painel": {
+    titulo: "Painel de Licitações",
+    subtitulo: "Licitações em andamento",
+  },
+};

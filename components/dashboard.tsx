@@ -25,11 +25,11 @@ import {
   Settings01Icon,
   GridIcon,
 } from "@hugeicons/core-free-icons";
-import { MODULES } from "@/lib/modules-config";
+import { MODULES, MODULE_HEADERS } from "@/lib/modules-config";
 import { useModuleVisibility } from "@/components/module-visibility-provider";
 import { SubmoduleAccessProvider } from "@/components/submodule-access";
 import { YearProvider } from "@/components/year-provider";
-import { YearSelector } from "@/components/year-selector";
+import { ModuleHeader } from "@/components/module-header";
 
 const SCROLL_DELAY_MS = 5000;
 const SCROLL_SPEED_PX = 0.75;
@@ -258,7 +258,6 @@ export function Dashboard({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <YearSelector />
             <ThemeSelector />
           </div>
         </div>
@@ -281,8 +280,15 @@ export function Dashboard({
 
             {modules.map((m) => {
               const ModuleComponent = m.component;
+              const header = MODULE_HEADERS[m.id];
               return (
-                <TabsContent key={m.id} value={m.id} className="mt-6">
+                <TabsContent key={m.id} value={m.id} className="mt-6 space-y-6">
+                  {header && (
+                    <ModuleHeader
+                      titulo={header.titulo}
+                      subtitulo={header.subtitulo}
+                    />
+                  )}
                   <ModuleComponent />
                 </TabsContent>
               );

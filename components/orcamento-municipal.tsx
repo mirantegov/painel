@@ -475,17 +475,6 @@ export function OrcamentoMunicipal() {
 
   return (
     <div className="space-y-8">
-      {/* Header do Módulo */}
-      <div>
-        <h2 className="text-2xl font-bold text-foreground">
-          Orçamento (Receita e Despesa)
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Planejamento e orçamento do município e entidades (Câmara, Saneamento
-          e Previdência)
-        </p>
-      </div>
-
       {/* ======================================================= */}
       {/* BLOCO RECEITA                                            */}
       {/* ======================================================= */}

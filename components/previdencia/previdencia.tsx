@@ -31,20 +31,6 @@ export function Previdencia() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Previdência Municipal
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            RPPS - Regime Próprio de Previdência Social
-          </p>
-        </div>
-        <Badge variant="outline" className="text-lg px-4 py-2">
-          2025
-        </Badge>
-      </div>
-
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="flex w-full flex-wrap h-auto p-1 bg-muted/50 rounded-lg">
           {canSee("gestao-beneficios") && (

@@ -663,54 +663,6 @@ export function ComprasMunicipais() {
 
   return (
     <div className="space-y-8">
-      {/* Header com Filtros */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">
-            Compras e Licitações
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Gestão de contratos e processos licitatórios
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Período" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="6m">6 meses</SelectItem>
-              <SelectItem value="12m">12 meses</SelectItem>
-              <SelectItem value="2024">2024</SelectItem>
-              <SelectItem value="2023">2023</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" size="sm">
-            <HugeiconsIcon
-              icon={FilterIcon}
-              strokeWidth={2}
-              className="mr-2 size-4"
-            />
-            Filtros
-          </Button>
-          <Button variant="outline" size="sm">
-            <HugeiconsIcon
-              icon={Download01Icon}
-              strokeWidth={2}
-              className="mr-2 size-4"
-            />
-            Exportar
-          </Button>
-          <Button variant="outline" size="icon" className="size-8">
-            <HugeiconsIcon
-              icon={RefreshIcon}
-              strokeWidth={2}
-              className="size-4"
-            />
-          </Button>
-        </div>
-      </div>
-
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpiData.map((kpi, index) => (

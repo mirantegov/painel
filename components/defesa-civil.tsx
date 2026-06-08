@@ -1393,15 +1393,6 @@ function PainelLogistica() {
 export function DefesaCivil() {
   return (
     <div className="space-y-6">
-      {/* Cabeçalho */}
-      <div className="flex flex-col gap-1">
-        <h2 className="text-2xl font-bold tracking-tight">Defesa Civil</h2>
-        <p className="text-sm text-muted-foreground">
-          Monitoramento climático, ocorrências, recursos e logística de
-          emergência municipal
-        </p>
-      </div>
-
       <Tabs defaultValue="monitoramento" className="space-y-6">
         <TabsList className="flex-wrap h-auto gap-1">
           <TabsTrigger value="monitoramento" className="gap-2">

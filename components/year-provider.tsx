@@ -6,6 +6,9 @@ type YearContextValue = {
   ano: number;
   setAno: (ano: number) => void;
   anos: number[];
+  /** Incrementado pelo botão de refresh; módulos o incluem nas deps de fetch. */
+  refreshNonce: number;
+  refresh: () => void;
 };
 
 const YearContext = React.createContext<YearContextValue | null>(null);
@@ -22,6 +25,8 @@ export function YearProvider({
 }) {
   const anoCorrente = anoInicial ?? new Date().getFullYear();
   const [ano, setAno] = React.useState(anoCorrente);
+  const [refreshNonce, setRefreshNonce] = React.useState(0);
+  const refresh = React.useCallback(() => setRefreshNonce((n) => n + 1), []);
 
   const anos = React.useMemo(() => {
     const lista: number[] = [];
@@ -31,7 +36,10 @@ export function YearProvider({
     return lista;
   }, [anoCorrente]);
 
-  const value = React.useMemo(() => ({ ano, setAno, anos }), [ano, anos]);
+  const value = React.useMemo(
+    () => ({ ano, setAno, anos, refreshNonce, refresh }),
+    [ano, anos, refreshNonce, refresh],
+  );
 
   return <YearContext.Provider value={value}>{children}</YearContext.Provider>;
 }
