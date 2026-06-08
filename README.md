@@ -4,7 +4,7 @@
 
 O **Mirante Painel** é uma aplicação web de **Next.js** pensada para **prefeituras, autarquias e equipes de planejamento** que precisam de um **único painel** para acompanhar, de forma didática, **indicadores de gestão pública**: finanças, pessoal, obras, políticas sociais, transparência e mais. A interface está em **português (Brasil)**, com gráficos, tabelas e cartões (KPIs) no estilo *dashboard* executivo.
 
-> **Dados de demonstração:** todo o conteúdo numérico e textos são **fictícios e estáticos** — servem para apresentações, treinamento e protótipos, **não** para decisão com informações reais. A arquitetura não inclui integração com ERP, TCE ou APIs governamentais.
+> **Backend (Fase 1):** os módulos de entrega leem dados de um **Postgres** (Supabase self-hosted), **multi-tenant por município** (schema `mun_<id_ibge>`), com **autenticação própria** (JWT em cookie httpOnly) e **ACL por módulo/submódulo**. Os dados seedados ainda são **demonstrativos** (município Nova Londrina/PR); o pipeline real de ingestão (TCE/SICONFI → ClickHouse → Postgres) é entregue em fases seguintes (Épicos 4–6). Detalhes em [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ### Navegação
 
@@ -34,6 +34,12 @@ O painel principal (`/`) organiza o conteúdo em **abas (tabs)**: o utilizador e
 | [shadcn/ui](https://ui.shadcn.com) + Radix | latest |
 | [Recharts](https://recharts.org) | 2 |
 | [Hugeicons](https://hugeicons.com) | (ícones) |
+| [PostgreSQL](https://www.postgresql.org) (via [Supabase](https://supabase.com) self-hosted) | 15 |
+| [Supabase CLI](https://supabase.com/docs/guides/cli) (Postgres/Studio/REST local em Docker) | latest |
+| [`pg`](https://node-postgres.com) (pool server-only) | 8 |
+| [`jose`](https://github.com/panva/jose) (JWT HS256) + [`bcryptjs`](https://github.com/dcodeIO/bcrypt.js) (hash de senha) | — |
+
+> A autenticação é **própria** (não usa GoTrue do Supabase): login = **cliente (id IBGE) + CPF + senha**, sessão em JWT no cookie httpOnly `mp_session`. Veja [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ---
 
@@ -121,7 +127,8 @@ Para **adicionar uma nova aba**, siga o fluxo descrito na secção [Como adicion
 
 - **Node.js** 20 ou superior — [download](https://nodejs.org)
 - **npm** 10 ou superior (incluído com o Node.js)
-- **Docker Engine** + **Docker Compose** *(apenas para execução em container)*
+- **Docker Engine** + **Docker Compose** — usado pela **Supabase CLI** (sobe Postgres/Studio/REST locais) e pela imagem de produção da app
+- **Supabase CLI** — [instalação](https://supabase.com/docs/guides/cli) (`brew install supabase/tap/supabase` no macOS); chamada via `npx supabase` nos scripts
 
 Verifique as versões instaladas:
 
@@ -129,29 +136,59 @@ Verifique as versões instaladas:
 node -v
 npm -v
 docker -v
+npx supabase --version
 ```
 
 ---
 
 ## Desenvolvimento local
 
+A app lê dados de um **Postgres** local provido pela **Supabase CLI**. O fluxo completo:
+
 ```bash
 git clone https://github.com/mirantegov/painel.git
 cd painel
 npm install
+
+# 1) Sobe Postgres/Studio/REST locais (Docker, via Supabase CLI)
+npm run db:start
+
+# 2) Aplica as migrations (cria dims, fatos, módulos, auth/ACL, multi-tenant)
+npm run db:reset
+
+# 3) Importa os 5.571 municípios do IBGE → public.dim_municipio
+npm run db:import-ibge
+
+# 4) Provisiona o município demo (mun_4117107), seed dos snapshots e do usuário demo
+npm run db:seed-demo
+
+# 5) Sobe o Next em http://localhost:3000
 npm run dev
 ```
 
-Abra [http://localhost:3000](http://localhost:3000). Será redirecionado para `/login` se não existir cookie de sessão.
+Crie um **`.env.local`** (não versionado) com:
+
+```bash
+DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
+JWT_SECRET=<uma-string-secreta-longa>
+AUTH_COOKIE_NAME=mp_session
+```
+
+Abra [http://localhost:3000](http://localhost:3000). Será redirecionado para `/login` se não existir cookie de sessão válido.
+
+> O **Studio** do Supabase (inspeção do banco) fica em [http://127.0.0.1:54323](http://127.0.0.1:54323). Veja [`docs/banco-de-dados.md`](docs/banco-de-dados.md) para o detalhe de schema, seed e fluxo de dados.
 
 ### Credenciais de demonstração
 
+Login é por **cliente (id IBGE) + usuário (CPF) + senha** (município **Nova Londrina/PR**):
+
 | Campo | Valor |
 | --- | --- |
-| Usuário | `admin` |
-| Senha | `admin` |
+| Cliente (id IBGE) | `4117107` |
+| Usuário (CPF) | `00000000000` |
+| Senha | `Dx7$kP2w-Ra9mLZ` |
 
-> São credenciais fixas só para demo — não utilize em produção sem substituir por autenticação real.
+> Usuário demo provisionado pelo `db:seed-demo` (cargo Prefeito, acesso total à ACL). Senha de **desenvolvimento** — sobrescreva via env `DEMO_PASSWORD` ao seedar e troque antes de qualquer uso real. Veja [Como alterar as credenciais de acesso](#como-alterar-as-credenciais-de-acesso).
 
 ### Build e servidor de produção (local)
 
@@ -174,6 +211,11 @@ O servidor de produção local também usa a porta **3000** por defeito.
 | `npm run lint` | ESLint no projeto |
 | `npm run typecheck` | TypeScript sem emitir ficheiros |
 | `npm run format` | Prettier em `.ts` / `.tsx` |
+| `npm run db:start` / `db:stop` / `db:status` | Sobe / para / inspeciona o stack local da Supabase CLI |
+| `npm run db:reset` | Recria o banco aplicando `supabase/migrations/` |
+| `npm run db:migration` | Cria um novo arquivo de migration |
+| `npm run db:import-ibge` | Importa os municípios do IBGE → `public.dim_municipio` |
+| `npm run db:seed-demo` | Provisiona o município demo + seed dos snapshots e do usuário demo |
 
 ---
 
@@ -202,46 +244,40 @@ docker compose down            # parar e remover contentores
 docker compose up -d --build   # rebuild após alterações ao código
 ```
 
-Utilize as mesmas credenciais **admin / admin** para entrar. Em ambientes reais, configure **HTTPS**, segredos e autenticação fora deste repositório.
+A imagem da app espera um **Postgres acessível** via `DATABASE_URL` e os segredos `JWT_SECRET` / `AUTH_COOKIE_NAME` no ambiente. Use as credenciais de demonstração ([acima](#credenciais-de-demonstração)) para entrar. Em ambientes reais, configure **HTTPS**, segredos e o banco fora deste repositório.
 
 ---
 
 ## Como alterar as credenciais de acesso
 
-As credenciais estão definidas diretamente no código-fonte em `app/login/page.tsx` (linhas 14–15). Para alterá-las, edite o ficheiro e faça rebuild da imagem Docker.
+Os usuários ficam na tabela **`public.usuarios`** do Postgres (não mais em código). Cada usuário é identificado por **(município `id_ibge`, CPF)** e a senha é guardada como **hash bcrypt** em `senha_hash`. O login valida `municipio_id_ibge + cpf + senha` e emite o JWT de sessão.
 
-### Passo a passo
+### Trocar a senha do usuário demo
 
-**1. Edite o ficheiro de login:**
-
-```bash
-# Dentro do diretório do projeto
-nano app/login/page.tsx
-```
-
-Localize as linhas:
-
-```ts
-const AUTH_USERNAME = "admin"
-const AUTH_PASSWORD = "admin"
-```
-
-Substitua pelos valores desejados, por exemplo:
-
-```ts
-const AUTH_USERNAME = "prefeitura"
-const AUTH_PASSWORD = "senha-segura-2025"
-```
-
-**2. Reconstrua e reinicie a aplicação:**
+A forma mais simples é re-seedar com outra senha (sobrescreve o hash):
 
 ```bash
-docker compose up -d --build
+DEMO_PASSWORD="sua-senha-forte" npm run db:seed-demo
 ```
 
-> A alteração só entra em vigor após o rebuild. Enquanto não reconstruir, o sistema continuará usando as credenciais antigas.
+### Criar / alterar um usuário manualmente
 
-> **Importante:** use uma senha com no mínimo 12 caracteres combinando letras, números e símbolos. Evite senhas óbvias como datas ou nomes de cidades.
+Gere o hash bcrypt e faça o `insert`/`update` em `public.usuarios`. Exemplo com a CLI do projeto:
+
+```bash
+# hash de uma senha (custo 10, igual ao usado no seed)
+node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 10))" "sua-senha-forte"
+```
+
+```sql
+-- no Studio (http://127.0.0.1:54323) ou via psql
+insert into public.usuarios (municipio_id_ibge, cpf, nome, cargo, senha_hash, ativo)
+values ('4117107', '12345678901', 'Fulano de Tal', 'Secretário', '<hash-bcrypt>', true);
+```
+
+A ACL (módulos/submódulos liberados) fica em `public.usuario_modulos` / `public.usuario_submodulos` — o `db:seed-demo` libera tudo para o usuário demo. Veja [`docs/banco-de-dados.md`](docs/banco-de-dados.md).
+
+> **Importante:** use uma senha com no mínimo 12 caracteres combinando letras, números e símbolos. Nunca versione segredos (`JWT_SECRET`, senhas) — eles vão no ambiente / `.env.local`.
 
 ---
 
@@ -361,22 +397,36 @@ painel/
 │   ├── layout.tsx          # Raiz: fonte Geist, tema, preset de cores
 │   ├── page.tsx            # Dashboard principal (abas dos módulos)
 │   ├── globals.css         # Tailwind + variáveis + presets de cor
-│   └── login/page.tsx      # Login por cookie (credenciais nas linhas 14–15)
+│   ├── login/page.tsx      # Login (cliente IBGE + CPF + senha)
+│   └── api/
+│       ├── auth/login|logout/route.ts   # Login/logout (JWT em cookie)
+│       └── data/[modulo]/route.ts       # Snapshot jsonb do módulo (por município da sessão)
 ├── components/
 │   ├── ui/                 # Primitivas shadcn/ui
-│   ├── theme-provider.tsx
-│   ├── theme-selector.tsx  # Paleta + modo claro/escuro
-│   ├── color-preset-provider.tsx
+│   ├── use-snapshot.ts    # Hook: lê /api/data/<slug> com fallback bundlado
 │   └── …                   # Um componente por módulo (ver tabela acima)
 ├── lib/
-│   ├── color-presets.ts    # Lista de paletas e script anti-FOUC
+│   ├── auth/               # jwt (jose) · password (bcrypt) · session
+│   ├── db.ts               # Pool Postgres + tenantQuery (search_path mun_<ibge>)
+│   ├── data/modules.ts     # getModuloDados + allowlist slug→mod_*
+│   ├── demo-*.ts           # Snapshots demo seedados em mod_* (fallback bundlado)
+│   ├── modules-config.ts   # Catálogo de módulos + DEFAULT_ENABLED_MODULE_IDS
 │   └── utils.ts
-├── middleware.ts           # Guarda rotas com cookie `auth`
+├── scripts/
+│   ├── import-ibge.ts      # Importa municípios → public.dim_municipio
+│   └── seed-demo.ts        # Provisiona município demo + seed snapshots + usuário
+├── supabase/
+│   ├── config.toml
+│   └── migrations/         # Schema: dims, fatos, módulos, auth/ACL, multi-tenant
+├── docs/                   # ARCHITECTURE complementar, planos e referências
+├── middleware.ts           # Guarda rotas com JWT (cookie mp_session)
 ├── Dockerfile
 ├── docker-compose.yml
 ├── setup-macos.sh
 └── setup-vps.sh
 ```
+
+> Documentação de arquitetura: [`ARCHITECTURE.md`](ARCHITECTURE.md) (camadas, multi-tenant, auth/ACL) e [`docs/banco-de-dados.md`](docs/banco-de-dados.md) (schema, seed, fluxo de dados).
 
 ---
 
@@ -406,16 +456,23 @@ export function MeuModulo() {
 
 Os ícones vêm de `@hugeicons/core-free-icons`.
 
+### 3. (Opcional) Servir dados do Postgres
+
+Para o módulo ler do banco como os demais: registre o slug em `MODULE_TABLES` (`lib/data/modules.ts`) apontando para `mod_<slug>`, extraia os dados para `lib/demo-<slug>.ts` (`<SLUG>_SNAPSHOT` serializável), consuma no componente via `useSnapshot("<slug>", <SLUG>_SNAPSHOT)` e seede em `scripts/seed-demo.ts`. Detalhe do padrão em [`docs/banco-de-dados.md`](docs/banco-de-dados.md).
+
 ---
 
 ## Autenticação e rotas
 
 | Rota | Comportamento |
 | --- | --- |
-| `/` | Exige cookie `auth=1`; senão redireciona para `/login` |
+| `/` | Exige sessão válida (cookie `mp_session` com JWT verificado); senão redireciona para `/login` |
 | `/login` | Se já autenticado, redireciona para `/` |
+| `POST /api/auth/login` | Valida `municipio + cpf + senha` contra `public.usuarios`, emite o JWT e grava o cookie |
+| `POST /api/auth/logout` | Limpa o cookie de sessão |
+| `GET /api/data/[modulo]` | Retorna o snapshot `jsonb` do módulo para o município da sessão (allowlist em `lib/data/modules.ts`) |
 
-Cookie com validade de **8 horas** (`max-age=28800`). Detalhes em [`middleware.ts`](middleware.ts) e [`app/login/page.tsx`](app/login/page.tsx).
+Sessão em **JWT HS256** (`jose`), cookie httpOnly `mp_session` com validade de **8 horas**, assinado com `JWT_SECRET`. O middleware ([`middleware.ts`](middleware.ts)) verifica o token; o município **sempre** sai do claim do JWT (nunca do cliente). Auth em [`lib/auth/`](lib/auth) (`jwt.ts`, `password.ts`, `session.ts`). Veja [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ---
 
@@ -488,11 +545,14 @@ sudo ufw status
 
 ### Tela de login aparece, mas não aceita a senha
 
-As credenciais estão no ficheiro `app/login/page.tsx` (linhas 14–15). Confirme os valores e, se alterá-los, reconstrua a imagem:
+Os usuários ficam em `public.usuarios` (Postgres). Verifique:
 
-```bash
-docker compose up -d --build
-```
+- O **banco está no ar** e a app o alcança (`DATABASE_URL` correto). Em dev: `npm run db:status`.
+- O **seed rodou** (`npm run db:seed-demo`) — sem ele não há usuário demo.
+- `JWT_SECRET` está definido no ambiente / `.env.local` (sem ele a sessão não é emitida).
+- Login = **cliente (id IBGE) + CPF + senha** — confira os valores ([credenciais de demonstração](#credenciais-de-demonstração)).
+
+Para redefinir a senha do usuário demo: `DEMO_PASSWORD="nova-senha" npm run db:seed-demo`.
 
 ---
 
