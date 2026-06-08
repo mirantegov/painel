@@ -244,6 +244,29 @@ async function main() {
       );
     }
 
+    // Snapshot do módulo Orçamento (números-base; derivados calculados na UI).
+    const ORCAMENTO_BASE = {
+      receitaPrevista: 580_000_000,
+      receitaDeduzida: 45_000_000,
+      receitaAlterada: 12_000_000,
+      despesaOrcada: 535_000_000,
+      despesaSuplementado: 42_000_000,
+      despesaReduzido: 28_000_000,
+      receitaArrecadada: 512_000_000,
+      despesaEmpenhada: 505_000_000,
+      metaRealizacaoReceitaPct: 95,
+      despesaPessoalOrcado: 265_000_000,
+    };
+    await client.query(
+      `delete from public.mod_orcamento where municipio_id_ibge = $1 and ano = $2`,
+      [MUNICIPIO, ANO],
+    );
+    await client.query(
+      `insert into public.mod_orcamento (municipio_id_ibge, entidade_id, ano, dados)
+       values ($1, $2, $3, $4)`,
+      [MUNICIPIO, entidadeId, ANO, JSON.stringify(ORCAMENTO_BASE)],
+    );
+
     await client.query("commit");
     console.log("Seed demo concluído:");
     console.log(`  município: ${MUNICIPIO} (Nova Londrina/PR)`);

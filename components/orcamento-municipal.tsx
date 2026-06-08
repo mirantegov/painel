@@ -42,26 +42,12 @@ import {
   ArrowRight01Icon,
 } from "@hugeicons/core-free-icons";
 import {
-  receitaPrevista,
-  receitaDeduzida,
-  receitaOrcada,
-  receitaAlterada,
-  receitaAtualizada,
-  despesaOrcada,
-  despesaSuplementado,
-  despesaReduzido,
-  despesaAtualizado,
-  receitaArrecadada,
-  despesaEmpenhada,
-  metaRealizacaoReceitaPct,
-  despesaPessoalOrcado,
+  ORCAMENTO_BASE,
+  computeOrcamento,
   pctShare,
-  realizacaoReceitaVsAtualizada,
-  comprometimentoDespesaVsAtualizada,
-  saldoEmpenhoDisponivelPct,
-  gapEstruturalLoa,
-  rigidezPessoalSobreOrcado,
+  type OrcamentoBase,
 } from "@/lib/demo-orcamento";
+import { useYear } from "@/components/year-provider";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { OrcamentoPonteEquilibrio } from "@/components/orcamento/orcamento-ponte-equilibrio";
 import { OrcamentoRealizacaoGauge } from "@/components/orcamento/orcamento-realizacao-gauge";
@@ -264,11 +250,6 @@ const despesaNatureza = [
   },
 ];
 
-const receitaDeltaNominal = receitaAtualizada - receitaOrcada;
-const receitaDeltaPercentual = pctDiff(receitaAtualizada, receitaOrcada);
-const despesaDeltaNominal = despesaAtualizado - despesaOrcada;
-const despesaDeltaPercentual = pctDiff(despesaAtualizado, despesaOrcada);
-
 const receitaTopAltas = [...receitaOrigemNatureza]
   .map((item) => ({ ...item, diff: item.atualizado - item.orcado }))
   .sort((a, b) => b.diff - a.diff)
@@ -450,6 +431,48 @@ function MixBreakdownCard({
 }
 
 export function OrcamentoMunicipal() {
+  const { ano } = useYear();
+  const [base, setBase] = React.useState<OrcamentoBase>(ORCAMENTO_BASE);
+
+  React.useEffect(() => {
+    let active = true;
+    fetch(`/api/data/orcamento?ano=${ano}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (active && d?.dados) setBase(d.dados as OrcamentoBase);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [ano]);
+
+  const {
+    receitaPrevista,
+    receitaDeduzida,
+    receitaOrcada,
+    receitaAlterada,
+    receitaAtualizada,
+    despesaOrcada,
+    despesaSuplementado,
+    despesaReduzido,
+    despesaAtualizado,
+    receitaArrecadada,
+    despesaEmpenhada,
+    metaRealizacaoReceitaPct,
+    despesaPessoalOrcado,
+    realizacaoReceitaVsAtualizada,
+    comprometimentoDespesaVsAtualizada,
+    saldoEmpenhoDisponivelPct,
+    gapEstruturalLoa,
+    rigidezPessoalSobreOrcado,
+  } = computeOrcamento(base);
+
+  const receitaDeltaNominal = receitaAtualizada - receitaOrcada;
+  const receitaDeltaPercentual = pctDiff(receitaAtualizada, receitaOrcada);
+  const despesaDeltaNominal = despesaAtualizado - despesaOrcada;
+  const despesaDeltaPercentual = pctDiff(despesaAtualizado, despesaOrcada);
+
   return (
     <div className="space-y-8">
       {/* Header do Módulo */}
