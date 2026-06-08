@@ -28,6 +28,8 @@ const MODULE_TABLES: Record<string, string> = {
   saneamento: "mod_saneamento",
   legislativo: "mod_legislativo",
   "licitacoes-painel": "mod_licitacoes_painel",
+  despesa: "mod_despesa",
+  receita: "mod_receita",
 };
 
 /**
