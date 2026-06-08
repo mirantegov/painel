@@ -3,18 +3,25 @@
 import * as React from "react";
 import {
   DISABLED_MODULES_STORAGE_KEY,
+  DEFAULT_DISABLED_MODULE_IDS,
   MODULES,
   type ModuleConfig,
 } from "@/lib/modules-config";
 
+/** Padrão: módulos ainda mockados ocultos no menu (usuário pode reativar). */
+function defaultDisabled(): Set<string> {
+  return new Set(DEFAULT_DISABLED_MODULE_IDS);
+}
+
 function readDisabled(): Set<string> {
   if (typeof window === "undefined") {
-    return new Set();
+    return defaultDisabled();
   }
   try {
     const raw = localStorage.getItem(DISABLED_MODULES_STORAGE_KEY);
-    if (!raw) {
-      return new Set();
+    if (raw === null) {
+      // Sem escolha salva → aplica o padrão (mockados ocultos).
+      return defaultDisabled();
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
@@ -25,7 +32,7 @@ function readDisabled(): Set<string> {
   } catch {
     // ignora valor inválido
   }
-  return new Set();
+  return defaultDisabled();
 }
 
 type ModuleVisibilityContextValue = {
@@ -42,12 +49,9 @@ export function ModuleVisibilityProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // Inicia vazio para que o primeiro render do cliente case com o do servidor
-  // (localStorage só existe no cliente). O valor real é carregado após a
-  // montagem, evitando erro de hidratação.
-  const [disabled, setDisabled] = React.useState<Set<string>>(
-    () => new Set(),
-  );
+  // Inicia com o padrão (determinístico em server e client → sem erro de
+  // hidratação). Após a montagem, carrega a escolha salva do usuário, se houver.
+  const [disabled, setDisabled] = React.useState<Set<string>>(defaultDisabled);
 
   React.useEffect(() => {
     setDisabled(readDisabled());

@@ -175,6 +175,27 @@ export const MODULES: ModuleConfig[] = [
 
 export const MODULE_IDS = MODULES.map((m) => m.id);
 
+/** Módulos de entrega (dados no banco) — visíveis no menu por padrão. */
+export const DEFAULT_ENABLED_MODULE_IDS = [
+  "despesa",
+  "receita",
+  "financeiro",
+  "tributacao",
+  "orcamento",
+  "prestacao-contas",
+  "compras",
+  "rh",
+  "licitacoes-painel",
+];
+
+/**
+ * Módulos ainda mockados (não no banco) — ocultos no menu por padrão.
+ * Não são removidos do código; o usuário pode reativá-los em Configurações/Módulos.
+ */
+export const DEFAULT_DISABLED_MODULE_IDS = MODULE_IDS.filter(
+  (id) => !DEFAULT_ENABLED_MODULE_IDS.includes(id),
+);
+
 /** Título e subtítulo padronizados, exibidos na faixa abaixo do menu. */
 export const MODULE_HEADERS: Record<string, { titulo: string; subtitulo: string }> = {
   "visao-geral": {
