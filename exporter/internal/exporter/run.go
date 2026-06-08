@@ -69,7 +69,7 @@ func Run(ctx context.Context, cfg Config) error {
 			ano = &a
 		}
 
-		cols, rows, err := src.Dump(ctx, physSchema, t.TableName(), t.Columns, ano)
+		cols, rows, err := src.Dump(ctx, physSchema, t.TableName(), t.Columns, t.Filters, ano)
 		if err != nil {
 			return err
 		}
