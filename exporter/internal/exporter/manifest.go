@@ -26,7 +26,9 @@ type Table struct {
 	PartitionByAno bool `yaml:"partition_by_ano,omitempty"`
 }
 
-var identRe = regexp.MustCompile(`^[a-z_][a-z0-9_]*$`)
+// Gate de sanidade p/ identificadores (a segurança real é pgx.Identifier.Sanitize).
+// Permissivo p/ nomes de ERP (maiúsculas, dígitos, _ e $).
+var identRe = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_$]*$`)
 
 // LoadManifest lê e valida o YAML do manifest.
 func LoadManifest(path string) (*Manifest, error) {

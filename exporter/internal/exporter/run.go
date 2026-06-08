@@ -9,8 +9,9 @@ import (
 
 // Config são os parâmetros de uma execução do exportador.
 type Config struct {
-	Municipio   string // id_ibge (7 dígitos)
+	Municipio   string // id_ibge (7 dígitos) — usado no path do MinIO
 	Ano         int
+	Schema      string // schema de origem p/ scope:tenant (ERP real); vazio = mun_<ibge>
 	Manifest    string // caminho do export.yaml
 	DSN         string // DATABASE_URL (Postgres de origem)
 	S3Endpoint  string
@@ -47,11 +48,20 @@ func Run(ctx context.Context, cfg Config) error {
 		return err
 	}
 
-	tenantSchema := "mun_" + cfg.Municipio
+	// Schema físico do tenant: --schema (ERP real, ex.: Elotech) ou mun_<ibge> (demo).
+	tenantSchema := cfg.Schema
+	if tenantSchema == "" {
+		tenantSchema = "mun_" + cfg.Municipio
+	}
 	for _, t := range man.Tables {
-		physSchema := "public"
-		if t.Scope == "tenant" {
-			physSchema = tenantSchema
+		physSchema := tenantSchema
+		if t.Scope == "global" {
+			// global usa o schema explícito do source (ex.: public.x); senão public.
+			if s, _ := t.split(); s != "" {
+				physSchema = s
+			} else {
+				physSchema = "public"
+			}
 		}
 		var ano *int
 		if t.PartitionByAno {
