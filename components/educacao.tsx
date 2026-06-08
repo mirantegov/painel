@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { fmtBRL } from "@/lib/format";
 import {
   Alert02Icon,
   ArrowUp01Icon,
@@ -1063,7 +1064,7 @@ export function Educacao() {
         <KpiCard
           title="FUNDEB Recebido"
           icon={Wallet01Icon}
-          value={formatCurrency(educacaoResumo.fundeRecebido)}
+          value={fmtBRL(educacaoResumo.fundeRecebido)}
           borderColor="border-l-emerald-700"
           footer={
             <>

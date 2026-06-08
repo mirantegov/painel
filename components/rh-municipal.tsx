@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { fmtBRL } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -840,7 +841,7 @@ export function RHMunicipal() {
         <KpiCard
           title="Horas Extras"
           icon={Clock01Icon}
-          value={formatCurrency(dadosFolha.horasExtras)}
+          value={fmtBRL(dadosFolha.horasExtras)}
           borderColor="border-l-amber-500"
           footer={
             <div className="flex items-center gap-1 text-xs text-muted-foreground">

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { fmtBRL } from "@/lib/format";
 import {
   Alert02Icon,
   AlertCircleIcon,
@@ -1326,7 +1327,7 @@ export function AssistenciaSocial() {
         <KpiCard
           title="Orçamento Atualizado"
           icon={Wallet01Icon}
-          value={formatCurrency(resumo.orcamentoAtualizado)}
+          value={fmtBRL(resumo.orcamentoAtualizado)}
           borderColor="border-l-emerald-700"
           footer={
             <p className="text-sm text-muted-foreground">
@@ -1351,7 +1352,7 @@ export function AssistenciaSocial() {
         <KpiCard
           title="Saldo em Fontes Vinculadas"
           icon={BankIcon}
-          value={formatCurrency(resumo.saldoFontes)}
+          value={fmtBRL(resumo.saldoFontes)}
           borderColor="border-l-emerald-700"
           footer={
             <p className="text-sm text-muted-foreground">
@@ -3918,7 +3919,7 @@ export function AssistenciaSocial() {
             <KpiCard
               title="Valor Patrimonial Atualizado"
               icon={BankIcon}
-              value={formatCurrency(patrimonioResumo.valorAtualizado)}
+              value={fmtBRL(patrimonioResumo.valorAtualizado)}
               borderColor="border-l-emerald-700"
               footer={
                 <p className="text-sm text-muted-foreground">

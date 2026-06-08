@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { fmtBRL } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { Progress } from "@/components/ui/progress";
@@ -61,7 +62,7 @@ function DespesasKpis() {
       <KpiCard
         title="Orçamento do Legislativo"
         icon={BankIcon}
-        value={formatCurrency(ORCAMENTO_LEGISLATIVO)}
+        value={fmtBRL(ORCAMENTO_LEGISLATIVO)}
         borderColor="border-l-slate-500"
         footer={
           <>
@@ -76,7 +77,7 @@ function DespesasKpis() {
       <KpiCard
         title="Despesa Empenhada"
         icon={InvoiceIcon}
-        value={formatCurrency(DESPESA_EMPENHADA_LEGISLATIVO)}
+        value={fmtBRL(DESPESA_EMPENHADA_LEGISLATIVO)}
         borderColor="border-l-blue-500"
         footer={
           <p className="text-xs text-muted-foreground">
@@ -87,7 +88,7 @@ function DespesasKpis() {
       <KpiCard
         title="Diárias Concedidas"
         icon={CalendarIcon}
-        value={formatCurrency(TOTAL_DIARIAS_LEGISLATIVO)}
+        value={fmtBRL(TOTAL_DIARIAS_LEGISLATIVO)}
         borderColor="border-l-amber-500"
         footer={
           <p className="text-xs text-muted-foreground">

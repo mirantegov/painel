@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { fmtBRL } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -657,7 +658,7 @@ export function Frotas() {
         <KpiCard
           title="Custo operacional / km"
           icon={MoneySend01Icon}
-          value={formatCurrency(custoPorKm)}
+          value={fmtBRL(custoPorKm)}
           borderColor="border-l-amber-500"
           footer={
             <div className="space-y-1">
@@ -740,7 +741,7 @@ export function Frotas() {
         <KpiCard
           title="Gasto com combustível (YTD)"
           icon={CoinsDollarIcon}
-          value={formatCurrency(ytdCombustivel)}
+          value={fmtBRL(ytdCombustivel)}
           borderColor="border-l-orange-500"
           footer={
             <div className="space-y-1">
