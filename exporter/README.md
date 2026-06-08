@@ -64,6 +64,35 @@ mc cp local/mirante-parquet/4117107/fato_despesa/ano=2026/part-0.parquet /tmp/x.
 go run ./cmd/inspect /tmp/x.parquet
 ```
 
+## Build para o cliente (Windows)
+
+Sem cgo → cross-compile limpo (de macOS/Linux):
+
+```bash
+make windows                 # → dist/exporter-windows-amd64.exe
+# ou: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o exporter.exe .
+make dist                    # windows + linux + mac
+```
+
+### Rodar no cliente (Windows → MinIO via ngrok)
+
+No PC do cliente, com 3 arquivos na mesma pasta: `exporter-windows-amd64.exe`, `export.yaml` e um `.env`/variáveis. O cliente roda o exportador contra o **Postgres do ERP dele** e sobe pro **nosso MinIO** (URL pública do ngrok).
+
+PowerShell:
+
+```powershell
+$env:DATABASE_URL = "postgresql://USER:SENHA@HOST_DO_ERP:5432/BANCO"
+$env:S3_ENDPOINT  = "https://<sua-url>.ngrok-free.dev"   # túnel S3 do nosso MinIO
+$env:S3_ACCESS_KEY = "minioadmin"
+$env:S3_SECRET_KEY = "minioadmin"
+$env:S3_BUCKET     = "mirante-parquet"
+.\exporter-windows-amd64.exe --municipio 4117107 --ano 2026
+```
+
+> **Manifest por ERP:** o `export.yaml` default lista as tabelas do **schema demo** (`mun_<ibge>`/`fato_*`). Para o ERP real (Elotech/Betha/IPM/Equiplano/Sysmmar), edite o `export.yaml` com as **tabelas nativas daquele ERP** (issue #83). Para um primeiro teste de conectividade, aponte para qualquer tabela existente no banco do cliente.
+>
+> **Endpoint:** use a URL **https** do túnel S3 (o exportador resolve path-style automaticamente). Não exponha a senha do banco do ERP em logs/prints.
+
 ## Expor o MinIO via ngrok (testes de importação)
 
 Veja `infra/ngrok.yml` e `docs/epico4-exportador.md`. Resumo:

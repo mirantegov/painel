@@ -1,5 +1,6 @@
 # Binários de build
 /exporter
 /inspect
+/dist/
 # Artefatos locais
 *.parquet
