@@ -29,7 +29,7 @@ Decisões validadas: auth = tabela custom + JWT em cookie; S3 = MinIO self-hoste
 - Demais 19 módulos: tabelas keyed `municipio, entidade, ano, mes`.
 - Auth/ACL: `usuarios` (id_user, municipio_id_ibge, cpf, nome, cargo, secretaria?, senha_hash, ativo), `modulos`, `submodulos`, `usuario_modulos`, `usuario_submodulos`.
 
-Demo: município Nova Londrina `4117453`; usuário `00000000000` (Prefeito, acesso total).
+Demo: município Nova Londrina `4117107`; usuário `00000000000` (Prefeito, acesso total).
 
 ## Workflow de execução (por tarefa)
 
