@@ -31,7 +31,7 @@ O Mirante Painel é um dashboard **Next.js (App Router)** que serve indicadores 
 
 O alvo do produto são **três camadas**; a Fase 1 entrega apenas a de **serving**:
 
-1. **Ingestão** *(Épicos 4 e 6 — futuro)* — exportador Go → Parquet → MinIO e scrapers Python (TCE/PR, SICONFI) que coletam despesa, receita, contas, certidões etc.
+1. **Ingestão** *(Épico 4 — exportador iniciado; Épico 6 — scrapers futuro)* — o **exportador** (`exporter/`) dumpa **raw** as tabelas do ERP em Parquet → MinIO (sem transformação; ver [`docs/epico4-exportador.md`](docs/epico4-exportador.md)). Scrapers Python (TCE/PR, SICONFI) coletam contas/certidões. **A normalização para o canônico SIM-AM é feita no ClickHouse (Épico 5)**, não no exportador.
 2. **SSoT analítica** *(Épico 5 — futuro)* — **ClickHouse** como fonte da verdade colunar (um database `mun_<ibge>` por município), com ETL e sincronização para o Postgres.
 3. **Serving** *(Fase 1 — entregue)* — **PostgreSQL** servindo a leitura do app: fatos normalizados (`fato_despesa`/`fato_receita`) como destino do pipeline e **snapshots `jsonb`** (`mod_*`) para exibição rápida por módulo.
 

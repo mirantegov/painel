@@ -1,5 +1,6 @@
-# MinIO (camada S3 self-hosted) — usado a partir do Épico 4 (exportador Go → Parquet).
-# Placeholder nesta fase. Subir com: docker compose -f infra/docker-compose.minio.yml up -d
+# MinIO (camada S3 self-hosted) — landing RAW do pipeline (Épico 4).
+# O exportador (exporter/) sobe Parquet pro bucket `mirante-parquet`.
+# Subir: docker compose -f infra/docker-compose.minio.yml up -d
 services:
   minio:
     image: minio/minio:latest
@@ -11,9 +12,32 @@ services:
     environment:
       MINIO_ROOT_USER: ${S3_ACCESS_KEY:-minioadmin}
       MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-minioadmin}
+      # Para acesso externo via ngrok, descomente apontando p/ as URLs do túnel:
+      # MINIO_SERVER_URL: ${MINIO_SERVER_URL:-}                       # URL pública da API S3 (9000)
+      # MINIO_BROWSER_REDIRECT_URL: ${MINIO_BROWSER_REDIRECT_URL:-}   # URL pública do console (9001)
     volumes:
       - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     restart: unless-stopped
+
+  # Cria o bucket `mirante-parquet` no `up` (idempotente) e encerra.
+  createbuckets:
+    image: minio/mc:latest
+    container_name: mirante-minio-createbuckets
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${S3_ACCESS_KEY:-minioadmin} ${S3_SECRET_KEY:-minioadmin} &&
+      mc mb --ignore-existing local/${S3_BUCKET:-mirante-parquet} &&
+      echo 'bucket pronto: ${S3_BUCKET:-mirante-parquet}'
+      "
+    restart: "no"
 
 volumes:
   minio-data:
