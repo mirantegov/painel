@@ -70,11 +70,11 @@ const SUBMODULOS: Record<string, [string, string][]> = {
     ["balanco-atuarial", "Balanço Atuarial"],
   ],
   saneamento: [
-    ["abastecimento-agua", "Abastecimento de Água"],
+    ["abastecimento", "Abastecimento de Água"],
     ["esgoto", "Esgoto"],
-    ["financeiro-saneamento", "Financeiro"],
-    ["obras-saneamento", "Obras"],
-    ["drenagem-urbana", "Drenagem Urbana"],
+    ["financeiro", "Financeiro"],
+    ["obras", "Obras"],
+    ["drenagem", "Drenagem Urbana"],
   ],
 };
 
