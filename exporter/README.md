@@ -17,7 +17,10 @@ tables:
     scope: tenant
     partition_by_ano: true         # filtra WHERE ano=<ano> e particiona ano=<ano>/
     # columns: [entidade_id, ano, valor_pago]   # subconjunto (omitido = todas)
+    # filters: { entidade: 42, exercicio: 2025 } # WHERE col=$ AND … (recorta 1 cliente)
 ```
+
+`filters` gera `WHERE coluna = $ AND …` **parametrizado** (valores nunca interpolados; colunas validadas). Usado p/ recortar um cliente quando o ERP separa por coluna (ex.: Elotech `entidade`), não por schema.
 
 `columns` ausente = **todas** as colunas (raw fiel). Para incluir tabelas auxiliares/dimensões (contexto p/ o ETL do ClickHouse), basta adicioná-las aqui — **sem recompilar**.
 

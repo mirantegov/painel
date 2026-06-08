@@ -3,11 +3,21 @@ package exporter
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+func sortedKeys(m map[string]any) []string {
+	ks := make([]string, 0, len(m))
+	for k := range m {
+		ks = append(ks, k)
+	}
+	sort.Strings(ks)
+	return ks
+}
 
 // Column é uma coluna de origem (nome + OID do tipo Postgres).
 type Column struct {
@@ -38,7 +48,7 @@ func (s *Source) Close() { s.pool.Close() }
 // Dump lê uma tabela inteira (raw fiel). Retorna as colunas (nome+OID) e as
 // linhas como map[string]any já convertidas para tipos amigáveis ao Parquet.
 // schemaName é o schema físico (public ou mun_<ibge>). ano, se != nil, filtra.
-func (s *Source) Dump(ctx context.Context, schemaName, table string, columns []string, ano *int) ([]Column, []map[string]any, error) {
+func (s *Source) Dump(ctx context.Context, schemaName, table string, columns []string, filters map[string]any, ano *int) ([]Column, []map[string]any, error) {
 	colExpr := "*"
 	if len(columns) > 0 {
 		quoted := make([]string, len(columns))
@@ -49,10 +59,20 @@ func (s *Source) Dump(ctx context.Context, schemaName, table string, columns []s
 	}
 	rel := pgx.Identifier{schemaName, table}.Sanitize()
 	sql := fmt.Sprintf("select %s from %s", colExpr, rel)
+
+	// WHERE = filtros (igualdade, ordem determinística) [+ ano]. Valores parametrizados.
+	var conds []string
 	var args []any
+	for _, k := range sortedKeys(filters) {
+		args = append(args, filters[k])
+		conds = append(conds, fmt.Sprintf("%s = $%d", pgx.Identifier{k}.Sanitize(), len(args)))
+	}
 	if ano != nil {
-		sql += " where ano = $1"
 		args = append(args, *ano)
+		conds = append(conds, fmt.Sprintf("ano = $%d", len(args)))
+	}
+	if len(conds) > 0 {
+		sql += " where " + strings.Join(conds, " and ")
 	}
 
 	rows, err := s.pool.Query(ctx, sql, args...)

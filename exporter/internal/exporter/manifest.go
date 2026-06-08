@@ -24,6 +24,10 @@ type Table struct {
 	Columns []string `yaml:"columns,omitempty"`
 	// PartitionByAno: filtra WHERE ano=$ano e particiona em ano=<ano>/.
 	PartitionByAno bool `yaml:"partition_by_ano,omitempty"`
+	// Filters: predicados de igualdade (coluna→valor), p/ recortar 1 cliente.
+	// Ex.: {entidade: 42, exercicio: 2025} → WHERE entidade=$ AND exercicio=$.
+	// Parametrizado (valores nunca interpolados); colunas validadas.
+	Filters map[string]any `yaml:"filters,omitempty"`
 }
 
 // Gate de sanidade p/ identificadores (a segurança real é pgx.Identifier.Sanitize).
@@ -61,6 +65,11 @@ func LoadManifest(path string) (*Manifest, error) {
 		for _, c := range t.Columns {
 			if !identRe.MatchString(c) {
 				return nil, fmt.Errorf("manifest: coluna inválida %q em %q", c, t.Source)
+			}
+		}
+		for c := range t.Filters {
+			if !identRe.MatchString(c) {
+				return nil, fmt.Errorf("manifest: coluna de filtro inválida %q em %q", c, t.Source)
 			}
 		}
 	}
