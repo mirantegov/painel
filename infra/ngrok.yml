@@ -10,16 +10,25 @@
 #
 # (Linux: ~/.config/ngrok/ngrok.yml)
 #
-# IMPORTANTE — free tier dá 1 URL pública por agente: ao subir os dois túneis,
-# a URL atende a API S3 (9000), que é o que importa p/ importação. O console
-# (9001) só ganha URL própria em plano pago. Para expor SÓ o console pontualmente:
-#   ngrok http 9001
+# IMPORTANTE — free tier dá 1 URL pública por agente. Por isso expomos APENAS a
+# API S3 (9000), que é o que o cliente/exportador usa. Dois túneis na mesma URL
+# colidem e roteiam errado (a request S3 cai no console e falha com
+# "S3 API Requests must be made to API port").
+#
+# Subir (single tunnel, free tier):
+#   ngrok start minio-s3 \
+#     --config "$HOME/Library/Application Support/ngrok/ngrok.yml" \
+#     --config infra/ngrok.yml
+#   # equivalente: ngrok http 9000
+#
+# Console (9001): use local em http://127.0.0.1:9001, ou exponha à parte com
+#   ngrok http 9001   (só ganha URL própria simultânea em plano pago).
 # A URL é efêmera (muda a cada restart) salvo domínio reservado (plano pago).
 version: "3"
 tunnels:
   minio-s3:
     proto: http
-    addr: 9000 # API S3 do MinIO (prioritária)
-  minio-console:
-    proto: http
-    addr: 9001 # Console web do MinIO (URL própria só em plano pago)
+    addr: 9000 # API S3 do MinIO
+  # minio-console:   # descomente só em plano pago (URLs simultâneas distintas)
+  #   proto: http
+  #   addr: 9001
