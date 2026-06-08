@@ -10,6 +10,7 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { Pool } from "pg";
+import { DESPESA_SNAPSHOT } from "../lib/demo-despesa";
 
 const DATABASE_URL =
   process.env.DATABASE_URL ??
@@ -259,6 +260,13 @@ async function main() {
       `insert into mod_orcamento (entidade_id, ano, dados)
        values ($1, $2, $3)`,
       [entidadeId, ANO, JSON.stringify(ORCAMENTO_BASE)],
+    );
+
+    // Snapshot do módulo Despesas (display).
+    await client.query(`delete from mod_despesa where ano = $1`, [ANO]);
+    await client.query(
+      `insert into mod_despesa (entidade_id, ano, dados) values ($1, $2, $3)`,
+      [entidadeId, ANO, JSON.stringify(DESPESA_SNAPSHOT)],
     );
 
     await client.query("commit");
