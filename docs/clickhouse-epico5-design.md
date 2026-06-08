@@ -5,6 +5,21 @@
 > Engines `MergeTree`/`ReplacingMergeTree`. Em CH evita-se `Nullable` na chave de
 > ordenação → `mes` usa `0` (= agregado anual) e `data` usa sentinela.
 
+## Canonicalização: SIM-AM (decisão)
+
+O **formato canônico** do pipeline é o **SIM-AM** (Sistema de Informações Municipais —
+Acompanhamento Mensal, **TCE-PR**): submissão mensal, leiaute XML/XSD com registros de
+empenho, liquidação, pagamento, receita, notas fiscais+itens, cheques, despesa
+extra-orçamentária, saldos, + Plano de Contas SIM-AM.
+Leiaute: <https://www1.tce.pr.gov.br/conteudo/sim-am-download-de-programas-e-documentacao/32/area/249>.
+
+**Onde a normalização acontece:** o produto exporta de vários ERPs (Elotech, Betha, IPM,
+Equiplano, Sysmmar, …). O **exportador (Épico 4) é raw** — só espelha a origem pro MinIO,
+**sem** mapear para SIM-AM. A **normalização ERP → SIM-AM é feita aqui, no passo
+MinIO → ClickHouse**: cada ERP tem sua transformação raw→SIM-AM; daí pra frente
+(marts, sync → Postgres) tudo é SIM-AM, ERP-agnóstico. O sync final ClickHouse → Postgres
+entrega o shape idêntico ao que a API serve.
+
 ## Provisionamento `mun_<ibge>` (gerado por script: loop nos 19 slugs + municípios)
 
 ```sql

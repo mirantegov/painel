@@ -1,0 +1,4 @@
+# Binário do build (nome = último componente do módulo)
+/exporter
+# Artefatos locais
+*.parquet

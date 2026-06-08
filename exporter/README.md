@@ -1,0 +1,76 @@
+# Exportador (raw → Parquet → MinIO)
+
+Módulo Go que **dumpa fielmente** tabelas do Postgres de origem (o "ERP") em **Parquet** e sobe pro **MinIO**. É a camada de ingestão do pipeline (Épico 4).
+
+> **Raw, sem transformação.** O exportador espelha a origem (tipos e NULLs preservados) — **não** mapeia para SIM-AM nem agrega. A canonicalização para o leiaute **SIM-AM** e todo o tratamento acontecem no **ClickHouse (Épico 5)**.
+
+## O que exporta — manifest
+
+Dirigido por **`export.yaml`** (editável). Cada ERP pode ter o seu manifest. Cada entrada:
+
+```yaml
+bucket: mirante-parquet
+tables:
+  - source: public.dim_municipio   # [schema.]tabela
+    scope: global                  # global=public · tenant=mun_<ibge>
+  - source: fato_despesa
+    scope: tenant
+    partition_by_ano: true         # filtra WHERE ano=<ano> e particiona ano=<ano>/
+    # columns: [entidade_id, ano, valor_pago]   # subconjunto (omitido = todas)
+```
+
+`columns` ausente = **todas** as colunas (raw fiel). Para incluir tabelas auxiliares/dimensões (contexto p/ o ETL do ClickHouse), basta adicioná-las aqui — **sem recompilar**.
+
+## Layout no MinIO
+
+| Caso | Path |
+|---|---|
+| global | `_global/<tabela>/part-0.parquet` |
+| tenant (sem ano) | `<ibge>/<tabela>/part-0.parquet` |
+| tenant + ano | `<ibge>/<tabela>/ano=<ano>/part-0.parquet` |
+
+Idempotente: path determinístico (1 arquivo por tabela/ano) → re-run sobrescreve.
+
+## Mapeamento de tipos (fiel à origem)
+
+`bool→boolean` · `int2/int4→int32` · `int8→int64` · `float4→float` · `float8→double` · **`numeric→string` (decimal exato, lossless)** · `uuid/date/timestamptz/json/jsonb/text→string`. Todas as colunas são `optional` (NULLs preservados). O ClickHouse re-tipa no Épico 5.
+
+## Uso
+
+```bash
+# pré-requisitos: Postgres demo no ar (npm run db:start + db:seed-demo) e MinIO no ar
+docker compose -f ../infra/docker-compose.minio.yml up -d   # MinIO + bucket
+
+cd exporter
+go run . --municipio 4117107 --ano 2026               # usa export.yaml
+go run . --municipio 4117107 --ano 2026 --manifest outro.yaml
+```
+
+Env (com defaults p/ o stack local):
+
+| Var | Default |
+|---|---|
+| `DATABASE_URL` | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| `S3_ENDPOINT` | `http://127.0.0.1:9000` |
+| `S3_ACCESS_KEY` / `S3_SECRET_KEY` | `minioadmin` / `minioadmin` |
+| `S3_BUCKET` | (override opcional do `bucket` do manifest) |
+
+## Inspecionar um Parquet
+
+`cmd/inspect` lê um `.parquet` e imprime contagem/colunas/valores:
+
+```bash
+mc cp local/mirante-parquet/4117107/fato_despesa/ano=2026/part-0.parquet /tmp/x.parquet
+go run ./cmd/inspect /tmp/x.parquet
+```
+
+## Expor o MinIO via ngrok (testes de importação)
+
+Veja `infra/ngrok.yml` e `docs/epico4-exportador.md`. Resumo:
+
+```bash
+ngrok config add-authtoken <SEU_TOKEN>
+ngrok start --all --config ../infra/ngrok.yml   # túneis p/ 9000 (S3) e 9001 (console)
+```
+
+O exportador local fala com `127.0.0.1:9000`; o ngrok é p/ consumidores **externos** (ex.: ClickHouse remoto lendo o Parquet).

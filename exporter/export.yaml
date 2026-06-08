@@ -1,0 +1,22 @@
+# Manifest do exportador — tabelas a dumpar RAW (fiel) pro MinIO.
+# Edite à vontade ao longo do tempo: cada ERP pode ter seu próprio manifest.
+# Regras:
+#   scope: global  → lê do schema public; objeto em _global/<tabela>/
+#   scope: tenant  → lê de mun_<ibge>;    objeto em <ibge>/<tabela>/
+#   partition_by_ano: true → filtra WHERE ano=<ano> e particiona em ano=<ano>/
+#   columns: [..]  → subconjunto de campos (omitido = todas as colunas)
+bucket: mirante-parquet
+tables:
+  - source: public.dim_municipio
+    scope: global
+
+  - source: dim_entidade
+    scope: tenant
+
+  - source: fato_despesa
+    scope: tenant
+    partition_by_ano: true
+
+  - source: fato_receita
+    scope: tenant
+    partition_by_ano: true
