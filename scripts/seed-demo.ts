@@ -16,6 +16,7 @@ import { LICITACOES_PAINEL } from "../lib/demo-licitacoes-painel";
 import { FINANCEIRO_SNAPSHOT } from "../lib/demo-financeiro";
 import { TRIBUTACAO_SNAPSHOT } from "../lib/demo-tributacao";
 import { COMPRAS_SNAPSHOT } from "../lib/demo-compras";
+import { RH_SNAPSHOT } from "../lib/demo-rh";
 
 const DATABASE_URL =
   process.env.DATABASE_URL ??
@@ -300,6 +301,13 @@ async function main() {
     await client.query(
       `insert into mod_compras (entidade_id, ano, dados) values ($1, $2, $3)`,
       [entidadeId, ANO, JSON.stringify(COMPRAS_SNAPSHOT)],
+    );
+
+    // Snapshot do módulo RH (Recursos Humanos — display).
+    await client.query(`delete from mod_rh where ano = $1`, [ANO]);
+    await client.query(
+      `insert into mod_rh (entidade_id, ano, dados) values ($1, $2, $3)`,
+      [entidadeId, ANO, JSON.stringify(RH_SNAPSHOT)],
     );
 
     // Snapshot do Painel de Licitações (lista de licitações).
