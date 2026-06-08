@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { fmtBRL } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -963,7 +964,7 @@ export function DespesaMunicipal() {
         <KpiCard
           title="Despesa Atualizada"
           icon={Wallet01Icon}
-          value={formatCurrency(totais.atualizada)}
+          value={fmtBRL(totais.atualizada)}
           borderColor="border-l-blue-500"
           footer={
             <p className="text-xs text-muted-foreground">
@@ -974,7 +975,7 @@ export function DespesaMunicipal() {
         <KpiCard
           title="Despesa Empenhada"
           icon={Invoice01Icon}
-          value={formatCurrency(totais.empenhada)}
+          value={fmtBRL(totais.empenhada)}
           borderColor="border-l-green-500"
           footer={
             <div className="flex items-center gap-2">
@@ -991,7 +992,7 @@ export function DespesaMunicipal() {
         <KpiCard
           title="A Empenhar"
           icon={Calendar01Icon}
-          value={formatCurrency(totais.aEmpenhar)}
+          value={fmtBRL(totais.aEmpenhar)}
           borderColor="border-l-amber-500"
           footer={
             <p className="text-xs text-muted-foreground">
@@ -1003,7 +1004,7 @@ export function DespesaMunicipal() {
         <KpiCard
           title="Pago"
           icon={MoneyReceiveSquareIcon}
-          value={formatCurrency(totais.pago)}
+          value={fmtBRL(totais.pago)}
           borderColor="border-l-red-500"
           footer={
             <div className="flex items-center gap-2">
@@ -1020,7 +1021,7 @@ export function DespesaMunicipal() {
         <KpiCard
           title="A Pagar"
           icon={Building06Icon}
-          value={formatCurrency(totais.aPagar)}
+          value={fmtBRL(totais.aPagar)}
           borderColor="border-l-orange-500"
           footer={
             <div className="flex items-center gap-1 text-xs text-muted-foreground">

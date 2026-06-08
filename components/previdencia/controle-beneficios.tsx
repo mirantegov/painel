@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { fmtBRL } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { KpiCard } from "@/components/ui/kpi-card";
 import {
@@ -463,7 +464,7 @@ export function ControleBeneficios() {
         />
         <KpiCard
           title="Valor Total"
-          value={formatCurrency(
+          value={fmtBRL(
             DATA_BENEFICIOS_ANALISE.reduce((acc, b) => acc + b.valor, 0),
           )}
           icon={TrendingUp}

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { fmtBRL } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -917,7 +918,7 @@ export function FinanceiroMunicipal() {
         <KpiCard
           title="Saldo Total em Contas"
           icon={Wallet01Icon}
-          value={formatCurrency(totaisFinanceiros.saldoTotal)}
+          value={fmtBRL(totaisFinanceiros.saldoTotal)}
           borderColor="border-l-blue-500"
           footer={
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -934,7 +935,7 @@ export function FinanceiroMunicipal() {
         <KpiCard
           title="Total Entradas (Ano)"
           icon={MoneyAdd01Icon}
-          value={formatCurrency(totaisFinanceiros.totalEntradas)}
+          value={fmtBRL(totaisFinanceiros.totalEntradas)}
           borderColor="border-l-green-500"
           footer={
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -951,7 +952,7 @@ export function FinanceiroMunicipal() {
         <KpiCard
           title="Total Saídas (Ano)"
           icon={MoneySend01Icon}
-          value={formatCurrency(totaisFinanceiros.totalSaidas)}
+          value={fmtBRL(totaisFinanceiros.totalSaidas)}
           borderColor="border-l-red-500"
           footer={
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -968,7 +969,7 @@ export function FinanceiroMunicipal() {
         <KpiCard
           title="Aplicações Financeiras"
           icon={CoinsSwapIcon}
-          value={formatCurrency(totaisFinanceiros.aplicacoes)}
+          value={fmtBRL(totaisFinanceiros.aplicacoes)}
           borderColor="border-l-purple-500"
           footer={
             <div className="flex items-center gap-1 text-xs text-muted-foreground">

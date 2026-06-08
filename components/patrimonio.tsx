@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { fmtBRL } from "@/lib/format";
 import {
   Archive02Icon,
   ArrowDown01Icon,
@@ -660,7 +661,7 @@ export function Patrimonio() {
         <KpiCard
           title="Valor Patrimonial"
           icon={Archive02Icon}
-          value={formatCurrency(patrimonioResumo.valorTotal)}
+          value={fmtBRL(patrimonioResumo.valorTotal)}
           borderColor="border-l-[var(--chart-1)]"
           footer={
             <div className="flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-300">

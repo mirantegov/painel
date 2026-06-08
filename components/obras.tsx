@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { fmtBRL } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -983,7 +984,7 @@ export function Obras() {
         <KpiCard
           title="Valor Total Contratado"
           icon={CoinsDollarIcon}
-          value={formatCurrency(totalContratado)}
+          value={fmtBRL(totalContratado)}
           borderColor="border-l-green-500"
           footer={
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
