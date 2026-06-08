@@ -38,20 +38,6 @@ export function Legislativo() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Legislativo Municipal
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Câmara Municipal - Gestão 2025-2028
-          </p>
-        </div>
-        <Badge variant="outline" className="text-lg px-4 py-2">
-          {DATA_VEREADORES.length} Vereadores
-        </Badge>
-      </div>
-
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="flex w-full flex-wrap h-auto p-1 bg-muted/50 rounded-lg">
           {canSee("vereadores") && (

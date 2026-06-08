@@ -882,59 +882,6 @@ export function TributacaoMunicipal() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            Tributos Municipais
-          </h2>
-          <p className="text-muted-foreground">
-            Gestão tributária, arrecadação, fiscalização e dívida ativa
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select
-            value={periodoSelecionado}
-            onValueChange={setPeriodoSelecionado}
-          >
-            <SelectTrigger className="w-[120px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="2024">2024</SelectItem>
-              <SelectItem value="2023">2023</SelectItem>
-              <SelectItem value="2022">2022</SelectItem>
-            </SelectContent>
-          </Select>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <HugeiconsIcon
-                    icon={Download01Icon}
-                    strokeWidth={2}
-                    className="size-4"
-                  />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Exportar relatório</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <HugeiconsIcon
-                    icon={RefreshIcon}
-                    strokeWidth={2}
-                    className="size-4"
-                  />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Atualizar dados</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </div>
-
       {/* KPIs Principais */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard

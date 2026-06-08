@@ -1129,60 +1129,6 @@ export function PrestacaoContas() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            Prestação de Contas
-          </h2>
-          <p className="text-muted-foreground">
-            Acompanhamento de prestação de contas, CAUC e julgamento pelo TCE/PR
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select
-            value={periodoSelecionado}
-            onValueChange={setPeriodoSelecionado}
-          >
-            <SelectTrigger className="w-[120px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="2025">2025</SelectItem>
-              <SelectItem value="2024">2024</SelectItem>
-              <SelectItem value="2023">2023</SelectItem>
-            </SelectContent>
-          </Select>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <HugeiconsIcon
-                    icon={RefreshIcon}
-                    strokeWidth={2}
-                    className="size-4"
-                  />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Atualizar extrato</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <HugeiconsIcon
-                    icon={Download01Icon}
-                    strokeWidth={2}
-                    className="size-4"
-                  />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Exportar PDF</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </div>
 
       {/* Abas Internas */}
       <Tabs value={contasTab} onValueChange={setContasTab} className="space-y-6">

@@ -153,16 +153,6 @@ export function LicitacoesPainel() {
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="space-y-1">
-        <h2 className="text-3xl font-semibold tracking-tight text-foreground">
-          Licitações em aberto
-        </h2>
-        <p className="text-base text-muted-foreground">
-          Painel para exibição em telão: rotação automática a cada 12&nbsp;s.
-          Tecla <span className="font-medium text-foreground">P</span> pausa ou
-          retoma. Clique no painel para tela cheia; use ESC para sair.
-        </p>
-      </div>
 
       <div
         ref={panelRef}
