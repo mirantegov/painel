@@ -147,6 +147,7 @@ async function main() {
        where municipio_id_ibge = $1 and tipo = 'Prefeitura' limit 1`,
       [MUNICIPIO],
     );
+    if (!prefeitura) throw new Error("Entidade Prefeitura não encontrada após seed");
     const entidadeId = prefeitura.id;
 
     // Módulos.
@@ -189,6 +190,7 @@ async function main() {
       `select id_user from public.usuarios where municipio_id_ibge = $1 and cpf = $2`,
       [MUNICIPIO, DEMO_CPF],
     );
+    if (!user) throw new Error("Usuário demo não encontrado após upsert");
     const userId = user.id_user;
 
     // ACL: acesso total.
