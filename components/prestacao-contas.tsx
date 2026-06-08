@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSubmoduleAccess } from "@/components/submodule-access";
 import {
   Table,
   TableBody,
@@ -1103,6 +1104,12 @@ export function PrestacaoContas() {
   const [periodoSelecionado, setPeriodoSelecionado] = React.useState("2025");
   const [filtroSituacao, setFiltroSituacao] = React.useState<string>("todos");
 
+  const canSee = useSubmoduleAccess("prestacao-contas");
+  const CONTAS_TABS = ["agenda", "certidao", "tce", "cauc", "msc"];
+  const [contasTab, setContasTab] = React.useState(
+    () => CONTAS_TABS.find(canSee) ?? CONTAS_TABS[0],
+  );
+
   const contagem = contarItensPorSituacao(gruposCAUC);
   const totalItens =
     contagem["Regular"] +
@@ -1178,51 +1185,62 @@ export function PrestacaoContas() {
       </div>
 
       {/* Abas Internas */}
-      <Tabs defaultValue="agenda" className="space-y-6">
+      <Tabs value={contasTab} onValueChange={setContasTab} className="space-y-6">
         <TabsList>
-          <TabsTrigger value="agenda" className="gap-2">
-            <HugeiconsIcon
-              icon={Calendar01Icon}
-              strokeWidth={2}
-              className="size-4"
-            />
-            Agenda de Obrigações
-          </TabsTrigger>
-          <TabsTrigger value="certidao" className="gap-2">
-            <HugeiconsIcon
-              icon={Flag01Icon}
-              strokeWidth={2}
-              className="size-4"
-            />
-            Certidão
-          </TabsTrigger>
-          <TabsTrigger value="tce" className="gap-2">
-            <HugeiconsIcon
-              icon={FileValidationIcon}
-              strokeWidth={2}
-              className="size-4"
-            />
-            Contas TCE/PR
-          </TabsTrigger>
-          <TabsTrigger value="cauc" className="gap-2">
-            <HugeiconsIcon
-              icon={SecurityCheckIcon}
-              strokeWidth={2}
-              className="size-4"
-            />
-            CAUC
-          </TabsTrigger>
-          <TabsTrigger value="msc" className="gap-2">
-            <HugeiconsIcon
-              icon={ChartLineData02Icon}
-              strokeWidth={2}
-              className="size-4"
-            />
-            MSC
-          </TabsTrigger>
+          {canSee("agenda") && (
+            <TabsTrigger value="agenda" className="gap-2">
+              <HugeiconsIcon
+                icon={Calendar01Icon}
+                strokeWidth={2}
+                className="size-4"
+              />
+              Agenda de Obrigações
+            </TabsTrigger>
+          )}
+          {canSee("certidao") && (
+            <TabsTrigger value="certidao" className="gap-2">
+              <HugeiconsIcon
+                icon={Flag01Icon}
+                strokeWidth={2}
+                className="size-4"
+              />
+              Certidão
+            </TabsTrigger>
+          )}
+          {canSee("tce") && (
+            <TabsTrigger value="tce" className="gap-2">
+              <HugeiconsIcon
+                icon={FileValidationIcon}
+                strokeWidth={2}
+                className="size-4"
+              />
+              Contas TCE/PR
+            </TabsTrigger>
+          )}
+          {canSee("cauc") && (
+            <TabsTrigger value="cauc" className="gap-2">
+              <HugeiconsIcon
+                icon={SecurityCheckIcon}
+                strokeWidth={2}
+                className="size-4"
+              />
+              CAUC
+            </TabsTrigger>
+          )}
+          {canSee("msc") && (
+            <TabsTrigger value="msc" className="gap-2">
+              <HugeiconsIcon
+                icon={ChartLineData02Icon}
+                strokeWidth={2}
+                className="size-4"
+              />
+              MSC
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* Tab: CAUC */}
+        {canSee("cauc") && (
         <TabsContent value="cauc" className="space-y-6">
           {/* KPIs */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -1796,8 +1814,10 @@ export function PrestacaoContas() {
             </TabsContent>
           </Tabs>
         </TabsContent>
+        )}
 
         {/* Tab: Contas TCE/PR */}
+        {canSee("tce") && (
         <TabsContent value="tce" className="space-y-6">
           {/* KPIs TCE */}
           {(() => {
@@ -2035,8 +2055,10 @@ export function PrestacaoContas() {
             );
           })()}
         </TabsContent>
+        )}
 
         {/* Tab: Agenda de Obrigações */}
+        {canSee("agenda") && (
         <TabsContent value="agenda" className="space-y-6">
           {/* KPIs */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -2472,8 +2494,10 @@ export function PrestacaoContas() {
             </CardContent>
           </Card>
         </TabsContent>
+        )}
 
         {/* Tab: MSC — Monitor de Situação Contábil */}
+        {canSee("msc") && (
         <TabsContent value="msc" className="space-y-6">
           {/* KPIs */}
           {(() => {
@@ -2876,8 +2900,10 @@ export function PrestacaoContas() {
             );
           })()}
         </TabsContent>
+        )}
 
         {/* Tab: Certidão Liberatória — TCE/PR */}
+        {canSee("certidao") && (
         <TabsContent value="certidao" className="space-y-6">
           {(() => {
             const isApto = certidaoAtual.status === "Apto";
@@ -3282,6 +3308,7 @@ export function PrestacaoContas() {
             );
           })()}
         </TabsContent>
+        )}
       </Tabs>
 
       {/* Info do Município */}

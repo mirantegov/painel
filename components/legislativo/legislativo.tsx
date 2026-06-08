@@ -9,6 +9,7 @@ import { Proposituras } from "./proposituras";
 import { Comissoes } from "./comissoes";
 import { Presencas } from "./presencas";
 import { DespesasLegislativo } from "./despesas-legislativo";
+import { useSubmoduleAccess } from "@/components/submodule-access";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   UserMultipleIcon,
@@ -20,8 +21,20 @@ import {
 } from "@hugeicons/core-free-icons";
 import { DATA_VEREADORES } from "@/lib/demo-legislativo";
 
+const TAB_ORDER = [
+  "vereadores",
+  "sessoes",
+  "proposituras",
+  "comissoes",
+  "presencas",
+  "despesas",
+];
+
 export function Legislativo() {
-  const [activeTab, setActiveTab] = useState("vereadores");
+  const canSee = useSubmoduleAccess("legislativo");
+  const [activeTab, setActiveTab] = useState(
+    () => TAB_ORDER.find(canSee) ?? TAB_ORDER[0],
+  );
 
   return (
     <div className="space-y-6">
@@ -40,74 +53,93 @@ export function Legislativo() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-7 h-auto p-1 bg-muted/50 rounded-lg">
-          <TabsTrigger
-            value="vereadores"
-            className="flex items-center gap-2 py-2.5"
-          >
-            <HugeiconsIcon icon={UserMultipleIcon} className="h-4 w-4" />
-            <span className="hidden sm:inline">Vereadores</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="sessoes"
-            className="flex items-center gap-2 py-2.5"
-          >
-            <HugeiconsIcon icon={CalendarIcon} className="h-4 w-4" />
-            <span className="hidden sm:inline">Sessões</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="proposituras"
-            className="flex items-center gap-2 py-2.5"
-          >
-            <HugeiconsIcon icon={FileValidationIcon} className="h-4 w-4" />
-            <span className="hidden sm:inline">Proposituras</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="comissoes"
-            className="flex items-center gap-2 py-2.5"
-          >
-            <HugeiconsIcon icon={ShieldIcon} className="h-4 w-4" />
-            <span className="hidden sm:inline">Comissões</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="presencas"
-            className="flex items-center gap-2 py-2.5"
-          >
-            <HugeiconsIcon icon={UserCheckIcon} className="h-4 w-4" />
-            <span className="hidden sm:inline">Presenças</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="despesas"
-            className="flex items-center gap-2 py-2.5"
-          >
-            <HugeiconsIcon icon={InvoiceIcon} className="h-4 w-4" />
-            <span className="hidden sm:inline">Despesas</span>
-          </TabsTrigger>
+        <TabsList className="flex w-full flex-wrap h-auto p-1 bg-muted/50 rounded-lg">
+          {canSee("vereadores") && (
+            <TabsTrigger
+              value="vereadores"
+              className="flex flex-1 items-center gap-2 py-2.5"
+            >
+              <HugeiconsIcon icon={UserMultipleIcon} className="h-4 w-4" />
+              <span className="hidden sm:inline">Vereadores</span>
+            </TabsTrigger>
+          )}
+          {canSee("sessoes") && (
+            <TabsTrigger
+              value="sessoes"
+              className="flex flex-1 items-center gap-2 py-2.5"
+            >
+              <HugeiconsIcon icon={CalendarIcon} className="h-4 w-4" />
+              <span className="hidden sm:inline">Sessões</span>
+            </TabsTrigger>
+          )}
+          {canSee("proposituras") && (
+            <TabsTrigger
+              value="proposituras"
+              className="flex flex-1 items-center gap-2 py-2.5"
+            >
+              <HugeiconsIcon icon={FileValidationIcon} className="h-4 w-4" />
+              <span className="hidden sm:inline">Proposituras</span>
+            </TabsTrigger>
+          )}
+          {canSee("comissoes") && (
+            <TabsTrigger
+              value="comissoes"
+              className="flex flex-1 items-center gap-2 py-2.5"
+            >
+              <HugeiconsIcon icon={ShieldIcon} className="h-4 w-4" />
+              <span className="hidden sm:inline">Comissões</span>
+            </TabsTrigger>
+          )}
+          {canSee("presencas") && (
+            <TabsTrigger
+              value="presencas"
+              className="flex flex-1 items-center gap-2 py-2.5"
+            >
+              <HugeiconsIcon icon={UserCheckIcon} className="h-4 w-4" />
+              <span className="hidden sm:inline">Presenças</span>
+            </TabsTrigger>
+          )}
+          {canSee("despesas") && (
+            <TabsTrigger
+              value="despesas"
+              className="flex flex-1 items-center gap-2 py-2.5"
+            >
+              <HugeiconsIcon icon={InvoiceIcon} className="h-4 w-4" />
+              <span className="hidden sm:inline">Despesas</span>
+            </TabsTrigger>
+          )}
         </TabsList>
 
-        <TabsContent value="vereadores" className="mt-6">
-          <Vereadores />
-        </TabsContent>
-
-        <TabsContent value="sessoes" className="mt-6">
-          <Sessoes />
-        </TabsContent>
-
-        <TabsContent value="proposituras" className="mt-6">
-          <Proposituras />
-        </TabsContent>
-
-        <TabsContent value="comissoes" className="mt-6">
-          <Comissoes />
-        </TabsContent>
-
-        <TabsContent value="presencas" className="mt-6">
-          <Presencas />
-        </TabsContent>
-
-        <TabsContent value="despesas" className="mt-6">
-          <DespesasLegislativo />
-        </TabsContent>
+        {canSee("vereadores") && (
+          <TabsContent value="vereadores" className="mt-6">
+            <Vereadores />
+          </TabsContent>
+        )}
+        {canSee("sessoes") && (
+          <TabsContent value="sessoes" className="mt-6">
+            <Sessoes />
+          </TabsContent>
+        )}
+        {canSee("proposituras") && (
+          <TabsContent value="proposituras" className="mt-6">
+            <Proposituras />
+          </TabsContent>
+        )}
+        {canSee("comissoes") && (
+          <TabsContent value="comissoes" className="mt-6">
+            <Comissoes />
+          </TabsContent>
+        )}
+        {canSee("presencas") && (
+          <TabsContent value="presencas" className="mt-6">
+            <Presencas />
+          </TabsContent>
+        )}
+        {canSee("despesas") && (
+          <TabsContent value="despesas" className="mt-6">
+            <DespesasLegislativo />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
