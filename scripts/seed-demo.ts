@@ -127,25 +127,28 @@ async function main() {
       [MUNICIPIO],
     );
 
-    // Entidades.
+    // Provisiona o schema do tenant e passa a operar dentro dele.
+    // (objetos globais seguem com prefixo public.* explícito.)
+    await client.query("select public.provision_municipio($1)", [MUNICIPIO]);
+    await client.query(`set search_path to mun_${MUNICIPIO}, public`);
+
+    // Entidades (no schema do tenant — sem municipio_id_ibge).
     const entidades: [string, string][] = [
       ["Prefeitura Municipal de Nova Londrina", "Prefeitura"],
       ["Câmara Municipal de Nova Londrina", "Câmara"],
     ];
     for (const [nome, tipo] of entidades) {
       await client.query(
-        `insert into public.dim_entidade (municipio_id_ibge, nome, tipo)
-         values ($1, $2, $3)
-         on conflict (municipio_id_ibge, nome) do nothing`,
-        [MUNICIPIO, nome, tipo],
+        `insert into dim_entidade (nome, tipo)
+         values ($1, $2)
+         on conflict (nome) do nothing`,
+        [nome, tipo],
       );
     }
     const {
       rows: [prefeitura],
     } = await client.query<{ id: string }>(
-      `select id from public.dim_entidade
-       where municipio_id_ibge = $1 and tipo = 'Prefeitura' limit 1`,
-      [MUNICIPIO],
+      `select id from dim_entidade where tipo = 'Prefeitura' limit 1`,
     );
     if (!prefeitura) throw new Error("Entidade Prefeitura não encontrada após seed");
     const entidadeId = prefeitura.id;
@@ -207,38 +210,32 @@ async function main() {
       [userId],
     );
 
-    // Fatos (re-seed idempotente da amostra do ano).
-    await client.query(
-      `delete from public.fato_despesa where municipio_id_ibge = $1 and ano = $2`,
-      [MUNICIPIO, ANO],
-    );
+    // Fatos (re-seed idempotente da amostra do ano) — no schema do tenant.
+    await client.query(`delete from fato_despesa where ano = $1`, [ANO]);
     for (const d of DESPESA) {
       await client.query(
-        `insert into public.fato_despesa
-           (municipio_id_ibge, entidade_id, ano, mes, orgao, secretaria,
+        `insert into fato_despesa
+           (entidade_id, ano, mes, orgao, secretaria,
             valor_atualizada, valor_empenhada, valor_liquidada, valor_pago,
             valor_a_empenhar, valor_a_pagar)
-         values ($1,$2,$3,null,$4,$4,$5,$6,$7,$8,$9,$10)`,
+         values ($1,$2,null,$3,$3,$4,$5,$6,$7,$8,$9)`,
         [
-          MUNICIPIO, entidadeId, ANO, d.orgao,
+          entidadeId, ANO, d.orgao,
           d.atualizada, d.empenhada, d.liquidada, d.pago,
           d.atualizada - d.empenhada, d.liquidada - d.pago,
         ],
       );
     }
 
-    await client.query(
-      `delete from public.fato_receita where municipio_id_ibge = $1 and ano = $2`,
-      [MUNICIPIO, ANO],
-    );
+    await client.query(`delete from fato_receita where ano = $1`, [ANO]);
     for (const r of RECEITA) {
       await client.query(
-        `insert into public.fato_receita
-           (municipio_id_ibge, entidade_id, ano, mes, codigo, receita, categoria,
+        `insert into fato_receita
+           (entidade_id, ano, mes, codigo, receita, categoria,
             valor_prevista, valor_arrecadada, valor_a_arrecadar)
-         values ($1,$2,$3,null,$4,$5,$6,$7,$8,$9)`,
+         values ($1,$2,null,$3,$4,$5,$6,$7,$8)`,
         [
-          MUNICIPIO, entidadeId, ANO, r.codigo, r.receita, r.categoria,
+          entidadeId, ANO, r.codigo, r.receita, r.categoria,
           r.prevista, r.arrecadada, r.prevista - r.arrecadada,
         ],
       );
@@ -257,14 +254,11 @@ async function main() {
       metaRealizacaoReceitaPct: 95,
       despesaPessoalOrcado: 265_000_000,
     };
+    await client.query(`delete from mod_orcamento where ano = $1`, [ANO]);
     await client.query(
-      `delete from public.mod_orcamento where municipio_id_ibge = $1 and ano = $2`,
-      [MUNICIPIO, ANO],
-    );
-    await client.query(
-      `insert into public.mod_orcamento (municipio_id_ibge, entidade_id, ano, dados)
-       values ($1, $2, $3, $4)`,
-      [MUNICIPIO, entidadeId, ANO, JSON.stringify(ORCAMENTO_BASE)],
+      `insert into mod_orcamento (entidade_id, ano, dados)
+       values ($1, $2, $3)`,
+      [entidadeId, ANO, JSON.stringify(ORCAMENTO_BASE)],
     );
 
     await client.query("commit");
