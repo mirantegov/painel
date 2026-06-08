@@ -21,8 +21,9 @@ import (
 func main() {
 	log.SetFlags(0)
 
-	municipio := flag.String("municipio", "", "id IBGE do município (7 dígitos)")
+	municipio := flag.String("municipio", "", "id IBGE do município (7 dígitos) — usado no path do MinIO")
 	ano := flag.Int("ano", 0, "ano de referência (filtra tabelas partition_by_ano)")
+	schema := flag.String("schema", "", "schema de origem p/ scope:tenant (ERP real, ex.: Elotech); vazio = mun_<ibge>")
 	manifest := flag.String("manifest", "export.yaml", "caminho do manifest YAML")
 	flag.Parse()
 
@@ -35,6 +36,7 @@ func main() {
 	cfg := exporter.Config{
 		Municipio:   *municipio,
 		Ano:         *ano,
+		Schema:      *schema,
 		Manifest:    *manifest,
 		DSN:         env("DATABASE_URL", "postgresql://postgres:postgres@127.0.0.1:54322/postgres"),
 		S3Endpoint:  env("S3_ENDPOINT", "http://127.0.0.1:9000"),
