@@ -60,12 +60,26 @@ func (s *Source) Dump(ctx context.Context, schemaName, table string, columns []s
 	rel := pgx.Identifier{schemaName, table}.Sanitize()
 	sql := fmt.Sprintf("select %s from %s", colExpr, rel)
 
-	// WHERE = filtros (igualdade, ordem determinística) [+ ano]. Valores parametrizados.
+	// WHERE = filtros (igualdade ou IN p/ lista, ordem determinística) [+ ano].
+	// Valores sempre parametrizados.
 	var conds []string
 	var args []any
 	for _, k := range sortedKeys(filters) {
-		args = append(args, filters[k])
-		conds = append(conds, fmt.Sprintf("%s = $%d", pgx.Identifier{k}.Sanitize(), len(args)))
+		col := pgx.Identifier{k}.Sanitize()
+		if list, ok := filters[k].([]any); ok { // lista → IN (...)
+			if len(list) == 0 {
+				return nil, nil, fmt.Errorf("filtro %q em %s: lista vazia", k, rel)
+			}
+			ph := make([]string, len(list))
+			for i, v := range list {
+				args = append(args, v)
+				ph[i] = fmt.Sprintf("$%d", len(args))
+			}
+			conds = append(conds, fmt.Sprintf("%s in (%s)", col, strings.Join(ph, ", ")))
+			continue
+		}
+		args = append(args, filters[k]) // escalar → igualdade
+		conds = append(conds, fmt.Sprintf("%s = $%d", col, len(args)))
 	}
 	if ano != nil {
 		args = append(args, *ano)

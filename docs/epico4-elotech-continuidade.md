@@ -42,19 +42,29 @@
 | **Planejamento** | orçado/suplementado/reduzido/atualizado; receita prevista/deduzida/alterada; metas LOA | orcdespesa+orcversao + decreto/itemdecreto(receita) + orcreceita |
 | **Financeiro** | contas/saldos bancários, fontes, pagamentos, fornecedores, aplicações, conciliação, fluxo | plano/contas/eventos + contabancaria + contaaplicacao + conciliacao + fornecedor |
 
+## Separação por IBGE / todas as entidades
+
+- **MinIO e ClickHouse separam por IBGE (município)**, não por entidade. Um município tem
+  **várias entidades** (prefeitura, câmara, RPPS, autarquias, fundos). Exporta-se **todas** —
+  filtro **`entidade IN (lista)`** — e a `entidade` fica como **coluna** no dado.
+- Os `filters` do exportador aceitam **lista** → `IN (...)` (além de escalar → `=`). Manifest:
+  `filters: { entidade: [__ENTIDADES__], exercicio: __EXERCICIO__ }`.
+
 ## Alvo do teste (definido)
 
-- **IBGE** `4117107` (Nova Londrina) · **entidade** `1` (prefeitura) · **exercicio** `2026`.
-- Manifest usa placeholders `__ENTIDADE__`/`__EXERCICIO__` resolvidos por **`--var`** (template reusável):
+- **IBGE** `4117107` (Nova Londrina) · **exercicio** `2026` · **entidades** = todas do município
+  (prefeitura `1` + câmara/RPPS/etc. — descobrir com a query do header do manifest).
+- Comando (resolve placeholders via `--var`; `ENTIDADES` = lista separada por vírgula):
   ```bash
   cd exporter
   DATABASE_URL="postgresql://USER:SENHA@HOST_ELOTECH:5432/BANCO" \
   S3_ENDPOINT="https://<ngrok-s3>" S3_ACCESS_KEY=minioadmin S3_SECRET_KEY=minioadmin S3_BUCKET=mirante-parquet \
   go run . --municipio 4117107 --ano 2026 \
-           --var ENTIDADE=1 --var EXERCICIO=2026 \
+           --var ENTIDADES="1, 2, 3" --var EXERCICIO=2026 \
            --manifest manifests/elotech-eloweb.yaml
   # objetos: mc ls -r local/mirante-parquet/4117107/
   ```
+  (Substitua `"1, 2, 3"` pela lista real das entidades do município — ver query no header do manifest.)
 
 ## Views siscop analisadas (sem matviews)
 
