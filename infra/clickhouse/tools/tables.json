@@ -2074,7 +2074,7 @@
     "size": 2,
     "tipo": "Numérico",
     "formato": "Z(1)9",
-    "name": "idTipoExecucao",
+    "name": "idTipoExecucaoAcao",
     "obrig": "SIM"
    },
    {

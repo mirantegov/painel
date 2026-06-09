@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS simam.MovimentoAcao
     cdSubFuncao String,
     nrAno UInt32,
     idNaturezaAcao UInt32,
-    idTipoExecucao UInt32,
+    idTipoExecucaoAcao UInt32,
     idTipoAcao UInt32,
     flAcaoContinua String,
     dsAcao String,

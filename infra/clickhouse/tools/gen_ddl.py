@@ -263,8 +263,9 @@ def main():
     ov_path = os.path.join(here, "overrides.json")
     overrides = {}
     if os.path.exists(ov_path):
+        # só entradas cujo valor é lista de campos (ignora _comment/metadados)
         overrides = {k: v for k, v in json.load(open(ov_path)).items()
-                     if not k.startswith("_")}
+                     if isinstance(v, list)}
     for t in tables:
         if t["kind"] == "layout" and t["table"] in overrides:
             t["fields"] = overrides[t["table"]]

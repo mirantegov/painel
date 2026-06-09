@@ -78,5 +78,11 @@ A extração via `pdftotext` é fiel em ~99,9%, mas restam glitches pontuais
 - Tipos de campos sem `Formato` no PDF são **inferidos pelo prefixo**
   (`dt`→Date, `vl`→Decimal, `id`→UInt32, `cd/nr/nm/ds`→String).
 
-Correções pontuais: editar `tools/tables.json` e rodar `gen_ddl.py` de novo, ou
-ajustar o DDL gerado. O parser é determinístico e reexecutável.
+O `parse_layout.py` **loga** (stderr) os tokens camelCase descartados por não
+terem prefixo SIM-AM conhecido — assim nenhum campo some em silêncio. Tokens que
+forem campos reais (ex.: `subItem`/`subTitulo` truncados) devem entrar em
+`tools/overrides.json`.
+
+Correções pontuais: adicionar a tabela em `tools/overrides.json` (lista de
+campos curada, aplicada por `gen_ddl.py`) ou editar `tools/tables.json` e regerar.
+O parser é determinístico e reexecutável.

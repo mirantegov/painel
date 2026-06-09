@@ -120,6 +120,8 @@ def parse_layout_fields(block):
             }
         elif cur is not None:
             tok = tok_at(ln)
+            if tok and SIG_RE.match(tok) and not KNOWN_PREFIX.match(tok.lower()):
+                DROPPED_TOKENS.append(tok)  # visibilidade: token camelCase sem prefixo SIM-AM
             if tok and SIG_RE.match(tok) and KNOWN_PREFIX.match(tok.lower()):
                 # campo standalone sem colunas size/tipo/formato (célula vazia);
                 # exige prefixo SIM-AM conhecido p/ não capturar palavra de descrição
@@ -160,13 +162,15 @@ def trim_doubled_tail(nm):
     len(B)>=3, e A é um nome plausível (>=4) — evita falsos positivos.
     """
     low = nm.lower()
-    for k in range(len(nm) - 3, 3, -1):  # B = nm[k:], A = nm[:k] (B do menor p/ maior)
+    # overlap mínimo de 4 chars: todos os vazamentos reais observados têm >=5
+    # ('penho','ersao','Estorno'…); 4 reduz a superfície de falso-positivo.
+    for k in range(len(nm) - 4, 3, -1):  # B = nm[k:], A = nm[:k] (B do menor p/ maior)
         b = low[k:]
         a = low[:k]
-        if len(b) >= 3 and a.endswith(b):
+        if len(b) >= 4 and a.endswith(b):
             return nm[:k]
         # tolera 1 char de junção vazado (ex.: '...Estorno' + 'lEstorno')
-        if len(b) >= 4 and a.endswith(b[1:]):
+        if len(b) >= 5 and a.endswith(b[1:]):
             return nm[:k]
     return nm
 
@@ -174,6 +178,7 @@ def trim_doubled_tail(nm):
 KNOWN_PREFIX = re.compile(
     r"^(id|cd|ds|nm|fl|tp|nr|sg|dt|vl|qt|pc|vr|cu|hr|in|co|nu|qd|ic|ap|sq|ba|na)"
 )
+DROPPED_TOKENS = []  # tokens camelCase descartados por não terem prefixo SIM-AM
 
 
 def parse_lookup(block):
@@ -263,6 +268,10 @@ def main(path):
     lay = sum(1 for t in tables if t["kind"] == "layout")
     look = sum(1 for t in tables if t["kind"] == "lookup")
     print(f"# layout={lay} lookup={look}", file=sys.stderr)
+    if DROPPED_TOKENS:
+        uniq = sorted(set(DROPPED_TOKENS))
+        print(f"# tokens standalone descartados (sem prefixo SIM-AM): "
+              f"{len(uniq)} -> {uniq[:20]}", file=sys.stderr)
 
 
 if __name__ == "__main__":
