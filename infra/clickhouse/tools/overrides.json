@@ -1,0 +1,9 @@
+{
+  "_comment": "Correções curadas de tabelas onde o parser do PDF erra (re-leitura multi-página, bleed de números). Aplicado por gen_ddl.py sobre tables.json. Cada entrada substitui a lista de campos da tabela.",
+  "ResponsavelContaBancaria": [
+    { "name": "idPessoa", "tipo": "Numérico", "formato": "Z(6)9", "size": 7, "obrig": "SIM" },
+    { "name": "idContaBACEN", "tipo": "Numérico", "formato": "Z(9)9", "size": 10, "obrig": "SIM" },
+    { "name": "nrCPF", "tipo": "Caractere", "formato": "X(15)", "size": 15, "obrig": "SIM" },
+    { "name": "dtInicio", "tipo": "Data", "formato": "AAAA-MM-DD", "size": 10, "obrig": "SIM" }
+  ]
+}
