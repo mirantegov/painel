@@ -177,6 +177,7 @@ export const MODULE_IDS = MODULES.map((m) => m.id);
 
 /** Módulos de entrega (dados no banco) — visíveis no menu por padrão. */
 export const DEFAULT_ENABLED_MODULE_IDS = [
+  "visao-geral",
   "despesa",
   "receita",
   "financeiro",
