@@ -113,6 +113,49 @@ Fonte: `siscop.fichaempenho` (saldos por empenho) ⋈ `siscop.exercicio` (anos) 
 `vlProcessar` / `vlProcessado` derivam dos `valor*` da ficha (empenhado − anulações − liquidações…).
 Usa a função `siscop.buscaano(data)` e `exercicio < ano_atual` (empenhos de anos anteriores ainda abertos).
 
+## 5) Dimensões (cadastros)
+
+Fonte (siscop, **globais** — sem coluna `entidade`): `cidade`, `unidadefederacao`, `fornecedor`,
+`fonterecurso` + hierarquia padrão (`fonterecursopadrao`, `fontepadraotce[UF='PR']`,
+`fonteorigemrecurso`, `especificacaofonte`, `fonteaplicacaorecurso`, `desdobramentofonte`,
+`detalhamentofonte`, `fontearea`). Por-ente: `siscop.entidade`, `siscop.exercicio`.
+
+- **Entidade**: `entidade.identificacaotce`(=idTCE), `tipoentidade` (E/L/R/A → 1/2/3/4; nomes
+  Executivo/Legislativo/Previdência/Autarquia), `cnpj`, `mscpoderorgao`(=cdMSC),
+  `msccodigosiconfi`(=cdSICONFI). Filtro do cliente: `codigoibge IN ('41','33')` (PR/SC).
+- **IBGE do ente** = `unidadefederacao.codigoibge || cidade.ibge`, casando `entidade.cidade`(texto)
+  com `cidade.descricao` e `cidade.unidadefederacao` → `unidadefederacao`.
+- **Fornecedor**: `tipopessoa` (F/J; estrangeiro→'98'), `situacao` (0=Ativo, >0=Inativo),
+  `responsavelliquidacao`, endereço/cidade.
+- **Fonte de recurso**: cadeia `fonterecurso → fonterecursopadrao → {fontepadraotce, origem,
+  especificacao, aplicacao, desdobramento, detalhamento, area}`. `cdaplicacaofonte` deriva o
+  **tipoaplicacao** (ver query "Despesa Executada").
+
+## 6) Modelo-alvo ClickHouse — despesa executada consolidada
+
+> Queries "Despesa Executada" e "Despesa executada consolidada" são **ClickHouse** (usam
+> `toDate32`/`leftPad`/`toMonth`, e tabelas `ctb_*`/`orc_*`). São o **destino do Épico 5**, não fonte.
+
+- **Registros (movimentos):** `ctb_reg_despesa_{empenho,liquidacao,pagamento,retencao}[_old]`,
+  `ctb_reg_despesa_empenho_detalhe[_old]`, `orc_reg_despesa_{orcada,suplementada,reduzida}_{new,old}`.
+  Views anuais consolidadas: `ctb_vue_despesa_executada_<ANO>[_1|_2]`.
+- **Filtros/dimensões (marts):** `ctb_flt_entidades`, `ctb_flt_estagio_procedimento`,
+  `ctb_flt_fonte_recursos`, `ctb_flt_fornecedor`, `ctb_flt_despesa_{orgao,unidade,secretaria,
+  programa,acao,categoria,grupo,modalidade,elemento,natureza,natureza_desdobrada}`,
+  `orc_flt_despesa_*`, `fin_flt_tipos_aplicacao`.
+- **Valores por procedimento** (pivot `CASE cdprocedimento/cdestagio`):
+  `111` orçado · `112` suplementado · `113` reduzido · estágio `10` atualizado ·
+  `161-165` empenho/anulações/cancel.restos · estágio `16` empenhado ·
+  `171/172` liquidação/estorno · estágio `17` liquidado · `181/182` pagamento/estorno ·
+  `183/184` retenção/estorno · estágio `18` pago.
+  Derivados: `aempenhar = atualizado − empenhado`, `aliquidar = empenhado − liquidado`,
+  `apagar = empenhado − pago`, `processado = liquidado − pago`.
+- **tipoaplicacao** (de `cdaplicacaofonte` [+ `cdfonterecurso`]): 1 Recursos Livres · 2 Educação ·
+  3 Saúde · 4 Social · 6 Previdência · 7 Consórcios · 9 Outras Áreas · 0 Classificar.
+- **nrmes** = `leftPad(toMonth(dtmovimento),2,'0')`; **nrano** = exercício.
+
+Esse é, na prática, o **fato despesa SIM-AM** que o sync ClickHouse→Postgres entrega à API.
+
 > **Receita** (orçamentária) ainda sem queries — tabelas siscop candidatas no dump:
 > `diarioarrecadacao` (realizada), `calculoprevisaoreceita`, `contabancariareceita`,
 > `ammrealizacaomensalreceitafonte`. Habilitar no manifest quando chegarem.
