@@ -6,24 +6,62 @@
 
 **Architecture:** O produto passa a operar como um stack self-hosted: proxy HTTPS na borda, Next.js como app, Postgres/Supabase como serving, MinIO como landing raw, ClickHouse como SSoT analítica e jobs de ingestão/sync. O desenvolvimento continua no servidor com Git, Docker Compose, backups, observabilidade e releases versionados.
 
-**Tech Stack:** Next.js 16, React 19, TypeScript, PostgreSQL/Supabase self-hosted, ClickHouse 25.3, MinIO, Docker Compose, Go exporter, Python scrapers, Caddy ou Traefik para TLS, GitHub Issues/Milestones para gestão. Imagens de produção devem usar base Debian/Bookworm quando houver tag oficial compatível; imagens customizadas devem partir de Debian slim para facilitar shell interno, auditoria e troubleshooting.
+**Tech Stack:** Next.js 16, React 19, TypeScript, PostgreSQL/Supabase self-hosted, ClickHouse 25.3, MinIO, Docker Compose, Go exporter, Python scrapers, **Traefik para TLS** (decidido em `docs/adr-proxy-tls.md`), Linear (execução) + GitHub Milestones/Issues (release/changelog) para gestão. Imagens de produção devem usar base Debian/Bookworm quando houver tag oficial compatível; imagens customizadas devem partir de Debian slim para facilitar shell interno, auditoria e troubleshooting.
 
 ---
 
 ## Estado Atual Em 2026-06-09
 
-- App Next.js com build standalone via `Dockerfile`.
-- `docker-compose.yml` atual sobe apenas o serviço `app`.
+- App Next.js com build standalone via `Dockerfile` (base `node:22-slim`).
+- `docker-compose.yml` atual sobe apenas o serviço `app`, **sem** `DATABASE_URL`/`JWT_SECRET` nem Postgres — quebrado para produção; serve só como atalho local.
+- Release `v2.0.0` já publicada em `main` (Épico 3 do plano legado fechado). `package.json` ainda em `0.0.1` — sincronizar.
 - Auth custom entregue: login por cliente IBGE + CPF + senha, JWT HS256 em cookie `mp_session`.
 - Postgres multi-tenant entregue em migrations Supabase: `public.*` global e schemas `mun_<id_ibge>` por município.
-- Leitura de módulos entregue via snapshots `mod_*` e rota `GET /api/data/[modulo]`.
+- Leitura de módulos entregue via snapshots `mod_*` e rota `GET /api/data/[modulo]`. 19 de 21 módulos já usam `useSnapshot`.
+- **Long tail (#33) está em WIP local, não mergeado**: working tree tem `lib/demo-*.ts` novos e `snapshot-context.tsx` em legislativo/previdência/saneamento. Merge é gate antes do Épico 1.
+- **`visao-geral` e `orcamento` continuam fora do padrão snapshot** (`visao-geral` com dados inline sem `lib/demo-visao-geral.ts`; `orcamento` usa `ORCAMENTO_BASE` + `computeOrcamento()` direto). Ambos no gate de código.
 - `scripts/seed-demo.ts` provisiona Nova Londrina/PR (`4117107`), usuário demo, ACL total, fatos demo e snapshots.
-- Catálogo de módulos centralizado em `lib/modules-config.ts`; dados de módulo em `lib/data/modules.ts`.
-- Long tail de snapshots foi consolidado para os módulos remanescentes.
-- ClickHouse SIM-AM já tem infra em `infra/clickhouse/`: 224 tabelas canônicas, 224 raw e 115 domínios.
-- MinIO já tem compose separado em `infra/docker-compose.minio.yml`.
+- Catálogo de módulos centralizado em `lib/modules-config.ts`; dados de módulo em `lib/data/modules.ts`. `DEFAULT_ENABLED_MODULE_IDS` ainda lista 9 módulos — revisar pós long-tail.
+- ClickHouse SIM-AM já tem infra em `infra/clickhouse/`: 224 tabelas canônicas, 224 raw e 115 domínios. ETL/sync ainda não implementados.
+- MinIO já tem compose separado em `infra/docker-compose.minio.yml`. Convenção de paths divergente entre exportador, template ETL e design doc — Épico 6/7 deve unificar.
 - Exportador Go existe em `exporter/`, com manifest padrão e manifest Elotech eloweb.
+- Já existem scripts VPS legados em `setup-vps.sh` (porta 3000 exposta) e `setup/vps/` (Nginx + Certbot no host) — divergem do plano (path `/opt/app` vs `/opt/mirante/painel`, sem Postgres, sem `.env.production`). Decisão de reaproveitar ou substituir vem após ADR do proxy.
 - Plano de Análises está historicamente concluído; só deve voltar se auditoria apontar regressão.
+
+## Mapa De Numeração De Épicos (legado → consolidado)
+
+Para não confundir agents que ainda leem `docs/plano-fase-backend-v2.md`:
+
+| Plano backend v2 (histórico) | Plano consolidado VPS |
+| --- | --- |
+| Épicos 1–3 (App + Auth + Snapshots → `v2.0.0`) | Base já entregue |
+| Épico 4 (Exportador Go + MinIO) | **Épico 6** |
+| Épico 5 (ClickHouse SSoT + ETL) | **Épico 7** (+ sync = **Épico 8**) |
+| Épico 6 (Scrapers TCE/PR + SICONFI) | **Épico 9** |
+| Épico 7 (Supabase self-hosted produção) | **Épico 3** |
+| — | Épicos 0, 1, 2, 4, 5, 10, 11 são novos (governança, VPS, compose, hardening, qualidade, ops, release) |
+
+## Mapa Linear ↔ Plano
+
+Projeto Linear: **[Mirante Painel — VPS Pipeline v2.x](https://linear.app/code42dev/project/mirante-painel-vps-pipeline-v2x-937f65e421e8)** (time `mirante`, key `MIR`).
+
+| Épico | Linear | GitHub Milestone |
+| --- | --- | --- |
+| E0 · Governança | [MIR-2](https://linear.app/code42dev/issue/MIR-2) | [#9 E0 Governança](https://github.com/mirantegov/painel/milestone/9) |
+| Gate de código | [MIR-3](https://linear.app/code42dev/issue/MIR-3) | [#10 Gate de código](https://github.com/mirantegov/painel/milestone/10) |
+| E1 · VPS, DNS, segurança | [MIR-4](https://linear.app/code42dev/issue/MIR-4) | [#11 E1 VPS, DNS, segurança](https://github.com/mirantegov/painel/milestone/11) |
+| E2 · Compose + Traefik | [MIR-5](https://linear.app/code42dev/issue/MIR-5) | [#12 E2 Compose+TLS (Traefik)](https://github.com/mirantegov/painel/milestone/12) |
+| E3 · Postgres prod | [MIR-6](https://linear.app/code42dev/issue/MIR-6) | [#13 E3 Postgres produção](https://github.com/mirantegov/painel/milestone/13) |
+| E4 · Hardening auth/ACL | [MIR-7](https://linear.app/code42dev/issue/MIR-7) | [#14 E4 Hardening auth/ACL](https://github.com/mirantegov/painel/milestone/14) |
+| E5 · Qualidade módulos | [MIR-8](https://linear.app/code42dev/issue/MIR-8) | [#15 E5 Qualidade módulos](https://github.com/mirantegov/painel/milestone/15) |
+| E6 · MinIO + exportador | [MIR-9](https://linear.app/code42dev/issue/MIR-9) | [#16 E6 MinIO+exportador](https://github.com/mirantegov/painel/milestone/16) |
+| E7 · ClickHouse ETL | [MIR-10](https://linear.app/code42dev/issue/MIR-10) | [#17 E7 ClickHouse ETL](https://github.com/mirantegov/painel/milestone/17) |
+| E8 · Sync CH→PG | [MIR-11](https://linear.app/code42dev/issue/MIR-11) | [#18 E8 Sync CH→PG](https://github.com/mirantegov/painel/milestone/18) |
+| E9 · Scrapers | [MIR-12](https://linear.app/code42dev/issue/MIR-12) | [#19 E9 Scrapers TCE/SICONFI](https://github.com/mirantegov/painel/milestone/19) |
+| E10 · Observabilidade/backup | [MIR-13](https://linear.app/code42dev/issue/MIR-13) | [#20 E10 Observabilidade/backup](https://github.com/mirantegov/painel/milestone/20) |
+| E11 · Releases | [MIR-14](https://linear.app/code42dev/issue/MIR-14) | [#21 v2.1.0](https://github.com/mirantegov/painel/milestone/21) · [#22 v2.2.0](https://github.com/mirantegov/painel/milestone/22) · [#23 v2.3.0](https://github.com/mirantegov/painel/milestone/23) |
+
+Fluxo de status Linear (regra `linear-workflow.mdc`): Backlog → To Do → In Progress → In Review → Done. Subtarefas com prefixo `E<n>.<t>` ficam como sub-issues quando começarem.
 
 ## Decisão De Operação
 
@@ -42,7 +80,7 @@ Continuar o desenvolvimento direto em uma VPS, com o mesmo ambiente servindo par
 
 ```mermaid
 flowchart TD
-  DNS["DNS do domínio"] --> Proxy["Caddy/Traefik HTTPS"]
+  DNS["DNS painel.mirantegov.cloud"] --> Proxy["Traefik HTTPS (ACME)"]
   Proxy --> App["Next.js app :3000"]
   App --> PG["Postgres/Supabase serving"]
   App --> Cookie["JWT httpOnly mp_session"]
@@ -58,20 +96,43 @@ flowchart TD
 
 ## Milestones / Épicos
 
-### Épico 0 · Governança, Branches E Gestão
+### Épico 0 · Governança, Branches E Gestão (Linear + GitHub)
 
-**Objetivo:** garantir que o trabalho prossiga com rastreabilidade e sem perder o estado atual.
+**Objetivo:** garantir que o trabalho prossiga com rastreabilidade e sem perder o estado atual. Linear é a fonte de execução; GitHub guarda milestones e releases para changelog público.
 
 **Tarefas:**
 
-- [ ] Criar Milestones no GitHub para os épicos 1 a 11 deste plano.
-- [ ] Criar Issues uma por tarefa, com prefixo `E<n>.<tarefa>`.
+- [ ] Criar épico no Linear para cada épico 1–11 deste plano, com prefixo `E<n>` no nome (ex.: `E1 · VPS, Domínio, DNS e Segurança Base`).
+- [ ] Criar issue no Linear uma por tarefa, com prefixo `E<n>.<tarefa>` no título.
+- [ ] Seguir o fluxo de status Linear: Backlog → To Do → In Progress → In Review → Done (regra `linear-workflow.mdc`).
+- [ ] Espelhar no GitHub uma Milestone por épico, e abrir issues apenas quando a tarefa virar PR aberto (não duplicar Backlog).
+- [ ] Manter tabela `E<n>.<t> ↔ LINEAR-id ↔ GH milestone` em `docs/plano-consolidado-vps-pipeline.md` ou anexo.
 - [ ] Definir branch padrão de trabalho na VPS: `govtech42/<epico>-<slug>`.
 - [ ] Manter `docs/CONTINUIDADE-SESSAO.md` e `docs/HANDOFF-2026-06-09.md` como referências históricas, sem substituir este plano.
+- [ ] Cross-linkar `docs/plano-fase-backend-v2.md` para o mapa de numeração acima.
 - [ ] Atualizar README/AGENTS/CLAUDE quando cada épico mudar comandos, infraestrutura ou fluxo operacional.
-- [ ] Padronizar checklist de conclusão por tarefa: `npm run typecheck`, `npm run lint`, `npm run build`, teste funcional e registro planejado-vs-feito na Issue.
+- [ ] Padronizar checklist de conclusão por tarefa: `npm run typecheck`, `npm run lint`, `npm run build`, teste funcional e registro planejado-vs-feito na issue Linear (e PR GitHub quando houver código).
+- [ ] Criar CI gate em `.github/workflows/ci.yml`: roda `typecheck` + `lint` + `build` em todo PR, bloqueando merge se falhar (evita levar WIP quebrado para `main`/VPS, já que o quality-check hoje é manual).
 
-**Critério de aceite:** Milestones e Issues criadas, cada tarefa com escopo, critério de aceite e ordem de execução.
+**Critério de aceite:** épicos no Linear com issues E<n>.<t>, milestones GitHub espelhadas, mapa publicado neste documento.
+
+---
+
+### Gate De Código · Fechar Long Tail Antes Da VPS
+
+**Objetivo:** evitar levar WIP local e divergências de snapshot para o ambiente de homologação na VPS.
+
+**Tarefas:**
+
+- [ ] Commit/PR do WIP de `#33` (long-tail snapshot): `defesa-civil`, `frotas`, `patrimonio`, `obras`, `educacao`, `saude`, `assistencia-social`, `previdencia`, `saneamento`, `legislativo` — todos seguindo o padrão `useSnapshot` + `lib/demo-<slug>.ts` + seed.
+- [ ] Migrar `components/visao-geral.tsx` para `useSnapshot("visao-geral", VISAO_GERAL_SNAPSHOT)` com dados em `lib/demo-visao-geral.ts` e seed `mod_visao_geral`.
+- [ ] Migrar `components/orcamento-municipal.tsx` para `useSnapshot("orcamento", ORCAMENTO_SNAPSHOT)` — `ORCAMENTO_BASE` vira o snapshot serializável; `computeOrcamento` continua como helper no componente.
+- [ ] Sincronizar `package.json` `version` com a release (`2.0.x` mínimo).
+- [ ] Rodar auditoria estrutural via skill `.agents/skills/source-command-audit-modules` e registrar baseline em `docs/auditoria-modulos.md` (ou anexo da issue Linear).
+- [ ] Executar `.agents/skills/source-command-quality-check` (typecheck, lint, format).
+- [ ] Decidir se `DEFAULT_ENABLED_MODULE_IDS` passa a incluir long-tail por padrão após snapshots OK.
+
+**Critério de aceite:** `main` tem 21/21 módulos lendo snapshot, audit-modules sem regressão, working tree limpo.
 
 ---
 
@@ -81,8 +142,9 @@ flowchart TD
 
 **Tarefas:**
 
-- [ ] Escolher o hostname principal, por exemplo `painel.seudominio.com.br`.
-- [ ] Criar registros DNS `A` e, se aplicável, `AAAA` apontando para a VPS.
+- [ ] Hostname principal definido: **`painel.mirantegov.cloud`** (ADR em `docs/adr-proxy-tls.md`).
+- [ ] Criar registros DNS `A` e, se aplicável, `AAAA` para `painel.mirantegov.cloud` apontando para a VPS.
+- [ ] Reservar subdomínios `traefik.`, `studio.`, `minio.`, `clickhouse.` em `mirantegov.cloud` para uso futuro (Traefik faz o roteamento por host). **Atenção:** ACME HTTP-01 exige registro `A` real apontando para a VPS no momento de emitir o cert — criar o registro DNS junto com a publicação de cada subdomínio (ou usar DNS-01 wildcard `*.mirantegov.cloud` se preferir emitir tudo de uma vez).
 - [ ] Criar usuário Linux não-root para deploy.
 - [ ] Configurar SSH por chave e desabilitar login por senha.
 - [ ] Configurar firewall liberando `22`, `80`, `443` e as portas externas de auditoria autorizadas.
@@ -90,7 +152,7 @@ flowchart TD
   - Supabase Studio: `54323` ou subdomínio protegido `studio.<dominio>`
   - Postgres: `5432` ou porta alternativa documentada
   - ClickHouse HTTP: `8123`
-  - ClickHouse nativo: `9100` ou porta alternativa documentada
+  - ClickHouse nativo: `9100` (mapeado a partir do `9000` interno do ClickHouse para **evitar colisão com a porta `9000` do MinIO** no mesmo host; não é arbitrário)
 - [ ] Restringir portas de banco por allowlist de IP do time/dev ou VPN sempre que a VPS/provedor permitir.
 - [ ] Documentar perfil de acesso DataGrip para Postgres e ClickHouse em `docs/runbook-vps.md`.
 - [ ] Instalar Docker Engine e Docker Compose plugin.
@@ -102,6 +164,7 @@ flowchart TD
   - `/opt/mirante/backups`
 - [ ] Clonar o repositório em `/opt/mirante/painel`.
 - [ ] Criar `.env.production` com `DATABASE_URL`, `JWT_SECRET`, `AUTH_COOKIE_NAME`, `S3_*`, senhas do Postgres, ClickHouse e MinIO.
+- [ ] Restringir o arquivo: `chown deploy-user:deploy-user .env.production && chmod 600 .env.production` — segredo não pode ser world-readable na VPS.
 - [ ] Documentar o runbook de acesso em `docs/runbook-vps.md`.
 
 **Arquivos prováveis:**
@@ -115,7 +178,7 @@ flowchart TD
 ```bash
 docker version
 docker compose version
-curl -I http://painel.seudominio.com.br
+curl -I http://painel.mirantegov.cloud
 ```
 
 **Critério de aceite:** VPS acessível por domínio, Docker funcionando, portas web abertas e portas de auditoria acessíveis somente conforme regra definida de firewall/allowlist.
@@ -126,40 +189,60 @@ curl -I http://painel.seudominio.com.br
 
 **Objetivo:** substituir o compose mínimo por um stack self-hosted consistente.
 
-**Tarefas:**
+#### E2.0 · ADR proxy TLS (DECIDIDO)
 
-- [ ] Criar `docker-compose.prod.yml` com redes internas e volumes nomeados.
-- [ ] Incluir serviço `app` com build do `Dockerfile`, env production e healthcheck HTTP.
+Decisão registrada em `docs/adr-proxy-tls.md` em 2026-06-09: **Traefik no Docker Compose**, domínio principal **`painel.mirantegov.cloud`**.
+
+Impacto:
+
+- `setup/vps/1-install.sh` e `setup/vps/2-build.sh` deixam de instalar Nginx + Certbot — apenas Docker/UFW/swap; Traefik sobe via compose.
+- `setup-vps.sh` (porta 3000 exposta direto) fica deprecado.
+- Subdomínios de auditoria (`studio.`, `minio.`, `clickhouse.`) entram por labels no Traefik conforme demanda, sem editar configs no host.
+
+#### E2.1 · Tarefas (após ADR)
+
+- [ ] Criar `docker-compose.prod.yml` com redes internas (`mirante`) e volumes nomeados.
+- [ ] Incluir serviço `app` com build do `Dockerfile`, env production e healthcheck HTTP em `/api/health`.
+- [ ] Ordenar boot com `depends_on: { postgres: { condition: service_healthy } }` para o `app` só subir após Postgres saudável.
 - [ ] Auditar a base de cada imagem do stack e registrar no compose/runbook: `app` em `node:<versao>-slim` Debian, Postgres em tag Debian/Bookworm, serviços customizados em Debian slim.
 - [ ] Para serviço oficial sem imagem Debian adequada, documentar a exceção e incluir container auxiliar Debian na mesma rede/volume para inspeção operacional.
-- [ ] Incluir proxy HTTPS com Caddy ou Traefik.
-- [ ] Configurar certificados TLS automáticos para o domínio.
+- [ ] Subir serviço Traefik no `docker-compose.prod.yml` com volume `traefik-acme`, expor portas 80 e 443.
+- [ ] Configurar resolver ACME/Let's Encrypt (HTTP-01) com `TRAEFIK_ACME_EMAIL`.
+- [ ] Configurar redirect global `web` (80) → `websecure` (443) no entrypoint do Traefik.
+- [ ] Criar middleware de segurança (HSTS, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) aplicado ao router do `app`.
+- [ ] Criar middleware de rate-limit no Traefik para `/api/auth/login` (mitigar brute-force antes do app).
+- [ ] Roteamento por labels no serviço `app`: `Host(\`painel.mirantegov.cloud\`)` → `http://app:3000`.
+- [ ] Habilitar dashboard Traefik em `traefik.mirantegov.cloud` protegido por basic-auth (`TRAEFIK_DASHBOARD_AUTH`).
 - [ ] Expor Postgres e ClickHouse para auditoria externa conforme decisão do projeto, com portas documentadas, senhas fortes e restrição por firewall/allowlist quando possível.
 - [ ] Expor Supabase Studio para auditoria do dev, preferindo subdomínio HTTPS com autenticação/proteção adicional; se usar porta direta, documentar risco e regra de firewall.
 - [ ] Manter MinIO privado por padrão; expor console/API apenas quando necessário para exportador ou auditoria, com credenciais fortes.
 - [ ] Garantir que serviços com necessidade de shell interno usem imagens base Debian/Bookworm ou tenham exceção documentada com alternativa de shell interno.
 - [ ] Adicionar profile opcional para expor consoles administrativos somente via túnel SSH ou rede privada.
-- [ ] Criar script `scripts/deploy-vps.sh` para pull, build, up, migrations, seed opcional e healthcheck.
+- [ ] Reaproveitar/evoluir `setup/vps/2-build.sh` em vez de criar `scripts/deploy-vps.sh` do zero — incluir migrations, leitura de `.env.production`, healthcheck real. ADR decidiu Traefik no compose: deprecar `setup-vps.sh` (porta 3000 exposta) e marcar `setup/vps/` como apenas instalação base do SO (Docker/UFW/swap, **sem** Nginx/Certbot).
+- [ ] Alinhar diretório padrão em **um único valor** (`/opt/mirante/painel` no plano vs `/opt/app` nos scripts atuais) — escolher e refatorar referências.
 - [ ] Documentar rollback simples: voltar commit anterior, rebuild e restaurar backup se banco tiver mudado.
 
 **Arquivos prováveis:**
 
 - Criar `docker-compose.prod.yml`
-- Criar `infra/caddy/Caddyfile` ou `infra/traefik/`
-- Criar `scripts/deploy-vps.sh`
+- Criar `docs/adr-proxy-tls.md`
+- Criar `infra/traefik/` (config estática: entrypoints web/websecure, resolver ACME, redirect 80→443, middlewares de segurança)
+- Evoluir `setup/vps/2-build.sh` ou criar `scripts/deploy-vps.sh`
+- Criar `.env.production.example`
 - Atualizar `README.md`
 
 **Comandos de validação:**
 
 ```bash
-docker compose -f docker-compose.prod.yml config
-docker compose -f docker-compose.prod.yml up -d --build
-curl -I https://painel.seudominio.com.br/login
-nc -vz painel.seudominio.com.br 5432
-curl -s http://painel.seudominio.com.br:8123/ --data "SELECT 1"
+docker compose --env-file .env.production -f docker-compose.prod.yml config
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+curl -I https://painel.mirantegov.cloud/login
+curl -fsS https://painel.mirantegov.cloud/api/health
+nc -vz painel.mirantegov.cloud 5432
+curl -s http://painel.mirantegov.cloud:8123/ --data "SELECT 1"
 ```
 
-**Critério de aceite:** `/login` responde em HTTPS com cookie `Secure` em produção; Postgres e ClickHouse aceitam conexão externa autorizada para DataGrip; Supabase Studio abre pelo endpoint definido.
+**Critério de aceite:** `https://painel.mirantegov.cloud/login` responde com cookie `Secure`; `https://painel.mirantegov.cloud/api/health` retorna `{status:"ok"}`; Postgres e ClickHouse aceitam conexão externa autorizada para DataGrip; Supabase Studio abre pelo endpoint definido.
 
 ---
 
@@ -169,13 +252,16 @@ curl -s http://painel.seudominio.com.br:8123/ --data "SELECT 1"
 
 **Tarefas:**
 
-- [ ] Decidir o modo de produção: Postgres puro com migrations SQL ou stack Supabase self-hosted completo.
+- [ ] Decidir o modo de produção: **Postgres puro com migrations SQL (`supabase/migrations/*.sql`) para Fase 1** (sem dependência da Supabase CLI em produção), Studio opcional como serviço separado. Stack Supabase self-hosted completo fica para fase futura.
+- [ ] Gerar `.env.production.example` com todas as vars necessárias: `DATABASE_URL`, `JWT_SECRET` forte, `AUTH_COOKIE_NAME`, `S3_*`, senhas Postgres/ClickHouse/MinIO, `DEMO_PASSWORD`, `APP_URL`, `TRUST_PROXY=1` quando atrás de proxy externo.
 - [ ] Criar serviço Postgres 15+ persistente no compose de produção.
 - [ ] Publicar Postgres externamente para DataGrip com porta documentada e credencial exclusiva de auditoria/leitura quando aplicável.
 - [ ] Criar usuário Postgres de auditoria com permissões controladas para inspeção de `public` e schemas `mun_*`.
 - [ ] Se usar Supabase Studio, publicar o Studio no compose com rota/porta externa e proteção de acesso.
 - [ ] Criar usuário/senha fortes e `DATABASE_URL` interna para o app.
 - [ ] Criar job ou script para aplicar migrations `supabase/migrations/*.sql` no Postgres da VPS.
+- [ ] Tornar `db-migrate-prod.sh` idempotente: tabela de controle `public.schema_migrations` (versão = nome do arquivo) para não reaplicar migrations já rodadas; aplicar em ordem lexical e em transação.
+- [ ] Backup `pg_dump` automático **antes** de aplicar migrations em banco com dados (gate do próprio script).
 - [ ] Executar migrations em banco limpo.
 - [ ] Executar `scripts/import-ibge.ts`.
 - [ ] Executar `scripts/seed-demo.ts` com `DEMO_PASSWORD` forte.
@@ -197,7 +283,7 @@ curl -s http://painel.seudominio.com.br:8123/ --data "SELECT 1"
 psql "$DATABASE_URL" -c "select count(*) from public.dim_municipio"
 psql "$DATABASE_URL" -c "select public.provision_municipio('4117107')"
 psql "$DATABASE_URL" -c "select count(*) from public.usuarios"
-psql "postgresql://AUDIT_USER:AUDIT_PASSWORD@painel.seudominio.com.br:5432/postgres" -c "select current_database(), current_user"
+psql "postgresql://AUDIT_USER:AUDIT_PASSWORD@painel.mirantegov.cloud:5432/postgres" -c "select current_database(), current_user"
 ```
 
 **Critério de aceite:** app autentica via banco da VPS, retorna snapshots por `/api/data/<slug>?ano=2026` e DataGrip conecta no Postgres com usuário de auditoria.
@@ -212,7 +298,7 @@ psql "postgresql://AUDIT_USER:AUDIT_PASSWORD@painel.seudominio.com.br:5432/postg
 
 - [ ] Criar tela ou script administrativo para criar município, entidades, usuário e ACL.
 - [ ] Validar `JWT_SECRET` obrigatório em produção; falhar boot se usar segredo dev.
-- [ ] Revisar `secure`, `sameSite`, domínio do cookie e tempo de sessão.
+- [ ] Revisar `secure`, `sameSite`, domínio do cookie e tempo de sessão. Multi-tenant futuro é **path-based** (`painel.mirantegov.cloud/{entidade}`): manter cookie no host apex **sem** setar `domain` explícito (não usar `.mirantegov.cloud`, que vazaria sessão para subdomínios de auditoria `studio.`/`minio.`/`clickhouse.`).
 - [ ] Criar endpoint ou utilitário para troca de senha.
 - [ ] Expandir ACL para todos os módulos/submódulos complexos, não só os já conectados.
 - [ ] Criar logs de login sem registrar senha ou token.
@@ -284,9 +370,26 @@ npm run build
 
 **Objetivo:** operacionalizar a ingestão raw ERP → Parquet → MinIO na VPS.
 
-**Tarefas:**
+#### E6.0 · Contrato de paths MinIO (BLOQUEANTE)
 
-- [ ] Integrar `infra/docker-compose.minio.yml` ao compose de produção.
+Hoje há três convenções divergentes:
+- `exporter/README.md`: `<ibge>/<tabela>/[ano=<ano>/]part-0.parquet` em bucket `mirante-parquet`.
+- `infra/clickhouse/schema/etl/README-pipeline.sql`: `mirante/eloweb/<ibge>/<exercicio>/<Tabela>.parquet`.
+- `docs/clickhouse-epico5-design.md`: `mirante-parquet/<ibge>/<tabela>/ano=<ano>/*.parquet`.
+
+**Convenção canônica adotada:** seguir o exportador.
+
+```
+s3://mirante-parquet/<ibge>/<tabela>/[ano=<ano>/]part-0.parquet         # tenant
+s3://mirante-parquet/_global/<tabela>/part-0.parquet                    # global
+```
+
+- [ ] Atualizar `infra/clickhouse/schema/etl/README-pipeline.sql` e `docs/clickhouse-epico5-design.md` para refletir esta convenção.
+- [ ] Documentar a convenção em `docs/runbook-exportador.md`.
+
+#### E6.1 · Tarefas
+
+- [ ] Integrar `infra/docker-compose.minio.yml` ao compose de produção, na rede `mirante`.
 - [ ] Configurar bucket `mirante-parquet`, credenciais fortes e política privada.
 - [ ] Definir se o exportador roda no cliente, na VPS via VPN/túnel ou em job manual.
 - [ ] Versionar manifests por ERP em `exporter/manifests/`.
@@ -351,7 +454,7 @@ python3 tools/apply_batches.py schema/simam
 python3 tools/apply_batches.py schema/raw
 python3 tools/apply_batches.py schema/seeds
 curl -s localhost:8123/ --data "SELECT count() FROM system.tables WHERE database='simam'"
-curl -s http://painel.seudominio.com.br:8123/ --data "SELECT currentUser()"
+curl -s http://painel.mirantegov.cloud:8123/ --data "SELECT currentUser()"
 ```
 
 **Critério de aceite:** ClickHouse da VPS consegue ler Parquet do MinIO, materializar marts de despesa/receita para um município/ano e aceitar conexão externa autorizada via DataGrip.
@@ -435,10 +538,10 @@ docker compose -f docker-compose.prod.yml run --rm scrapers python -m scrapers.t
 - [ ] Criar healthchecks Docker para todos os serviços.
 - [ ] Monitorar portas externas de auditoria: Supabase Studio, Postgres e ClickHouse.
 - [ ] Registrar acessos administrativos a Postgres/ClickHouse quando possível.
-- [ ] Criar página ou endpoint interno de saúde do app.
+- [ ] Criar endpoint `/api/health` no app (liveness simples + ping opcional ao Postgres) — antecipar como parte do Épico 11 parcial para que healthchecks Docker e proxy possam apontar para ele.
 - [ ] Criar backups diários de Postgres.
 - [ ] Criar backup/snapshot dos volumes MinIO e ClickHouse, ou política clara de reconstrução a partir do raw.
-- [ ] Testar restore completo em ambiente paralelo.
+- [ ] Testar restore completo em ambiente paralelo, com **cadência definida** (ex.: mensal + após toda mudança de schema) e registro da data/resultado do último drill em `docs/runbook-operacao.md` — backup não testado não conta.
 - [ ] Criar alerta simples para disco acima de 80%, container parado e falha de backup.
 - [ ] Criar runbook de incidente: queda do app, banco indisponível, certificado expirado, disco cheio.
 
@@ -460,14 +563,23 @@ docker compose -f docker-compose.prod.yml logs --tail=100 app
 
 ---
 
-### Épico 11 · Release V2 E Primeira Homologação Real
+### Épico 11 · Release E Primeira Homologação Real
 
-**Objetivo:** consolidar uma versão publicável do painel em domínio real.
+**Objetivo:** consolidar versões publicáveis do painel em domínio real, evoluindo a partir da `v2.0.0` já tageada.
+
+**Marcos de release (substituem o `v2.0.0-rc.1` original do plano, pois `v2.0.0` já existe):**
+
+| Marco | Tag | Escopo |
+| --- | --- | --- |
+| Homolog HTTPS + Postgres VPS | `v2.1.0-rc.1` → `v2.1.0` | Épicos 1–5 + smoke E11 parcial |
+| Pipeline contábil mínimo | `v2.2.0-rc.1` → `v2.2.0` | Épicos 6–8 |
+| Release operacional | `v2.3.0` | Épicos 9–10 + E11 final |
 
 **Tarefas:**
 
-- [ ] Criar release candidate `v2.0.0-rc.1`.
-- [ ] Rodar pipeline completo: typecheck, lint, build, seed, API smoke e login no domínio.
+- [ ] Criar release candidate `v2.1.0-rc.1` ao final dos épicos 1–5.
+- [ ] Rodar pipeline completo: typecheck, lint, build, seed, API smoke (`/api/health` + `/api/data/<slug>?ano=YYYY`) e login no domínio.
+- [ ] Criar `scripts/smoke-prod.sh` que automatiza os `curl` de homologação (HTTPS `/login`, `/api/health`, `/api/data/<slug>`) e retorna exit code != 0 em falha — usável no CI e pós-deploy.
 - [ ] Criar usuário demo com senha forte e registrar credenciais fora do Git.
 - [ ] Validar todos os módulos habilitados no menu.
 - [ ] Validar responsividade desktop/notebook.
@@ -481,26 +593,30 @@ docker compose -f docker-compose.prod.yml logs --tail=100 app
 npm run typecheck
 npm run lint
 npm run build
-curl -I https://painel.seudominio.com.br/login
+curl -I https://painel.mirantegov.cloud/login
+curl -fsS https://painel.mirantegov.cloud/api/health
 ```
 
 **Critério de aceite:** domínio HTTPS acessível, login funcionando, módulos carregando dados do Postgres da VPS e release documentada.
 
 ## Ordem Recomendada De Execução
 
-1. Épico 0: gestão e issues.
-2. Épico 1: VPS, DNS e segurança base.
-3. Épico 2: compose produção e HTTPS.
-4. Épico 3: Postgres produção, migrations, seed e backup.
-5. Épico 4: hardening de auth/ACL.
-6. Épico 5: qualidade dos módulos e snapshots.
-7. Épico 11 parcial: primeira homologação do app em domínio.
-8. Épico 6: MinIO e exportador.
-9. Épico 7: ClickHouse/ETL.
-10. Épico 8: sync para Postgres.
-11. Épico 9: scrapers.
-12. Épico 10: operação contínua e alertas.
-13. Épico 11 final: release `v2.0.0`.
+1. Épico 0: governança Linear + GitHub.
+2. **Gate de código**: long-tail + visão geral + orçamento.
+3. Épico 1: VPS, DNS e segurança base.
+4. **E2.0**: ADR proxy TLS.
+5. Épico 2: compose produção e HTTPS (depende do E2.0).
+6. Épico 3: Postgres produção, migrations, seed e backup.
+7. Épico 4: hardening de auth/ACL (pode rodar em paralelo a 8).
+8. Épico 5: qualidade dos módulos e snapshots.
+9. Épico 11 parcial: primeira homologação do app em domínio (`v2.1.0`).
+10. **E6.0**: contrato de paths MinIO.
+11. Épico 6: MinIO e exportador.
+12. Épico 7: ClickHouse/ETL.
+13. Épico 8: sync para Postgres.
+14. Épico 9: scrapers.
+15. Épico 10: operação contínua e alertas.
+16. Épico 11 final: release `v2.3.0`.
 
 ## Definição De Pronto Por Tarefa
 
@@ -559,13 +675,18 @@ Use este formato para cada Issue:
 
 Para iniciar na VPS sem atropelar o pipeline:
 
-- [ ] E0.1 Criar milestones e issues deste plano.
+- [ ] E0.1 Criar épicos no Linear + milestones espelho no GitHub.
+- [ ] **Gate-1** Commit/PR do WIP long-tail (#33).
+- [ ] **Gate-2** Migrar `visao-geral` e `orcamento` para `useSnapshot` + seed `mod_visao_geral`.
+- [ ] **Gate-3** Rodar audit-modules + quality-check; sincronizar `package.json` version.
+- [ ] E2.0 Registrar ADR de proxy TLS.
 - [ ] E1.1 Preparar VPS, usuário, SSH, firewall e Docker.
 - [ ] E1.2 Apontar DNS do domínio para a VPS.
 - [ ] E1.3 Liberar portas externas de auditoria para Supabase Studio, Postgres e ClickHouse com regra de segurança.
-- [ ] E2.1 Criar `docker-compose.prod.yml` com app + proxy HTTPS e portas de auditoria.
+- [ ] E2.1 Criar `docker-compose.prod.yml` com app + proxy escolhido + portas de auditoria.
 - [ ] E3.1 Subir Postgres produção e aplicar migrations.
-- [ ] E3.2 Rodar import IBGE e seed demo com senha forte.
+- [ ] E3.2 Rodar import IBGE e seed demo com `DEMO_PASSWORD` forte.
+- [ ] E10.1/E11.0 Adicionar `/api/health` ao app antes do smoke.
 - [ ] E11.1 Fazer smoke test público em HTTPS.
 
 Depois disso, seguir para MinIO/exportador e ClickHouse.
