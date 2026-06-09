@@ -18,6 +18,7 @@ import { TRIBUTACAO_SNAPSHOT } from "../lib/demo-tributacao";
 import { COMPRAS_SNAPSHOT } from "../lib/demo-compras";
 import { RH_SNAPSHOT } from "../lib/demo-rh";
 import { CONTAS_SNAPSHOT } from "../lib/demo-prestacao-contas";
+import { PROCESSOS_SNAPSHOT } from "../lib/demo-processos";
 
 const DATABASE_URL =
   process.env.DATABASE_URL ??
@@ -316,6 +317,13 @@ async function main() {
     await client.query(
       `insert into mod_prestacao_contas (entidade_id, ano, dados) values ($1, $2, $3)`,
       [entidadeId, ANO, JSON.stringify(CONTAS_SNAPSHOT)],
+    );
+
+    // Snapshot do módulo Processos (controle de processos e solicitações).
+    await client.query(`delete from mod_processos where ano = $1`, [ANO]);
+    await client.query(
+      `insert into mod_processos (entidade_id, ano, dados) values ($1, $2, $3)`,
+      [entidadeId, ANO, JSON.stringify(PROCESSOS_SNAPSHOT)],
     );
 
     // Snapshot do Painel de Licitações (lista de licitações).
