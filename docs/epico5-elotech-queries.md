@@ -182,5 +182,34 @@ espécie `(3,1)`, desdobr1 `(4,1)`, desdobr2 `(5,2)`, desdobr3 `(7,1)`, tipo `(8
 `descricao`, `tipo`(tpReceita), `ordem`, `idTipoPermissaoDeducao`, `ModeloReceita`, `esferagoverno`,
 `sintetico→cdTipoNivelConta (S/A)`.
 
-> **Receita prevista/orçada** ainda sem query dedicada — candidatas no dump:
-> `calculoprevisaoreceita`, `contprevisaoreceita`, `diarioarrecadacao`. Habilitar quando chegar.
+## 8) Orçado / Previsto (estágio 10)
+
+**Despesa orçada** — fonte: `siscop.orcdespesa` ⋈ `siscop.orcversaoorcamento`. Pega a **versão**
+vigente: `max(versao)` por (entidade, exercicio, situacao), `situacao IN ('0','1','2')`, `movsn='S'`.
+Estágio **10**, procedimento **111** (orçado). `dtmovimento = exercicio-01-01`. Mesmo layout de
+`programatica` da despesa. (Suplementado/reduzido = procedimentos 112/113 — virão das views `orc_reg_*`.)
+
+**Receita prevista** — fonte: `siscop.orcreceita rc` ⋈ `siscop.orcreceita_fontetce rf`
+(entidade, exercicio, versao, receita, fonterecurso, idtipooperacaoreceita). `movsn='S'`,
+`rf.vinculofonterecurso IS NOT NULL`. Estágio **10**, procedimento **101** previsto
+(`idtipooperacaoreceita=1`) ou **102** dedução (`>1`). Valor = `rc.valor * rf.percentual/100`.
+Mesmo layout SUBSTRING do código de receita.
+
+## 9) Saldo bancário (financeiro / eventos contábeis)
+
+**Fonte:** `siscop.plano` (plano de contas), `siscop.contacorrente`, `siscop.planocontacorrente`
+(vínculo conta↔contacorrente), `siscop.eventoslancados` (cabeçalho), `siscop.eventoslancadosconta`
+(linhas: `debcred` D/C, `valor`, `conta`), `siscop.tabelaevento` (`atualizaplano`, `grupoevento`),
+`siscop.contabancariavinculo` ⋈ `siscop.contabancaria` (banco/agência/conta/fonterecurso) ⋈
+`siscop.banco`. + cadeia de fonte (→ `tipoaplicacao`).
+
+**Lógica (→ Épico 5):** contas de disponibilidade (`conta like '%11111%' or '%11411%'`).
+- **SaldoInicial** = Σ débitos−créditos de lançamentos **antes do ano** (ou encerramento:
+  `atualizaplano='N' and grupoevento=85`).
+- **Débito/Crédito** = Σ no período (`atualizaplano='S'`), por `debcred`.
+- **SaldoFinal** = SaldoInicial + Débito − Crédito.
+- Encerramento: `grupoevento=80`. Período por `nrano`/`nrquadrimestre`/`nrmes` de `data`.
+`tipoaplicacao` derivado da fonte da `contabancaria` (mesmo CASE da despesa), exceto `reduzido=9000`.
+
+> **Receita: faltam** previsão detalhada por mês e arrecadação por diário, se necessário.
+> Candidatas no dump: `calculoprevisaoreceita`, `diarioarrecadacao`. Habilitar se vierem queries.

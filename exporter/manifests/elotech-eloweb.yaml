@@ -1,5 +1,5 @@
-# Manifest Elotech eloweb (legado) — despesa orçamentária (raw).
-# Despesa/receita ORÇAMENTÁRIA = schema `siscop`. (No `aise` ficam TRIBUTOS e RH.)
+# Manifest Elotech eloweb (legado) — despesa/receita orçamentária + financeiro (raw).
+# Tudo no schema `siscop`. (No `aise` ficam TRIBUTOS e RH.)
 # Cliente/município = coluna `entidade` (NÃO é IBGE); ano = coluna `exercicio`.
 # Schema explícito no `source`; `scope` define só o path no MinIO
 # (tenant=<ibge>/ · global=_global/).
@@ -11,60 +11,118 @@
 # ⚠️ Preencha __ENTIDADE__ (código do cliente em siscop.entidade) e
 #    __EXERCICIO__ (ano, ex.: 2025).
 #
-# Obs.: derivações (órgão/unidade/natureza por SUBSTRING de programatica; estágios/
-#       procedimentos; restos a pagar; funções como siscop.buscaano) são TRANSFORM
+# Obs.: derivações (programatica/receita por SUBSTRING; estágios/procedimentos;
+#       saldos; tipoaplicacao; IBGE; funções como siscop.buscaano) são TRANSFORM
 #       do ClickHouse (Épico 5). Aqui só raw. Ver docs/epico5-elotech-queries.md.
 bucket: mirante-parquet
 tables:
-  # ── Dimensões ───────────────────────────────────────────────────
-  - source: siscop.entidade # entidade, nome, cnpj, identificacaotce, tipoentidade
+  # ── Dimensões por-ente ──────────────────────────────────────────
+  - source: siscop.entidade
     scope: tenant
     filters: { entidade: __ENTIDADE__ }
-  - source: siscop.exercicio # exercícios do ente (p/ restos a pagar — anos anteriores)
+  - source: siscop.exercicio
     scope: tenant
     filters: { entidade: __ENTIDADE__ }
-  - source: siscop.despesa # classificação/dotação (programatica, valorprevisto, modelodespesa, nivel)
+
+  # ── Classificação da despesa ────────────────────────────────────
+  - source: siscop.despesa # dotação/classificação (programatica, modelodespesa, nivel)
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.niveismodelodespesa # parse de programatica (referência; sem coluna entidade)
+  - source: siscop.niveismodelodespesa # parse de programatica (referência; sem entidade)
     scope: global
 
+  # ── Orçado / Previsto (estágio 10) ──────────────────────────────
+  - source: siscop.orcdespesa # despesa orçada (versao, movsn, programatica, valor)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.orcversaoorcamento # versões do orçamento (situacao, versao, data)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.orcreceita # receita prevista (versao, receita, fonterecurso, valor)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.orcreceita_fontetce # vínculo de fonte da previsão (percentual, vinculofonterecurso)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+
   # ── Execução da despesa ─────────────────────────────────────────
-  - source: siscop.empenho # empenho (cabeçalho + valores; layout de programatica)
+  - source: siscop.empenho
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.anulacaoempenho # anulação de empenho (+ estorno via dataestorno)
+  - source: siscop.anulacaoempenho
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.cancelamentorestos # cancelamento de restos (+ estorno)
+  - source: siscop.cancelamentorestos
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
   - source: siscop.fichaempenho # saldos por empenho (base dos restos a pagar)
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.liquidacao # liquidação
+  - source: siscop.liquidacao
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.estornoliquidacao # estorno de liquidação
+  - source: siscop.estornoliquidacao
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.pagamento # pagamento
+  - source: siscop.pagamento
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.estornopagamento # estorno de pagamento
+  - source: siscop.estornopagamento
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
   - source: siscop.ordempagamento_liquidacao # OPL — liga pagamento ↔ liquidação ↔ empenho
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.retencoesliquidacao # retenções sobre liquidação (+ estorno)
+  - source: siscop.retencoesliquidacao
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.lancamentosequencia # sequência de lançamento (usado nas retenções)
+  - source: siscop.lancamentosequencia
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
 
+  # ── Receita realizada ───────────────────────────────────────────
+  - source: siscop.receita # cadastro da receita
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.realizacaoreceita # realização (grupoevento, data, fonterecurso, lancamento)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.realizacaoreceitaitem # itens da realização (valor)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.orcparametroreceita # parâmetros/natureza da receita
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+
+  # ── Financeiro (saldo bancário / contábil) ──────────────────────
+  - source: siscop.plano # plano de contas (conta, descricao)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.planocontacorrente # vínculo conta-contábil ↔ conta-corrente
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.contacorrente # contas-corrente contábeis (sem exercicio)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__ }
+  - source: siscop.eventoslancados # lançamentos (cabeçalho: data, evento)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.eventoslancadosconta # lançamentos por conta (debcred, valor, conta)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.tabelaevento # eventos contábeis (atualizaplano, grupoevento)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.contabancariavinculo # vínculo conta bancária (id, reduzido)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__ }
+  - source: siscop.contabancaria # contas bancárias (banco, agencia, conta, fonterecurso)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__ }
+
   # ── Dimensões globais (referência; sem coluna entidade → _global/) ──
+  - source: siscop.banco # cadastro de bancos
+    scope: global
   - source: siscop.cidade # municípios (descricao, ibge) — base do IBGE do ente
     scope: global
   - source: siscop.unidadefederacao # UF (codigoibge) — base do IBGE do ente
@@ -89,17 +147,3 @@ tables:
     scope: global
   - source: siscop.fontearea # área da fonte
     scope: global
-
-  # ── RECEITA (orçamentária) ──────────────────────────────────────
-  - source: siscop.receita # cadastro da receita (receita, descricao, fonterecurso, idtipooperacaoreceita)
-    scope: tenant
-    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.realizacaoreceita # realização (grupoevento, data, fonterecurso, lancamento)
-    scope: tenant
-    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.realizacaoreceitaitem # itens da realização (valor, fonterecurso, idtipooperacaoreceita)
-    scope: tenant
-    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.orcparametroreceita # parâmetros/natureza da receita (sintetico, tipo, ordem, esferagoverno)
-    scope: tenant
-    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
