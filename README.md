@@ -6,6 +6,24 @@ O **Mirante Painel** é uma aplicação web de **Next.js** pensada para **prefei
 
 > **Backend (Fase 1):** os módulos de entrega leem dados de um **Postgres** (Supabase self-hosted), **multi-tenant por município** (schema `mun_<id_ibge>`), com **autenticação própria** (JWT em cookie httpOnly) e **ACL por módulo/submódulo**. Todos os módulos de display atuais possuem fallback demo em `lib/demo-*.ts` e podem ser seedados em snapshots `mod_*` para o município Nova Londrina/PR. O pipeline real de ingestão (TCE/SICONFI → ClickHouse → Postgres) é entregue em fases seguintes (Épicos 4–6). Detalhes em [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
+## Andamento (VPS Pipeline v2.x)
+
+> Plano completo: [`docs/plano-consolidado-vps-pipeline.md`](docs/plano-consolidado-vps-pipeline.md) · Execução no [Linear (MIR)](https://linear.app/code42dev/project/mirante-painel-vps-pipeline-v2x-937f65e421e8) · Milestones espelho no GitHub. Subtarefas detalhadas nas issues `E<n>.<t>` do Linear. **Ao concluir cada épico, gerar `docs/HANDOFF-<épico>.md`.**
+
+- [ ] **E0** Governança (Linear+GitHub) — [MIR-2](https://linear.app/code42dev/issue/MIR-2) · [#119](https://github.com/mirantegov/painel/issues/119)
+- [ ] **Gate** Fechar long-tail antes da VPS — [MIR-3](https://linear.app/code42dev/issue/MIR-3) · [#120](https://github.com/mirantegov/painel/issues/120)
+- [ ] **E1** VPS, DNS (`painel.mirantegov.cloud`), segurança — [MIR-4](https://linear.app/code42dev/issue/MIR-4) · [#121](https://github.com/mirantegov/painel/issues/121)
+- [ ] **E2** Compose prod + TLS Traefik — [MIR-5](https://linear.app/code42dev/issue/MIR-5) · [#122](https://github.com/mirantegov/painel/issues/122)
+- [ ] **E3** Postgres produção + migrations + backup — [MIR-6](https://linear.app/code42dev/issue/MIR-6) · [#123](https://github.com/mirantegov/painel/issues/123)
+- [ ] **E4** Hardening auth/ACL — [MIR-7](https://linear.app/code42dev/issue/MIR-7) · [#124](https://github.com/mirantegov/painel/issues/124)
+- [ ] **E5** Qualidade dos módulos/snapshots — [MIR-8](https://linear.app/code42dev/issue/MIR-8) · [#125](https://github.com/mirantegov/painel/issues/125)
+- [ ] **E6** MinIO + exportador Go — [MIR-9](https://linear.app/code42dev/issue/MIR-9) · [#126](https://github.com/mirantegov/painel/issues/126)
+- [ ] **E7** ClickHouse SIM-AM, ETL e marts — [MIR-10](https://linear.app/code42dev/issue/MIR-10) · [#127](https://github.com/mirantegov/painel/issues/127)
+- [ ] **E8** Sync ClickHouse → Postgres — [MIR-11](https://linear.app/code42dev/issue/MIR-11) · [#128](https://github.com/mirantegov/painel/issues/128)
+- [ ] **E9** Scrapers TCE/PR + SICONFI — [MIR-12](https://linear.app/code42dev/issue/MIR-12) · [#129](https://github.com/mirantegov/painel/issues/129)
+- [ ] **E10** Observabilidade, backup e operação — [MIR-13](https://linear.app/code42dev/issue/MIR-13) · [#130](https://github.com/mirantegov/painel/issues/130)
+- [ ] **E11** Releases (`v2.1.0` → `v2.2.0` → `v2.3.0`) — [MIR-14](https://linear.app/code42dev/issue/MIR-14) · [#131](https://github.com/mirantegov/painel/issues/131)
+
 ### Navegação
 
 O painel principal (`/`) organiza o conteúdo em **abas (tabs)**: o utilizador escolhe o módulo e vê indicadores e visualizações daquela área. Há opção de **modo apresentação** (scroll automático entre módulos) nas definições do menu de utilizador, útil em **reuniões ou telão**.
