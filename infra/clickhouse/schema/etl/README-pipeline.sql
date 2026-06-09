@@ -6,11 +6,20 @@
 -- por tabela conforme as bases de origem forem mapeadas.
 --
 -- MinIO já roda em mirante-minio (host 9000). Para o ClickHouse enxergar o
--- MinIO, ambos precisam estar na mesma rede docker (infra_default) OU usar
--- o host gateway. Credenciais demo: minioadmin / <secret>.
+-- MinIO, ambos precisam estar na mesma rede docker (rede `mirante` no
+-- compose de produção) OU usar o host gateway. Credenciais demo:
+-- minioadmin / <secret>.
 --
--- Convenção de buckets/paths (exportador Go -> Parquet):
---   s3://mirante/<base>/<entidade>/<exercicio>/<Tabela>.parquet
+-- Convenção canônica de buckets/paths (Épico 6.0 do plano consolidado,
+-- alinhada ao exportador Go em exporter/README.md):
+--
+--   bucket: mirante-parquet
+--   tenant: s3://mirante-parquet/<ibge>/<tabela>/[ano=<ano>/]part-0.parquet
+--   global: s3://mirante-parquet/_global/<tabela>/part-0.parquet
+--
+-- Em todos os ERPs (Elotech eloweb, Betha, IPM, etc.) o path do MinIO usa
+-- a tabela do destino RAW (camelCase do leiaute SIM-AM) -- a origem
+-- ERP-específica é apenas dimensão. O _fonte registra de qual ERP veio.
 -- ---------------------------------------------------------------------
 
 -- 1) INGESTÃO: lê o Parquet do MinIO direto para a tabela RAW (tudo String).
@@ -28,7 +37,7 @@ SELECT
     'Empenho.parquet'         AS _arquivo,
     now()                     AS _ingerido_em
 FROM s3(
-    'http://mirante-minio:9000/mirante/eloweb/4117107/2026/Empenho.parquet',
+    'http://mirante-minio:9000/mirante-parquet/4117107/Empenho/ano=2026/part-0.parquet',
     'minioadmin', '<secret>', 'Parquet'
 );
 

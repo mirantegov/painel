@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { useSnapshot } from "@/components/use-snapshot";
+import { VISAO_GERAL_SNAPSHOT } from "@/lib/demo-visao-geral";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -30,16 +32,11 @@ import {
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
-  Line,
-  LineChart,
   Pie,
   PieChart,
   XAxis,
   YAxis,
-  Cell,
 } from "recharts";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -58,8 +55,6 @@ import {
 } from "@hugeicons/core-free-icons";
 import { KpiCard } from "@/components/ui/kpi-card";
 
-// --- DADOS CONSOLIDADOS ---
-
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
     value,
@@ -71,127 +66,21 @@ const formatMillions = (value: number) =>
 const formatNumber = (value: number) =>
   new Intl.NumberFormat("pt-BR").format(value);
 
-// Receita
-const receita = {
-  prevista: 243900000,
-  arrecadada: 228500000,
-  percentual: 93.7,
-};
-
-// Despesa
-const despesa = {
-  atualizada: 139440000,
-  empenhada: 128244500,
-  paga: 115960000,
-  percentualExecucao: 92.0,
-  percentualPessoalRCL: 42,
-};
-
-// Financeiro
-const financeiro = {
-  saldoTotal: 34770000,
-  entradas: 228500000,
-  saidas: 193730000,
-  aplicacoes: 18500000,
-};
-
-// Compras
-const compras = {
-  contratosAtivos: 1247,
-  valorContratado: 45200000,
-  licitacoesAndamento: 38,
-  economiaPeriodo: 3800000,
-  taxaEconomia: 8.4,
-};
-
-// RH
-const rh = {
-  totalFuncionarios: 1130,
-  folhaPagamento: 10500000,
-  horasExtras: 767000,
-  absenteismo: 4.3,
-  turnover: 8.5,
-};
-
-// Tributação
-const tributacao = {
-  receitaTributaria: 62800000,
-  iptu: 28500000,
-  iss: 22400000,
-  itbi: 4200000,
-  dividaAtiva: 45200000,
-  inadimplencia: 12.8,
-};
-
-// Prestação de Contas (CAUC)
-const prestacaoContas = {
-  regulares: 22,
-  aComprovar: 3,
-  irregulares: 1,
-  conformidade: 84.6,
-  taxaAprovacaoTCE: 91.7,
-};
-
-// Evolução mensal consolidada (Receita vs Despesa)
-const evolucaoConsolidada = [
-  { mes: "Jan", receita: 18200000, despesa: 15800000 },
-  { mes: "Fev", receita: 17500000, despesa: 15200000 },
-  { mes: "Mar", receita: 21300000, despesa: 18900000 },
-  { mes: "Abr", receita: 19800000, despesa: 17600000 },
-  { mes: "Mai", receita: 20100000, despesa: 18100000 },
-  { mes: "Jun", receita: 22400000, despesa: 19500000 },
-  { mes: "Jul", receita: 19600000, despesa: 17400000 },
-  { mes: "Ago", receita: 20800000, despesa: 18800000 },
-  { mes: "Set", receita: 21200000, despesa: 19200000 },
-  { mes: "Out", receita: 23100000, despesa: 20500000 },
-  { mes: "Nov", receita: 22500000, despesa: 19800000 },
-  { mes: "Dez", receita: 21500000, despesa: 19100000 },
-];
-
-// Composição de Receita por Origem
-const composicaoReceita = [
-  { nome: "Receitas Próprias", valor: 62800000, fill: "var(--chart-1)" },
-  { nome: "Transf. Estaduais", valor: 58200000, fill: "var(--chart-2)" },
-  { nome: "Transf. Federais", valor: 95400000, fill: "var(--chart-3)" },
-  { nome: "Outras Receitas", valor: 12100000, fill: "var(--chart-4)" },
-];
-
-// Despesa por Função
-const despesaPorFuncao = [
-  { funcao: "Educação", valor: 42500000, percentual: 30.5 },
-  { funcao: "Saúde", valor: 35200000, percentual: 25.2 },
-  { funcao: "Administração", valor: 18700000, percentual: 13.4 },
-  { funcao: "Transporte", valor: 12800000, percentual: 9.2 },
-  { funcao: "Assistência Social", valor: 8900000, percentual: 6.4 },
-  { funcao: "Outros", valor: 21340000, percentual: 15.3 },
-];
-
-// Indicadores chave para radar
-const indicadoresChave = [
-  {
-    indicador: "Execução Orçamentária",
-    valor: 92.0,
-    meta: 95,
-    status: "atencao",
-  },
-  { indicador: "Pessoal / RCL", valor: 42, meta: 54, status: "atingido" },
-  {
-    indicador: "Arrecadação / Previsão",
-    valor: 93.7,
-    meta: 95,
-    status: "atencao",
-  },
-  { indicador: "Conformidade CAUC", valor: 84.6, meta: 100, status: "atencao" },
-  {
-    indicador: "Taxa de Economia (Compras)",
-    valor: 8.4,
-    meta: 5,
-    status: "atingido",
-  },
-  { indicador: "Absenteísmo", valor: 4.3, meta: 3.5, status: "atencao" },
-];
-
 export function VisaoGeral() {
+  const {
+    receita,
+    despesa,
+    financeiro,
+    compras,
+    rh,
+    tributacao,
+    prestacaoContas,
+    evolucaoConsolidada,
+    composicaoReceita,
+    despesaPorFuncao,
+    indicadoresChave,
+  } = useSnapshot("visao-geral", VISAO_GERAL_SNAPSHOT);
+
   return (
     <div className="space-y-8">
       {/* KPIs Macro */}
