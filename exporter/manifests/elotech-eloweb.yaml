@@ -70,6 +70,9 @@ tables:
   - source: siscop.estornopagamento
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.ordempagamento # ordem de pagamento (cabeçalho da OP)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
   - source: siscop.ordempagamento_liquidacao # OPL — liga pagamento ↔ liquidação ↔ empenho
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
@@ -128,6 +131,23 @@ tables:
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
   - source: siscop.itemdecretoreceita # itens do decreto (receita)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+
+  # ── Extra-orçamentário (restos/consignações/depósitos) ──────────
+  - source: siscop.cadastroextra # cadastro extra-orçamentário (sem exercicio)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__ }
+  - source: siscop.extraorcamentario # movimentos extra-orçamentários
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.estornoextraorcamentario # estorno extra-orçamentário
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.pagamentoextra # pagamento extra-orçamentário
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.estornopagamentoextra # estorno de pagamento extra
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
 
