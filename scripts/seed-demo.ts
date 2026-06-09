@@ -19,6 +19,16 @@ import { COMPRAS_SNAPSHOT } from "../lib/demo-compras";
 import { RH_SNAPSHOT } from "../lib/demo-rh";
 import { CONTAS_SNAPSHOT } from "../lib/demo-prestacao-contas";
 import { PROCESSOS_SNAPSHOT } from "../lib/demo-processos";
+import { DEFESA_CIVIL_SNAPSHOT } from "../lib/demo-defesa-civil";
+import { FROTAS_SNAPSHOT } from "../lib/demo-frotas";
+import { PATRIMONIO_SNAPSHOT } from "../lib/demo-patrimonio";
+import { OBRAS_SNAPSHOT } from "../lib/demo-obras";
+import { EDUCACAO_SNAPSHOT } from "../lib/demo-educacao";
+import { SAUDE_SNAPSHOT } from "../lib/demo-saude";
+import { ASSISTENCIA_SOCIAL_SNAPSHOT } from "../lib/demo-assistencia-social";
+import { PREVIDENCIA_SNAPSHOT } from "../lib/demo-previdencia";
+import { LEGISLATIVO_SNAPSHOT } from "../lib/demo-legislativo";
+import { SANEAMENTO_SNAPSHOT } from "../lib/demo-saneamento";
 
 const DATABASE_URL =
   process.env.DATABASE_URL ??
@@ -95,14 +105,62 @@ const DESPESA: {
   liquidada: number;
   pago: number;
 }[] = [
-  { orgao: "Gabinete do Prefeito", atualizada: 8_500_000, empenhada: 7_900_000, liquidada: 7_400_000, pago: 7_100_000 },
-  { orgao: "Secretaria de Administração", atualizada: 21_000_000, empenhada: 19_800_000, liquidada: 18_600_000, pago: 18_000_000 },
-  { orgao: "Secretaria de Saúde", atualizada: 64_000_000, empenhada: 61_500_000, liquidada: 58_900_000, pago: 56_700_000 },
-  { orgao: "Secretaria de Educação", atualizada: 78_000_000, empenhada: 75_200_000, liquidada: 71_800_000, pago: 69_400_000 },
-  { orgao: "Secretaria de Obras", atualizada: 33_000_000, empenhada: 29_500_000, liquidada: 24_300_000, pago: 22_100_000 },
-  { orgao: "Secretaria de Assistência Social", atualizada: 17_500_000, empenhada: 16_400_000, liquidada: 15_200_000, pago: 14_800_000 },
-  { orgao: "Secretaria de Agricultura", atualizada: 9_800_000, empenhada: 9_100_000, liquidada: 8_300_000, pago: 8_000_000 },
-  { orgao: "Secretaria de Finanças", atualizada: 12_200_000, empenhada: 11_300_000, liquidada: 10_700_000, pago: 10_400_000 },
+  {
+    orgao: "Gabinete do Prefeito",
+    atualizada: 8_500_000,
+    empenhada: 7_900_000,
+    liquidada: 7_400_000,
+    pago: 7_100_000,
+  },
+  {
+    orgao: "Secretaria de Administração",
+    atualizada: 21_000_000,
+    empenhada: 19_800_000,
+    liquidada: 18_600_000,
+    pago: 18_000_000,
+  },
+  {
+    orgao: "Secretaria de Saúde",
+    atualizada: 64_000_000,
+    empenhada: 61_500_000,
+    liquidada: 58_900_000,
+    pago: 56_700_000,
+  },
+  {
+    orgao: "Secretaria de Educação",
+    atualizada: 78_000_000,
+    empenhada: 75_200_000,
+    liquidada: 71_800_000,
+    pago: 69_400_000,
+  },
+  {
+    orgao: "Secretaria de Obras",
+    atualizada: 33_000_000,
+    empenhada: 29_500_000,
+    liquidada: 24_300_000,
+    pago: 22_100_000,
+  },
+  {
+    orgao: "Secretaria de Assistência Social",
+    atualizada: 17_500_000,
+    empenhada: 16_400_000,
+    liquidada: 15_200_000,
+    pago: 14_800_000,
+  },
+  {
+    orgao: "Secretaria de Agricultura",
+    atualizada: 9_800_000,
+    empenhada: 9_100_000,
+    liquidada: 8_300_000,
+    pago: 8_000_000,
+  },
+  {
+    orgao: "Secretaria de Finanças",
+    atualizada: 12_200_000,
+    empenhada: 11_300_000,
+    liquidada: 10_700_000,
+    pago: 10_400_000,
+  },
 ];
 
 // Amostra de receita (agregado anual, mes = null).
@@ -113,13 +171,55 @@ const RECEITA: {
   prevista: number;
   arrecadada: number;
 }[] = [
-  { codigo: "1.1.1", receita: "IPTU", categoria: "propria", prevista: 9_000_000, arrecadada: 7_200_000 },
-  { codigo: "1.1.2", receita: "ISS", categoria: "propria", prevista: 14_000_000, arrecadada: 12_800_000 },
-  { codigo: "1.1.3", receita: "ITBI", categoria: "propria", prevista: 4_500_000, arrecadada: 4_100_000 },
-  { codigo: "2.1.1", receita: "FPM", categoria: "federal", prevista: 95_000_000, arrecadada: 91_000_000 },
-  { codigo: "2.1.2", receita: "FUNDEB", categoria: "federal", prevista: 62_000_000, arrecadada: 60_500_000 },
-  { codigo: "3.1.1", receita: "ICMS", categoria: "estadual", prevista: 120_000_000, arrecadada: 114_000_000 },
-  { codigo: "3.1.2", receita: "IPVA", categoria: "estadual", prevista: 18_000_000, arrecadada: 16_900_000 },
+  {
+    codigo: "1.1.1",
+    receita: "IPTU",
+    categoria: "propria",
+    prevista: 9_000_000,
+    arrecadada: 7_200_000,
+  },
+  {
+    codigo: "1.1.2",
+    receita: "ISS",
+    categoria: "propria",
+    prevista: 14_000_000,
+    arrecadada: 12_800_000,
+  },
+  {
+    codigo: "1.1.3",
+    receita: "ITBI",
+    categoria: "propria",
+    prevista: 4_500_000,
+    arrecadada: 4_100_000,
+  },
+  {
+    codigo: "2.1.1",
+    receita: "FPM",
+    categoria: "federal",
+    prevista: 95_000_000,
+    arrecadada: 91_000_000,
+  },
+  {
+    codigo: "2.1.2",
+    receita: "FUNDEB",
+    categoria: "federal",
+    prevista: 62_000_000,
+    arrecadada: 60_500_000,
+  },
+  {
+    codigo: "3.1.1",
+    receita: "ICMS",
+    categoria: "estadual",
+    prevista: 120_000_000,
+    arrecadada: 114_000_000,
+  },
+  {
+    codigo: "3.1.2",
+    receita: "IPVA",
+    categoria: "estadual",
+    prevista: 18_000_000,
+    arrecadada: 16_900_000,
+  },
 ];
 
 async function main() {
@@ -159,7 +259,8 @@ async function main() {
     } = await client.query<{ id: string }>(
       `select id from dim_entidade where tipo = 'Prefeitura' limit 1`,
     );
-    if (!prefeitura) throw new Error("Entidade Prefeitura não encontrada após seed");
+    if (!prefeitura)
+      throw new Error("Entidade Prefeitura não encontrada após seed");
     const entidadeId = prefeitura.id;
 
     // Módulos.
@@ -229,9 +330,15 @@ async function main() {
             valor_a_empenhar, valor_a_pagar)
          values ($1,$2,null,$3,$3,$4,$5,$6,$7,$8,$9)`,
         [
-          entidadeId, ANO, d.orgao,
-          d.atualizada, d.empenhada, d.liquidada, d.pago,
-          d.atualizada - d.empenhada, d.liquidada - d.pago,
+          entidadeId,
+          ANO,
+          d.orgao,
+          d.atualizada,
+          d.empenhada,
+          d.liquidada,
+          d.pago,
+          d.atualizada - d.empenhada,
+          d.liquidada - d.pago,
         ],
       );
     }
@@ -244,8 +351,14 @@ async function main() {
             valor_prevista, valor_arrecadada, valor_a_arrecadar)
          values ($1,$2,null,$3,$4,$5,$6,$7,$8)`,
         [
-          entidadeId, ANO, r.codigo, r.receita, r.categoria,
-          r.prevista, r.arrecadada, r.prevista - r.arrecadada,
+          entidadeId,
+          ANO,
+          r.codigo,
+          r.receita,
+          r.categoria,
+          r.prevista,
+          r.arrecadada,
+          r.prevista - r.arrecadada,
         ],
       );
     }
@@ -313,7 +426,9 @@ async function main() {
     );
 
     // Snapshot do módulo Contas Públicas (Prestação de Contas — display).
-    await client.query(`delete from mod_prestacao_contas where ano = $1`, [ANO]);
+    await client.query(`delete from mod_prestacao_contas where ano = $1`, [
+      ANO,
+    ]);
     await client.query(
       `insert into mod_prestacao_contas (entidade_id, ano, dados) values ($1, $2, $3)`,
       [entidadeId, ANO, JSON.stringify(CONTAS_SNAPSHOT)],
@@ -326,8 +441,31 @@ async function main() {
       [entidadeId, ANO, JSON.stringify(PROCESSOS_SNAPSHOT)],
     );
 
+    // Snapshots dos módulos long-tail (#33).
+    const longTailSnapshots: [string, unknown][] = [
+      ["mod_defesa_civil", DEFESA_CIVIL_SNAPSHOT],
+      ["mod_frotas", FROTAS_SNAPSHOT],
+      ["mod_patrimonio", PATRIMONIO_SNAPSHOT],
+      ["mod_obras", OBRAS_SNAPSHOT],
+      ["mod_educacao", EDUCACAO_SNAPSHOT],
+      ["mod_saude", SAUDE_SNAPSHOT],
+      ["mod_assistencia_social", ASSISTENCIA_SOCIAL_SNAPSHOT],
+      ["mod_previdencia", PREVIDENCIA_SNAPSHOT],
+      ["mod_legislativo", LEGISLATIVO_SNAPSHOT],
+      ["mod_saneamento", SANEAMENTO_SNAPSHOT],
+    ];
+    for (const [table, snapshot] of longTailSnapshots) {
+      await client.query(`delete from ${table} where ano = $1`, [ANO]);
+      await client.query(
+        `insert into ${table} (entidade_id, ano, dados) values ($1, $2, $3)`,
+        [entidadeId, ANO, JSON.stringify(snapshot)],
+      );
+    }
+
     // Snapshot do Painel de Licitações (lista de licitações).
-    await client.query(`delete from mod_licitacoes_painel where ano = $1`, [ANO]);
+    await client.query(`delete from mod_licitacoes_painel where ano = $1`, [
+      ANO,
+    ]);
     await client.query(
       `insert into mod_licitacoes_painel (entidade_id, ano, dados) values ($1, $2, $3)`,
       [entidadeId, ANO, JSON.stringify(LICITACOES_PAINEL)],
@@ -336,9 +474,15 @@ async function main() {
     await client.query("commit");
     console.log("Seed demo concluído:");
     console.log(`  município: ${MUNICIPIO} (Nova Londrina/PR)`);
-    console.log(`  usuário:   ${DEMO_CPF} (Prefeito) — senha: ${DEMO_PASSWORD}`);
-    console.log(`  módulos:   ${MODULOS.length} · submódulos: ${Object.values(SUBMODULOS).flat().length}`);
-    console.log(`  fatos:     ${DESPESA.length} despesas + ${RECEITA.length} receitas (ano ${ANO})`);
+    console.log(
+      `  usuário:   ${DEMO_CPF} (Prefeito) — senha: ${DEMO_PASSWORD}`,
+    );
+    console.log(
+      `  módulos:   ${MODULOS.length} · submódulos: ${Object.values(SUBMODULOS).flat().length}`,
+    );
+    console.log(
+      `  fatos:     ${DESPESA.length} despesas + ${RECEITA.length} receitas (ano ${ANO})`,
+    );
   } catch (err) {
     await client.query("rollback");
     throw err;

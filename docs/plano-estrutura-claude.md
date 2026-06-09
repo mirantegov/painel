@@ -1,6 +1,6 @@
 # Estrutura `.claude/` — Mirante Painel Municipal Dashboard
 
-Plano completo para a pasta `.claude/` do projeto Mirante Painel, otimizada para uso com Claude Code CLI + Windsurf IDE, cobrindo automação de tarefas recorrentes, proteção de arquivos críticos e padronização entre os 19 módulos.
+Plano completo para a pasta `.claude/` do projeto Mirante Painel, otimizada para uso com Claude Code CLI + Windsurf IDE, cobrindo automação de tarefas recorrentes, proteção de arquivos críticos e padronização entre os módulos ativos registrados em `lib/modules-config.ts`.
 
 ---
 
@@ -13,7 +13,7 @@ Plano completo para a pasta `.claude/` do projeto Mirante Painel, otimizada para
 │   ├── new-module.md              # /new-module — Cria módulo completo do zero
 │   ├── add-analise.md             # /add-analise — Adiciona seção Análises a módulo existente
 │   ├── add-demo-data.md           # /add-demo-data — Cria/estende lib/demo-*.ts
-│   ├── audit-modules.md           # /audit-modules — Audita consistência dos 19 módulos
+│   ├── audit-modules.md           # /audit-modules — Audita consistência dos módulos ativos
 │   └── quality-check.md           # /quality-check — Typecheck + lint + format
 └── hooks/
     └── guard-ui-components.sh     # Avisa quando components/ui/ é modificado
@@ -33,9 +33,10 @@ Configurações centrais do Claude Code para o projeto:
 Comando guiado para criar um módulo governamental completo:
 1. Solicita: nome do módulo (ex: `meio-ambiente`), label PT-BR, ícone HugeIcons, cor do tema
 2. Cria `components/[nome].tsx` com estrutura padrão: 4× `KpiCard`, gráficos Recharts, `<Tabs>` internas (5 sub-abas), seção `Análises` completa, `Alertas`
-3. Cria `lib/demo-[nome].ts` com dados mock estruturados
-4. Adiciona `<TabsTrigger>` + `<TabsContent>` em `app/page.tsx` na posição correta do `TAB_ORDER`
-5. Verifica com `npm run typecheck`
+3. Cria `lib/demo-[nome].ts` com snapshot demo serializável
+4. Registra o módulo em `MODULES` (`lib/modules-config.ts`) e em `MODULE_TABLES` (`lib/data/modules.ts`)
+5. Atualiza o componente para consumir `useSnapshot("<slug>", <SLUG>_SNAPSHOT)` e inclui seed em `scripts/seed-demo.ts`
+6. Verifica com `npm run typecheck`
 
 ### `commands/add-analise.md` → `/add-analise`
 Implementa a seção Análises em módulos existentes (padrão documentado em `docs/plano-implementacao-analises.md`):
@@ -45,15 +46,16 @@ Implementa a seção Análises em módulos existentes (padrão documentado em `d
 4. Para módulos complexos: cria `components/[modulo]/analise-[modulo].tsx`, atualiza `grid-cols-N` no `TabsList`
 
 ### `commands/add-demo-data.md` → `/add-demo-data`
-Cria ou estende arquivos de dados demo:
+Cria ou estende arquivos de dados demo/snapshot:
 1. Solicita: módulo de destino, entidades principais
 2. Gera `lib/demo-[modulo].ts` com: constantes de KPIs, arrays de dados para gráficos, dados de tabelas, todos tipados com `as const` ou interfaces TypeScript
-3. Exporta no padrão dos arquivos existentes (`demo-legislativo.ts`, `demo-previdencia.ts`)
+3. Exporta `<SLUG>_SNAPSHOT` com somente dados serializáveis por `JSON.stringify`
+4. Atualiza `scripts/seed-demo.ts` para persistir o snapshot em `mod_<slug>.dados`
 
 ### `commands/audit-modules.md` → `/audit-modules`
 Auditoria de consistência estrutural:
-1. Lê `app/page.tsx` para obter lista de módulos do `TAB_ORDER`
-2. Para cada módulo, verifica presença de: seção Análises, `KpiCard`, `Separator`, `Accordion`, `Alert`
+1. Lê `lib/modules-config.ts` para obter a lista oficial de módulos em `MODULES`
+2. Para cada módulo, verifica presença de: seção Análises, `KpiCard`, `Separator`, `Accordion`, `Alert`, fallback demo e uso de snapshot
 3. Produz tabela Markdown: módulo × feature × status (✅/❌)
 4. Identifica módulos pendentes (como os 4 do `docs/plano-implementacao-analises.md`)
 
@@ -79,7 +81,7 @@ As seguintes regras serão referenciadas nos comandos e no `settings.json`:
 | Área | Regra |
 |---|---|
 | `components/ui/` | Nunca modificar — são primitivos shadcn/ui |
-| Dados | Sempre mock/estático — zero chamadas de API reais |
+| Dados | Snapshots `mod_*` no Postgres com fallback demo serializável em `lib/demo-*.ts` |
 | Ícones | Exclusivamente `@hugeicons/react` + `@hugeicons/core-free-icons` |
 | Estilização | Tailwind CSS v4 + `cn()` de `lib/utils.ts` |
 | Gráficos | Recharts via wrapper `components/ui/chart.tsx` |

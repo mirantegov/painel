@@ -1,5 +1,6 @@
 "use client";
 
+import { useLegislativoSnapshot } from "./snapshot-context";
 import {
   Card,
   CardContent,
@@ -18,11 +19,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { Bar, BarChart, Cell, CartesianGrid, XAxis, YAxis } from "recharts";
-import {
-  DATA_VEREADORES,
-  calcularPresencaVereador,
-  calcularPresencaGeral,
-} from "@/lib/demo-legislativo";
+import type { Presenca } from "@/lib/demo-legislativo";
 import { getInitials } from "@/lib/utils";
 import {
   UserCheckIcon,
@@ -33,11 +30,13 @@ import {
 function VereadorPresencaCard({
   vereadorId,
   nome,
+  presencas,
 }: {
   vereadorId: string;
   nome: string;
+  presencas: Presenca[];
 }) {
-  const presenca = calcularPresencaVereador(vereadorId);
+  const presenca = calcularPresencaVereador(presencas, vereadorId);
   const initials = getInitials(nome);
 
   const getColor = (pct: number) => {
@@ -69,11 +68,13 @@ function VereadorPresencaCard({
 }
 
 function PresencaStats() {
-  const presencaGeral = calcularPresencaGeral();
+  const { DATA_VEREADORES, DATA_PRESENCAS } = useLegislativoSnapshot();
+
+  const presencaGeral = calcularPresencaGeral(DATA_PRESENCAS);
   const presencasPorVereador = DATA_VEREADORES.map((v) => ({
     id: v.id,
     nome: v.nome,
-    presenca: calcularPresencaVereador(v.id),
+    presenca: calcularPresencaVereador(DATA_PRESENCAS, v.id),
   }));
 
   const media = Math.round(
@@ -138,10 +139,12 @@ function PresencaStats() {
 }
 
 function QuorumCard() {
+  const { DATA_VEREADORES, DATA_PRESENCAS } = useLegislativoSnapshot();
+
   const presencasPorVereador = DATA_VEREADORES.map((vereador) => ({
     id: vereador.id,
     nome: vereador.nome,
-    presenca: calcularPresencaVereador(vereador.id),
+    presenca: calcularPresencaVereador(DATA_PRESENCAS, vereador.id),
   }));
 
   const acima90 = presencasPorVereador.filter((item) => item.presenca >= 90);
@@ -179,11 +182,13 @@ function QuorumCard() {
 }
 
 function PresencaDistribuicao() {
+  const { DATA_VEREADORES, DATA_PRESENCAS } = useLegislativoSnapshot();
+
   const presencasPorVereador = DATA_VEREADORES.map((v) => ({
     id: v.id,
     nome: v.nome.split(" ")[0],
     partido: v.partido,
-    presenca: calcularPresencaVereador(v.id),
+    presenca: calcularPresencaVereador(DATA_PRESENCAS, v.id),
   })).sort((a, b) => b.presenca - a.presenca);
 
   const getBarColor = (pct: number) => {
@@ -246,13 +251,38 @@ function PresencaDistribuicao() {
 }
 
 function VereadoresPresencaGrid() {
+  const { DATA_VEREADORES, DATA_PRESENCAS } = useLegislativoSnapshot();
+
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {DATA_VEREADORES.map((v) => (
-        <VereadorPresencaCard key={v.id} vereadorId={v.id} nome={v.nome} />
+        <VereadorPresencaCard
+          key={v.id}
+          vereadorId={v.id}
+          nome={v.nome}
+          presencas={DATA_PRESENCAS}
+        />
       ))}
     </div>
   );
+}
+
+function calcularPresencaVereador(
+  presencas: Presenca[],
+  vereadorId: string,
+): number {
+  const presencasVereador = presencas.filter(
+    (p) => p.vereadorId === vereadorId,
+  );
+  if (presencasVereador.length === 0) return 0;
+  const presentes = presencasVereador.filter((p) => p.presente).length;
+  return Math.round((presentes / presencasVereador.length) * 100);
+}
+
+function calcularPresencaGeral(presencas: Presenca[]): number {
+  if (presencas.length === 0) return 0;
+  const presentes = presencas.filter((p) => p.presente).length;
+  return Math.round((presentes / presencas.length) * 100);
 }
 
 export function Presencas() {

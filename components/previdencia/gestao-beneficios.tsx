@@ -1,5 +1,6 @@
 "use client";
 
+import { usePrevidenciaSnapshot } from "./snapshot-context";
 import {
   Card,
   CardContent,
@@ -26,20 +27,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
-import {
-  TOTAL_PARTICIPANTES_ATIVOS,
-  TOTAL_APOSENTADOS,
-  TOTAL_PENSIONISTAS,
-  TOTAL_BENEFICIARIOS,
-  DATA_PARTICIPANTES,
-  DATA_APOSENTADOS,
-  DATA_PENSIONISTAS,
-  DATA_BENEFICIARIOS,
-  DATA_BENEFICIARIOS_MES,
-  DATA_DISTRIBUICAO_ETARIA,
-  formatCurrency,
-  formatNumber,
-} from "@/lib/demo-previdencia";
+import { formatCurrency, formatNumber } from "@/lib/demo-previdencia";
 import {
   UserIcon,
   UserMultipleIcon,
@@ -49,6 +37,8 @@ import {
 import { getInitials } from "@/lib/utils";
 
 function ComposicaoChart() {
+  const { TOTAL_BENEFICIARIOS, DATA_BENEFICIARIOS } = usePrevidenciaSnapshot();
+
   const total = TOTAL_BENEFICIARIOS;
   const aposentadosCount = DATA_BENEFICIARIOS.filter(
     (b) => b.tipo === "Aposentadoria",
@@ -112,6 +102,8 @@ function ComposicaoChart() {
 }
 
 function BeneficiariosTable() {
+  const { DATA_BENEFICIARIOS } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -151,6 +143,8 @@ function BeneficiariosTable() {
 }
 
 function ParticipantesTable() {
+  const { DATA_PARTICIPANTES } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -201,6 +195,8 @@ function ParticipantesTable() {
 }
 
 function AposentadosTable() {
+  const { DATA_APOSENTADOS } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -247,6 +243,8 @@ function AposentadosTable() {
 }
 
 function PensionistasTable() {
+  const { DATA_PENSIONISTAS } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -293,6 +291,8 @@ function PensionistasTable() {
 }
 
 function DistribuicaoEtariaChart() {
+  const { DATA_DISTRIBUICAO_ETARIA } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -342,6 +342,12 @@ function DistribuicaoEtariaChart() {
 }
 
 function PerfilPrevidenciarioCard() {
+  const {
+    TOTAL_PARTICIPANTES_ATIVOS,
+    TOTAL_BENEFICIARIOS,
+    DATA_BENEFICIARIOS,
+  } = usePrevidenciaSnapshot();
+
   const razaoDependencia = TOTAL_BENEFICIARIOS / TOTAL_PARTICIPANTES_ATIVOS;
   const mediaBeneficio =
     DATA_BENEFICIARIOS.reduce((acc, item) => acc + item.valorTotal, 0) /
@@ -387,6 +393,14 @@ function PerfilPrevidenciarioCard() {
 }
 
 export function GestaoBeneficios() {
+  const {
+    TOTAL_PARTICIPANTES_ATIVOS,
+    TOTAL_APOSENTADOS,
+    TOTAL_PENSIONISTAS,
+    TOTAL_BENEFICIARIOS,
+    DATA_BENEFICIARIOS_MES,
+  } = usePrevidenciaSnapshot();
+
   const maxBeneficiariosMes = Math.max(
     ...DATA_BENEFICIARIOS_MES.map((item) => item.quantidade),
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { useLegislativoSnapshot } from "./snapshot-context";
 import {
   Card,
   CardContent,
@@ -19,13 +20,7 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { KpiCard } from "@/components/ui/kpi-card";
-import {
-  DATA_VEREADORES,
-  MESA_DIRETORA,
-  PartidoCores,
-  type Partido,
-  type Vereador,
-} from "@/lib/demo-legislativo";
+import { type Partido, type Vereador } from "@/lib/demo-legislativo";
 import { getInitials } from "@/lib/utils";
 import {
   UserIcon,
@@ -35,6 +30,8 @@ import {
 } from "@hugeicons/core-free-icons";
 
 function PartidoBadge({ partido }: { partido: Partido }) {
+  const { PartidoCores } = useLegislativoSnapshot();
+
   return (
     <Badge
       variant="outline"
@@ -65,6 +62,8 @@ function CargoBadge({ cargo }: { cargo: string }) {
 }
 
 function VereadorCard({ vereador }: { vereador: Vereador }) {
+  const { PartidoCores } = useLegislativoSnapshot();
+
   const initials = getInitials(vereador.nome);
 
   return (
@@ -93,6 +92,8 @@ function VereadorCard({ vereador }: { vereador: Vereador }) {
 }
 
 function VereadoresKpis() {
+  const { DATA_VEREADORES, MESA_DIRETORA } = useLegislativoSnapshot();
+
   const partidos = new Set(DATA_VEREADORES.map((vereador) => vereador.partido));
   const comEmail = DATA_VEREADORES.filter((vereador) => vereador.email).length;
 
@@ -147,6 +148,8 @@ function VereadoresKpis() {
 }
 
 function ObservacoesPlenarioCard() {
+  const { DATA_VEREADORES } = useLegislativoSnapshot();
+
   const liderancas = DATA_VEREADORES.filter(
     (vereador) => vereador.cargo !== "Vereador",
   );
@@ -192,6 +195,8 @@ function ObservacoesPlenarioCard() {
 }
 
 function MesaDiretoraCard() {
+  const { MESA_DIRETORA } = useLegislativoSnapshot();
+
   const { presidente, vice, primeiraSecretaria, segundaSecretaria } =
     MESA_DIRETORA;
 
@@ -230,6 +235,8 @@ function MesaDiretoraCard() {
 }
 
 function VereadoresTable() {
+  const { DATA_VEREADORES } = useLegislativoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -269,6 +276,8 @@ function VereadoresTable() {
 }
 
 function ComposicaoPartidoChart() {
+  const { PartidoCores, DATA_VEREADORES } = useLegislativoSnapshot();
+
   const partidoCount = DATA_VEREADORES.reduce(
     (acc, v) => {
       acc[v.partido] = (acc[v.partido] || 0) + 1;
@@ -317,6 +326,8 @@ function ComposicaoPartidoChart() {
 }
 
 export function Vereadores() {
+  const { DATA_VEREADORES } = useLegislativoSnapshot();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">

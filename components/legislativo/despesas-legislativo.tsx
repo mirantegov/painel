@@ -1,5 +1,6 @@
 "use client";
 
+import { useLegislativoSnapshot } from "./snapshot-context";
 import {
   Card,
   CardContent,
@@ -29,18 +30,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  ORCAMENTO_LEGISLATIVO,
-  DESPESA_EMPENHADA_LEGISLATIVO,
-  TOTAL_DIARIAS_LEGISLATIVO,
-  QUANTIDADE_DIARIAS,
-  MEDIA_DIARIAS,
-  GASTO_PESSOAL_PORCENTO,
-  LIMITE_GASTO_PESSOAL,
-  DATA_DESPESAS_CATEGORIAS,
-  DATA_DIARIAS_MES,
-  formatCurrency,
-} from "@/lib/demo-legislativo";
+import { formatCurrency } from "@/lib/demo-legislativo";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   BankIcon,
@@ -52,6 +42,16 @@ import {
 } from "@hugeicons/core-free-icons";
 
 function DespesasKpis() {
+  const {
+    ORCAMENTO_LEGISLATIVO,
+    DESPESA_EMPENHADA_LEGISLATIVO,
+    TOTAL_DIARIAS_LEGISLATIVO,
+    QUANTIDADE_DIARIAS,
+    MEDIA_DIARIAS,
+    GASTO_PESSOAL_PORCENTO,
+    LIMITE_GASTO_PESSOAL,
+  } = useLegislativoSnapshot();
+
   const executado =
     (DESPESA_EMPENHADA_LEGISLATIVO / ORCAMENTO_LEGISLATIVO) * 100;
   const saldo = ORCAMENTO_LEGISLATIVO - DESPESA_EMPENHADA_LEGISLATIVO;
@@ -123,6 +123,8 @@ function DespesasKpis() {
 }
 
 function ResumoDespesas() {
+  const { DATA_DESPESAS_CATEGORIAS } = useLegislativoSnapshot();
+
   const totalEmpenhado = DATA_DESPESAS_CATEGORIAS.reduce(
     (acc, c) => acc + c.empenhado,
     0,
@@ -195,6 +197,8 @@ function ResumoDespesas() {
 }
 
 function DiariasPorMesChart() {
+  const { DATA_DIARIAS_MES } = useLegislativoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -248,6 +252,8 @@ function DiariasPorMesChart() {
 }
 
 function DespesasPorCategoriaChart() {
+  const { DATA_DESPESAS_CATEGORIAS } = useLegislativoSnapshot();
+
   const data = DATA_DESPESAS_CATEGORIAS.map((c) => ({
     categoria: c.nome,
     empenhado: c.empenhado,
@@ -317,6 +323,9 @@ function DespesasPorCategoriaChart() {
 }
 
 function AlertaLimite() {
+  const { GASTO_PESSOAL_PORCENTO, LIMITE_GASTO_PESSOAL } =
+    useLegislativoSnapshot();
+
   const restam = LIMITE_GASTO_PESSOAL - GASTO_PESSOAL_PORCENTO;
 
   if (GASTO_PESSOAL_PORCENTO >= 60) {
@@ -364,6 +373,9 @@ function AlertaLimite() {
 }
 
 function PainelExecutivoFinanceiro() {
+  const { DESPESA_EMPENHADA_LEGISLATIVO, TOTAL_DIARIAS_LEGISLATIVO } =
+    useLegislativoSnapshot();
+
   const percentualDiarias =
     (TOTAL_DIARIAS_LEGISLATIVO / DESPESA_EMPENHADA_LEGISLATIVO) * 100;
   const gastoPessoalValor = DESPESA_EMPENHADA_LEGISLATIVO * 0.65;

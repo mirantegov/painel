@@ -4,7 +4,7 @@
 
 O **Mirante Painel** é uma aplicação web de **Next.js** pensada para **prefeituras, autarquias e equipes de planejamento** que precisam de um **único painel** para acompanhar, de forma didática, **indicadores de gestão pública**: finanças, pessoal, obras, políticas sociais, transparência e mais. A interface está em **português (Brasil)**, com gráficos, tabelas e cartões (KPIs) no estilo *dashboard* executivo.
 
-> **Backend (Fase 1):** os módulos de entrega leem dados de um **Postgres** (Supabase self-hosted), **multi-tenant por município** (schema `mun_<id_ibge>`), com **autenticação própria** (JWT em cookie httpOnly) e **ACL por módulo/submódulo**. Os dados seedados ainda são **demonstrativos** (município Nova Londrina/PR); o pipeline real de ingestão (TCE/SICONFI → ClickHouse → Postgres) é entregue em fases seguintes (Épicos 4–6). Detalhes em [`ARCHITECTURE.md`](ARCHITECTURE.md).
+> **Backend (Fase 1):** os módulos de entrega leem dados de um **Postgres** (Supabase self-hosted), **multi-tenant por município** (schema `mun_<id_ibge>`), com **autenticação própria** (JWT em cookie httpOnly) e **ACL por módulo/submódulo**. Todos os módulos de display atuais possuem fallback demo em `lib/demo-*.ts` e podem ser seedados em snapshots `mod_*` para o município Nova Londrina/PR. O pipeline real de ingestão (TCE/SICONFI → ClickHouse → Postgres) é entregue em fases seguintes (Épicos 4–6). Detalhes em [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ### Navegação
 
@@ -85,6 +85,7 @@ Cada linha corresponde a uma aba no ecrã principal. Os ficheiros vivem em [`com
 | **Saúde** | `saude.tsx` | Indicadores da área de saúde. |
 | **Educação** | `educacao.tsx` | Indicadores educacionais. |
 | **Assistência Social** | `assistencia-social.tsx` | Políticas sociais. |
+| **Defesa Civil** | `defesa-civil.tsx` | Ocorrências, riscos, abrigos e logística. |
 | **Obras** | `obras.tsx` | Obras e investimentos. |
 | **Frotas** | `frotas.tsx` | Frota e operações. |
 | **Patrimônio** | `patrimonio.tsx` | Bens e inventário. |
@@ -93,6 +94,7 @@ Cada linha corresponde a uma aba no ecrã principal. Os ficheiros vivem em [`com
 | **Legislativo** | `legislativo/` | Câmara, sessões, proposituras, etc. |
 | **Previdência** | `previdencia/` | RPPS / previdência municipal. |
 | **Saneamento** | `saneamento/` | Água, esgoto, drenagem. |
+| **Painel de Licitações** | `licitacoes-painel.tsx` | Lista executiva de licitações em andamento. |
 
 Para **adicionar uma nova aba**, siga o fluxo descrito na secção [Como adicionar um novo módulo](#como-adicionar-um-novo-módulo).
 
@@ -403,7 +405,7 @@ painel/
 │       └── data/[modulo]/route.ts       # Snapshot jsonb do módulo (por município da sessão)
 ├── components/
 │   ├── ui/                 # Primitivas shadcn/ui
-│   ├── use-snapshot.ts    # Hook: lê /api/data/<slug> com fallback bundlado
+│   ├── use-snapshot.ts     # Hook: lê /api/data/<slug> com fallback bundlado
 │   └── …                   # Um componente por módulo (ver tabela acima)
 ├── lib/
 │   ├── auth/               # jwt (jose) · password (bcrypt) · session
@@ -419,6 +421,8 @@ painel/
 │   ├── config.toml
 │   └── migrations/         # Schema: dims, fatos, módulos, auth/ACL, multi-tenant
 ├── docs/                   # ARCHITECTURE complementar, planos e referências
+├── .agents/                # Skills locais migradas de comandos do projeto
+├── .codex/                 # Configuração local de hooks/guardas para agentes
 ├── middleware.ts           # Guarda rotas com JWT (cookie mp_session)
 ├── Dockerfile
 ├── docker-compose.yml
@@ -447,18 +451,18 @@ export function MeuModulo() {
 }
 ```
 
-### 2. Registe a aba em `app/page.tsx`
+### 2. Registe a aba em `lib/modules-config.ts`
 
-1. Importe o componente.
-2. Adicione o id em `TAB_ORDER`.
-3. Adicione um `<TabsTrigger>` em `<TabsList>`.
-4. Adicione `<TabsContent>` com o componente.
+1. Importe o componente em `lib/modules-config.ts`.
+2. Adicione uma entrada em `MODULES` com `id`, `label`, `icon` e `component`.
+3. Adicione título/subtítulo em `MODULE_HEADERS`.
+4. Decida se o módulo entra em `DEFAULT_ENABLED_MODULE_IDS` ou fica oculto por padrão.
 
 Os ícones vêm de `@hugeicons/core-free-icons`.
 
-### 3. (Opcional) Servir dados do Postgres
+### 3. Servir dados do Postgres
 
-Para o módulo ler do banco como os demais: registre o slug em `MODULE_TABLES` (`lib/data/modules.ts`) apontando para `mod_<slug>`, extraia os dados para `lib/demo-<slug>.ts` (`<SLUG>_SNAPSHOT` serializável), consuma no componente via `useSnapshot("<slug>", <SLUG>_SNAPSHOT)` e seede em `scripts/seed-demo.ts`. Detalhe do padrão em [`docs/banco-de-dados.md`](docs/banco-de-dados.md).
+Para o módulo ler do banco como os demais: registre o slug em `MODULE_TABLES` (`lib/data/modules.ts`) apontando para `mod_<slug>`, extraia os dados para `lib/demo-<slug>.ts` (`<SLUG>_SNAPSHOT` serializável), consuma no componente via `useSnapshot("<slug>", <SLUG>_SNAPSHOT)` e seede em `scripts/seed-demo.ts`. O snapshot deve conter somente dados serializáveis por `JSON.stringify` (sem funções, JSX ou objetos de ícone). Detalhe do padrão em [`docs/banco-de-dados.md`](docs/banco-de-dados.md).
 
 ---
 

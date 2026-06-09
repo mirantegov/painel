@@ -1,5 +1,6 @@
 "use client";
 
+import { useLegislativoSnapshot } from "./snapshot-context";
 import {
   Card,
   CardContent,
@@ -19,7 +20,6 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
-  DATA_COMISSOES,
   formatDate,
   type Comissao,
   type TipoComissao,
@@ -119,6 +119,8 @@ function ComissaoCard({ comissao }: { comissao: Comissao }) {
 }
 
 function ComissoesTable() {
+  const { DATA_COMISSOES } = useLegislativoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -169,6 +171,8 @@ function ComissoesTable() {
 }
 
 function ComissoesStats() {
+  const { DATA_COMISSOES } = useLegislativoSnapshot();
+
   const total = DATA_COMISSOES.length;
   const permanentes = DATA_COMISSOES.filter(
     (c) => c.tipo === "Permanente",
@@ -233,6 +237,8 @@ function ComissoesStats() {
 }
 
 function PainelComissoesCard() {
+  const { DATA_COMISSOES } = useLegislativoSnapshot();
+
   const presidentesPartidos = DATA_COMISSOES.reduce(
     (acc, comissao) => {
       acc[comissao.presidente.partido] =
@@ -281,6 +287,8 @@ function PainelComissoesCard() {
 }
 
 export function Comissoes() {
+  const { DATA_COMISSOES } = useLegislativoSnapshot();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
