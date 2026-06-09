@@ -2074,7 +2074,7 @@
     "size": 2,
     "tipo": "Numérico",
     "formato": "Z(1)9",
-    "name": "idTipoExecucaoAcao",
+    "name": "idTipoExecucao",
     "obrig": "SIM"
    },
    {
@@ -10305,7 +10305,7 @@
     "size": 7,
     "tipo": "Numérico",
     "formato": "Z(6)9",
-    "name": "idOrigemEmpenhopenho",
+    "name": "idOrigemEmpenho",
     "obrig": "SIM"
    }
   ]
@@ -10362,7 +10362,7 @@
     "size": 3,
     "tipo": "Numérico",
     "formato": "Z(2)9",
-    "name": "idTipoDadoComplementarEmpenholEmpenho",
+    "name": "idTipoDadoComplementarEmpenho",
     "obrig": "SIM"
    },
    {
@@ -10376,7 +10376,7 @@
     "size": 4,
     "tipo": "Numérico",
     "formato": "9999",
-    "name": "nrAnoEstornolEstorno",
+    "name": "nrAnoEstorno",
     "obrig": "NÃO"
    },
    {
@@ -10390,7 +10390,7 @@
     "size": 4,
     "tipo": "Numérico",
     "formato": "9999",
-    "name": "nrAnoReversaoersao",
+    "name": "nrAnoReversao",
     "obrig": "NÃO"
    }
   ]
@@ -10493,7 +10493,7 @@
     "size": 4,
     "tipo": "Numérico",
     "formato": "9999",
-    "name": "nrAnoInscricaoProcessadoNaoProcessado",
+    "name": "nrAnoInscricaoProcessado",
     "obrig": "SIM"
    }
   ]
@@ -10764,7 +10764,7 @@
     "size": 0,
     "tipo": "",
     "formato": "",
-    "name": "dtEstornolEstorno",
+    "name": "dtEstorno",
     "obrig": "SIM"
    },
    {
@@ -12148,7 +12148,7 @@
     "size": 0,
     "tipo": "",
     "formato": "",
-    "name": "dtEstornolEstorno",
+    "name": "dtEstorno",
     "obrig": "SIM"
    }
   ]
@@ -12820,7 +12820,7 @@
     "size": 0,
     "tipo": "",
     "formato": "",
-    "name": "dtEstornolEstorno",
+    "name": "dtEstorno",
     "obrig": "SIM"
    },
    {
@@ -13400,14 +13400,7 @@
     "size": 4,
     "tipo": "Numérico",
     "formato": "Z(3)9",
-    "name": "nrQteParcelatratada",
-    "obrig": "NÃO"
-   },
-   {
-    "size": 0,
-    "tipo": "",
-    "formato": "",
-    "name": "teParcelaa",
+    "name": "nrQteParcelatratadateParcelaa",
     "obrig": "NÃO"
    }
   ]
@@ -13877,21 +13870,7 @@
     "size": 0,
     "tipo": "",
     "formato": "",
-    "name": "cdTitulo",
-    "obrig": "SIM"
-   },
-   {
-    "size": 0,
-    "tipo": "",
-    "formato": "",
-    "name": "ubTitulotem",
-    "obrig": "SIM"
-   },
-   {
-    "size": 0,
-    "tipo": "",
-    "formato": "",
-    "name": "ubItemivel8ivel9ivel10ivel11ivel12",
+    "name": "cdTituloubTitulotemubItemivel8ivel9ivel10ivel11ivel12",
     "obrig": "SIM"
    },
    {
@@ -15402,7 +15381,7 @@
     "size": 0,
     "tipo": "",
     "formato": "",
-    "name": "dtEstornotorno",
+    "name": "dtEstorno",
     "obrig": "SIM"
    },
    {
@@ -17293,7 +17272,7 @@
     "size": 0,
     "tipo": "",
     "formato": "",
-    "name": "nrAnoAditivoContratoConsorcioConsorcio",
+    "name": "nrAnoAditivoContratoConsorcio",
     "obrig": "SIM"
    },
    {
@@ -17416,7 +17395,7 @@
     "size": 0,
     "tipo": "",
     "formato": "",
-    "name": "nrAnoAditivoContratoConsorcioConsorcio",
+    "name": "nrAnoAditivoContratoConsorcio",
     "obrig": "SIM"
    },
    {
@@ -20103,7 +20082,7 @@
     "size": 20,
     "tipo": "Caractere",
     "formato": "X(20)",
-    "name": "nrDocumentoocumento",
+    "name": "nrDocumento",
     "obrig": "SIM"
    },
    {
@@ -20671,7 +20650,7 @@
     "size": 4,
     "tipo": "Numérico",
     "formato": "Z(3)9",
-    "name": "nrSequencialEstornoEstorno",
+    "name": "nrSequencialEstorno",
     "obrig": "SIM"
    }
   ]
@@ -21920,13 +21899,6 @@
     "obrig": "SIM"
    },
    {
-    "size": 0,
-    "tipo": "",
-    "formato": "",
-    "name": "aoEPPME",
-    "obrig": "NÃO"
-   },
-   {
     "size": 1,
     "tipo": "Caractere",
     "formato": "X",
@@ -22024,13 +21996,6 @@
     "formato": "X",
     "name": "flCotaParticipac",
     "obrig": "SIM"
-   },
-   {
-    "size": 0,
-    "tipo": "",
-    "formato": "",
-    "name": "aoEPPME",
-    "obrig": "NÃO"
    },
    {
     "size": 1,
@@ -33453,14 +33418,7 @@
     "size": 7,
     "tipo": "Numérico",
     "formato": "Z(6)9",
-    "name": "cdControle",
-    "obrig": "NÃO"
-   },
-   {
-    "size": 0,
-    "tipo": "",
-    "formato": "",
-    "name": "eiAto",
+    "name": "cdControleeiAto",
     "obrig": "NÃO"
    },
    {

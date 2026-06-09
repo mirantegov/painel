@@ -198,7 +198,7 @@ CREATE TABLE IF NOT EXISTS simam.Empenho
     idPessoa UInt32,
     nrEmpenho UInt32,
     nrAnoEmpenho UInt32,
-    idOrigemEmpenhopenho UInt32,
+    idOrigemEmpenho UInt32,
     _id_entidade   UInt32,
     _exercicio     UInt16,
     _competencia   UInt8 DEFAULT 0,
@@ -217,11 +217,11 @@ CREATE TABLE IF NOT EXISTS simam.DadoComplementarEmpenho
     nrEmpenho UInt32,
     nrAnoEmpenho UInt32,
     idOrigemEmpenho UInt32,
-    idTipoDadoComplementarEmpenholEmpenho UInt32,
+    idTipoDadoComplementarEmpenho UInt32,
     nrEstorno Nullable(UInt32),
-    nrAnoEstornolEstorno Nullable(UInt32),
+    nrAnoEstorno Nullable(UInt32),
     nrReversao Nullable(UInt32),
-    nrAnoReversaoersao Nullable(UInt32),
+    nrAnoReversao Nullable(UInt32),
     _id_entidade   UInt32,
     _exercicio     UInt16,
     _competencia   UInt8 DEFAULT 0,
@@ -238,7 +238,7 @@ CREATE TABLE IF NOT EXISTS simam.InscricaoRAP
     nrEmpenho UInt32,
     nrAnoEmpenho UInt32,
     idOrigemEmpenho UInt32,
-    nrAnoInscricaoProcessadoNaoProcessado UInt32,
+    nrAnoInscricaoProcessado UInt32,
     _id_entidade   UInt32,
     _exercicio     UInt16,
     _competencia   UInt8 DEFAULT 0,
@@ -331,7 +331,7 @@ CREATE TABLE IF NOT EXISTS simam.EstornoEmpenho
     nrAnoEmpenho UInt32,
     idOrigemEmpenho UInt32,
     idTipoEstornoEmpenho UInt32,
-    dtEstornolEstorno Date32,
+    dtEstorno Date32,
     dsMotivolSaldoAntDotacao Nullable(String),
     _id_entidade   UInt32,
     _exercicio     UInt16,
@@ -576,7 +576,7 @@ CREATE TABLE IF NOT EXISTS simam.EstornoPagamento
     idTipoOperacaoPagamento UInt32,
     nrPagamento UInt32,
     nrAnoPagamento UInt32,
-    dtEstornolEstorno Date32,
+    dtEstorno Date32,
     _id_entidade   UInt32,
     _exercicio     UInt16,
     _competencia   UInt8 DEFAULT 0,
@@ -713,7 +713,7 @@ CREATE TABLE IF NOT EXISTS simam.EstornoTransferenciaFinanceira
     nrAnoEstorno UInt32,
     nrTransferencia UInt64,
     nrAnoTransferencia UInt32,
-    dtEstornolEstorno Date32,
+    dtEstorno Date32,
     dsMotivo String,
     _id_entidade   UInt32,
     _exercicio     UInt16,
@@ -861,8 +861,7 @@ CREATE TABLE IF NOT EXISTS simam.Divida
     dtOficioSTN Nullable(Date32),
     dsDivida String,
     dtAssinaturaContratoontratogemvida Nullable(Date32),
-    nrQteParcelatratada Nullable(UInt32),
-    teParcelaa Nullable(String),
+    nrQteParcelatratadateParcelaa Nullable(UInt32),
     _id_entidade   UInt32,
     _exercicio     UInt16,
     _competencia   UInt8 DEFAULT 0,
@@ -918,9 +917,7 @@ CREATE TABLE IF NOT EXISTS simam.IngressoAtualizacaoDivida
     cdClasse String,
     cdGrupo String,
     cdSubGrupo String,
-    cdTitulo String,
-    ubTitulotem String,
-    ubItemivel8ivel9ivel10ivel11ivel12 String,
+    cdTituloubTitulotemubItemivel8ivel9ivel10ivel11ivel12 String,
     nrAnoAplicacao UInt32,
     _id_entidade   UInt32,
     _exercicio     UInt16,
@@ -1361,7 +1358,7 @@ CREATE TABLE IF NOT EXISTS simam.EstornoContrapartidaExecAntConvenioSIT
     nrAnoEstorno UInt32,
     nrExecucao UInt32,
     nrAnoExecucao UInt32,
-    dtEstornotorno Date32,
+    dtEstorno Date32,
     dsMotivo String,
     _id_entidade   UInt32,
     _exercicio     UInt16,
@@ -1772,7 +1769,7 @@ CREATE TABLE IF NOT EXISTS simam.AditivoContratoRateioPrograma
     idPessoa UInt32,
     nrAditivoContratoCon String,
     sorcio Nullable(UInt32),
-    nrAnoAditivoContratoConsorcioConsorcio String,
+    nrAnoAditivoContratoConsorcio String,
     idPessoaMunicipioAditivo UInt32,
     nrContratoConsorcio UInt32,
     nrAnoContratoConsorcio UInt32,
@@ -1789,7 +1786,7 @@ CREATE TABLE IF NOT EXISTS simam.AditivoContratoRateioPrograma
     _ingerido_em   DateTime DEFAULT now()
 )
 ENGINE = ReplacingMergeTree(_ingerido_em)
-ORDER BY (_id_entidade, _exercicio, _competencia, idPessoa, nrAditivoContratoCon, nrAnoAditivoContratoConsorcioConsorcio);
+ORDER BY (_id_entidade, _exercicio, _competencia, idPessoa, nrAditivoContratoCon, nrAnoAditivoContratoConsorcio);
 
 -- VALORES DOS ADITIVOS DOS CONTRATOS DE RATEIO E DE PROGRAMAS
 CREATE TABLE IF NOT EXISTS simam.ValorAditivoContratoRateioPrograma
@@ -1797,7 +1794,7 @@ CREATE TABLE IF NOT EXISTS simam.ValorAditivoContratoRateioPrograma
     idPessoa UInt32,
     nrAditivoContratoCon String,
     sorcio Nullable(UInt32),
-    nrAnoAditivoContratoConsorcioConsorcio String,
+    nrAnoAditivoContratoConsorcio String,
     idPessoaMunicipioAditivo UInt32,
     nrContratoConsorcio UInt32,
     nrAnoContratoConsorcio UInt32,
@@ -1817,7 +1814,7 @@ CREATE TABLE IF NOT EXISTS simam.ValorAditivoContratoRateioPrograma
     _ingerido_em   DateTime DEFAULT now()
 )
 ENGINE = ReplacingMergeTree(_ingerido_em)
-ORDER BY (_id_entidade, _exercicio, _competencia, idPessoa, nrAditivoContratoCon, nrAnoAditivoContratoConsorcioConsorcio);
+ORDER BY (_id_entidade, _exercicio, _competencia, idPessoa, nrAditivoContratoCon, nrAnoAditivoContratoConsorcio);
 
 -- DADOS DO PORTAL DE TRANSPARÊNCIA
 CREATE TABLE IF NOT EXISTS simam.DadosPortalTransparencia

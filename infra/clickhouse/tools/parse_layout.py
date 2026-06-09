@@ -120,8 +120,9 @@ def parse_layout_fields(block):
             }
         elif cur is not None:
             tok = tok_at(ln)
-            if tok and SIG_RE.match(tok):
-                # campo standalone sem colunas size/tipo/formato (célula vazia)
+            if tok and SIG_RE.match(tok) and KNOWN_PREFIX.match(tok.lower()):
+                # campo standalone sem colunas size/tipo/formato (célula vazia);
+                # exige prefixo SIM-AM conhecido p/ não capturar palavra de descrição
                 flush()
                 ob = OBRIG_RE.search(ln)
                 cur = {
@@ -143,11 +144,36 @@ def parse_layout_fields(block):
     flush()
     for f in fields:
         f["obrig"] = "SIM" if f["obrig"] == "SIM" else "NÃO"
-        # campos SIM-AM sempre iniciam minúsculo (corrige SgUF -> sgUF)
         nm = f["name"]
+        # campos SIM-AM sempre iniciam minúsculo (corrige SgUF -> sgUF)
         if len(nm) >= 2 and nm[0].isupper() and nm[1].islower():
-            f["name"] = nm[0].lower() + nm[1:]
+            nm = nm[0].lower() + nm[1:]
+        f["name"] = trim_doubled_tail(nm)
     return fields
+
+
+def trim_doubled_tail(nm):
+    """Remove cauda vazada da PT-label quando duplica o fim do nome.
+
+    Ex.: idOrigemEmpenho + 'penho' -> a parte 'penho' é sufixo de 'idOrigemEmpenho',
+    então o nome correto é 'idOrigemEmpenho'. Só corta se A.endswith(B) (case-insens),
+    len(B)>=3, e A é um nome plausível (>=4) — evita falsos positivos.
+    """
+    low = nm.lower()
+    for k in range(len(nm) - 3, 3, -1):  # B = nm[k:], A = nm[:k] (B do menor p/ maior)
+        b = low[k:]
+        a = low[:k]
+        if len(b) >= 3 and a.endswith(b):
+            return nm[:k]
+        # tolera 1 char de junção vazado (ex.: '...Estorno' + 'lEstorno')
+        if len(b) >= 4 and a.endswith(b[1:]):
+            return nm[:k]
+    return nm
+
+
+KNOWN_PREFIX = re.compile(
+    r"^(id|cd|ds|nm|fl|tp|nr|sg|dt|vl|qt|pc|vr|cu|hr|in|co|nu|qd|ic|ap|sq|ba|na)"
+)
 
 
 def parse_lookup(block):

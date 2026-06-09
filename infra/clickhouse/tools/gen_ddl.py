@@ -257,7 +257,17 @@ def write_grouped(tables, kind, gen):
 
 
 def main():
-    tables = json.load(open(os.path.join(os.path.dirname(__file__), "tables.json")))
+    here = os.path.dirname(__file__)
+    tables = json.load(open(os.path.join(here, "tables.json")))
+    # overrides curados (tabelas onde o parser do PDF erra)
+    ov_path = os.path.join(here, "overrides.json")
+    overrides = {}
+    if os.path.exists(ov_path):
+        overrides = {k: v for k, v in json.load(open(ov_path)).items()
+                     if not k.startswith("_")}
+    for t in tables:
+        if t["kind"] == "layout" and t["table"] in overrides:
+            t["fields"] = overrides[t["table"]]
     layout = [t for t in tables if t["kind"] == "layout"]
     # dedupe lookups por nome (mantém a ocorrência com mais dados)
     lk = {}

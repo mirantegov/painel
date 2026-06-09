@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS simam_raw.MovimentoAcao
     cdSubFuncao Nullable(String),
     nrAno Nullable(String),
     idNaturezaAcao Nullable(String),
-    idTipoExecucaoAcao Nullable(String),
+    idTipoExecucao Nullable(String),
     idTipoAcao Nullable(String),
     flAcaoContinua Nullable(String),
     dsAcao Nullable(String),
