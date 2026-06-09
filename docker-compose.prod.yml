@@ -29,6 +29,8 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_EMAIL}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/acme/acme.json"
+      # CA server: staging p/ validar sem queimar rate-limit; trocar p/ prod no cutover.
+      - "--certificatesresolvers.letsencrypt.acme.caserver=${TRAEFIK_ACME_CASERVER}"
       - "--api.dashboard=true"
       - "--log.level=INFO"
       - "--accesslog=true"
@@ -75,9 +77,26 @@ services:
       - "traefik.http.routers.app.rule=Host(`${APP_DOMAIN}`)"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.app.middlewares=sec-headers@docker"
       - "traefik.http.services.app.loadbalancer.server.port=3000"
       - "traefik.http.services.app.loadbalancer.healthcheck.path=/api/health"
       - "traefik.http.services.app.loadbalancer.healthcheck.interval=30s"
+      # Headers de segurança (E2.4)
+      - "traefik.http.middlewares.sec-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.sec-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.sec-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.sec-headers.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.sec-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.sec-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
+      # Rate-limit só no login (E2.5): router dedicado de maior prioridade
+      - "traefik.http.middlewares.login-rl.ratelimit.average=5"
+      - "traefik.http.middlewares.login-rl.ratelimit.burst=10"
+      - "traefik.http.routers.app-login.rule=Host(`${APP_DOMAIN}`) && PathPrefix(`/api/auth/login`)"
+      - "traefik.http.routers.app-login.entrypoints=websecure"
+      - "traefik.http.routers.app-login.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.app-login.service=app"
+      - "traefik.http.routers.app-login.priority=100"
+      - "traefik.http.routers.app-login.middlewares=sec-headers@docker,login-rl@docker"
     restart: unless-stopped
     networks:
       - mirante
