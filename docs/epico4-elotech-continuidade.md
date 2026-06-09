@@ -5,15 +5,16 @@
 
 ## Onde estamos
 
-- **Épico 4 (exportador raw PG→Parquet→MinIO) entregue** (v… série de PRs #81–#93). Genérico, dirigido por manifest, multi-schema, com `filters` parametrizados, schema de origem configurável, cross-compile Windows (`make windows`). MinIO em `infra/docker-compose.minio.yml` (+ createbuckets). ngrok em `infra/ngrok.yml` (single tunnel S3 :9000 no free tier).
-- **Integração Elotech em andamento** (issue [#83](https://github.com/mirantegov/painel/issues/83)). Manifest `exporter/manifests/elotech-eloweb.yaml` com **59 tabelas** siscop, cobrindo orçado/execução/receita/financeiro + dims + acessórias.
-- **Falta:** (1) rodar o 1º export real (precisa `entidade`+`exercicio`+IBGE do cliente); (2) decidir tabelas acessórias em aberto (abaixo); (3) Épico 5 (ClickHouse: raw→SIM-AM).
+- **Épico 4 (exportador raw PG→Parquet→MinIO) entregue** (PRs #81–#97). Genérico, dirigido por manifest, multi-schema, `filters` parametrizados (escalar `=` ou **lista `IN(...)`**), placeholders via **`--var KEY=VALUE`**, schema de origem configurável, cross-compile Windows (`make windows`). MinIO em `infra/docker-compose.minio.yml` (+ createbuckets). ngrok em `infra/ngrok.yml` (single tunnel S3 :9000 no free tier).
+- **Integração Elotech em andamento** (issue [#83](https://github.com/mirantegov/painel/issues/83)). Manifest `exporter/manifests/elotech-eloweb.yaml` com **59 tabelas** siscop (orçado/execução/receita/financeiro + extra-orçamentário + dims + acessórias). `entidade` e `exercicio` são **listas** (`[__ENTIDADES__]`/`[__EXERCICIOS__]`) → exporta **todas as entidades** do município e **vários anos** de uma vez; separação só por **IBGE** no MinIO/ClickHouse (entidade/ano = colunas).
+- **Falta:** (1) **rodar o 1º export real** — ainda NÃO rodado; precisa `DATABASE_URL` do banco Elotech + a lista de entidades do município (query no header do manifest); (2) decidir acessórias em aberto (abaixo); (3) Épico 5 (ClickHouse: raw→SIM-AM).
+- **⚠️ Gotcha do último teste:** rodar sem `DATABASE_URL` cai no **demo local** (`:54322`, sem `siscop`) → erro `relation "siscop.entidade" does not exist`. Sempre exportar `DATABASE_URL` do Elotech antes.
 
 ## Modelo Elotech eloweb (fatos confirmados)
 
 - 1 banco Postgres, **11 schemas por MÓDULO** (não por cliente): `aise, alvara, analytics, apice, conversao, eloarquivo, image, protocolo, sigeloam, siscop, unico`.
 - **Despesa/receita/orçamentária/financeiro = schema `siscop`.** `aise` = tributos + RH (fora deste manifest).
-- **Cliente/ente = coluna `entidade`** (numeric, NÃO é IBGE). Ano = `exercicio`. Filtro de export = `{entidade, exercicio}`.
+- **Cliente/ente = coluna `entidade`** (numeric, NÃO é IBGE). Ano = `exercicio`. Filtro de export = `entidade IN (todas do município) AND exercicio IN (anos)`.
 - **IBGE do ente** = `unidadefederacao.codigoibge || cidade.ibge` (casa `entidade.cidade` texto → `cidade`). Entidade tem `identificacaotce`, `mscpoderorgao`(MSC), `msccodigosiconfi`(SICONFI), `tipoentidade` (E/L/R/A → 1/2/3/4).
 - **Sem materialized views em siscop** (as 21 matview estão no `aise`). siscop tem 82 views normais (derivadas — não são fonte raw; o exportador dumpa só tabelas-base).
 - **`programatica`** (despesa) layout: órgão(1,2) unidade(1,5) função(6,2) subfunção(8,3) programa(11,4) ação(15,4) categoria(19,1) grupo(20,1) modalidade(21,2) elemento(23,2) natureza(19,6).
