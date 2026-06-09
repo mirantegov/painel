@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -35,13 +36,25 @@ type Table struct {
 var identRe = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_$]*$`)
 
 // LoadManifest lê e valida o YAML do manifest.
-func LoadManifest(path string) (*Manifest, error) {
+func LoadManifest(path string, vars map[string]string) (*Manifest, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("lendo manifest %s: %w", path, err)
 	}
+	// Substitui placeholders __KEY__ pelos valores de --var (template reusável).
+	s := string(b)
+	for k, v := range vars {
+		s = strings.ReplaceAll(s, "__"+k+"__", v)
+	}
+	if i := strings.Index(s, "__"); i >= 0 {
+		if j := strings.Index(s[i+2:], "__"); j >= 0 {
+			ph := s[i : i+2+j+2]
+			return nil, fmt.Errorf("manifest: placeholder %s sem valor (use --var %s=...)",
+				ph, strings.Trim(ph, "_"))
+		}
+	}
 	var m Manifest
-	if err := yaml.Unmarshal(b, &m); err != nil {
+	if err := yaml.Unmarshal([]byte(s), &m); err != nil {
 		return nil, fmt.Errorf("parse manifest: %w", err)
 	}
 	if m.Bucket == "" {

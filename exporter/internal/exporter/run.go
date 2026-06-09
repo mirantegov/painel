@@ -11,9 +11,10 @@ import (
 type Config struct {
 	Municipio   string // id_ibge (7 dígitos) — usado no path do MinIO
 	Ano         int
-	Schema      string // schema de origem p/ scope:tenant (ERP real); vazio = mun_<ibge>
-	Manifest    string // caminho do export.yaml
-	DSN         string // DATABASE_URL (Postgres de origem)
+	Schema      string            // schema de origem p/ scope:tenant (ERP real); vazio = mun_<ibge>
+	Vars        map[string]string // substitui placeholders __KEY__ no manifest
+	Manifest    string            // caminho do export.yaml
+	DSN         string            // DATABASE_URL (Postgres de origem)
 	S3Endpoint  string
 	S3AccessKey string
 	S3SecretKey string
@@ -28,7 +29,7 @@ func Run(ctx context.Context, cfg Config) error {
 		return fmt.Errorf("municipio inválido %q (esperado 7 dígitos IBGE)", cfg.Municipio)
 	}
 
-	man, err := LoadManifest(cfg.Manifest)
+	man, err := LoadManifest(cfg.Manifest, cfg.Vars)
 	if err != nil {
 		return err
 	}

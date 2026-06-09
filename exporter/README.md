@@ -22,6 +22,8 @@ tables:
 
 `filters` gera `WHERE coluna = $ AND …` **parametrizado** (valores nunca interpolados; colunas validadas). Usado p/ recortar um cliente quando o ERP separa por coluna (ex.: Elotech `entidade`), não por schema.
 
+**Placeholders `--var`:** o manifest pode ter tokens `__KEY__` resolvidos em runtime por `--var KEY=VALUE` (repetível) — mantém o manifest reusável por cliente/ano. Ex.: `filters: { entidade: __ENTIDADE__ }` + `--var ENTIDADE=1 --var EXERCICIO=2026`. Falta um `--var` → erro claro.
+
 `columns` ausente = **todas** as colunas (raw fiel). Para incluir tabelas auxiliares/dimensões (contexto p/ o ETL do ClickHouse), basta adicioná-las aqui — **sem recompilar**.
 
 **Schema de origem (`--schema`):** `scope: tenant` lê do schema passado em `--schema` (ERP real, ex.: um schema por cliente no Elotech). Sem `--schema`, usa `mun_<ibge>` (nosso demo). `scope: global` lê do schema **explícito** no `source` (ex.: `public.x`), senão `public`. O `--municipio` (id IBGE) é usado só no **path do MinIO** — independe do nome físico do schema. Ex.: `--municipio 4106902 --schema contabil_pmcuritiba`. Integração Elotech: ver [`docs/epico4-elotech.md`](../docs/epico4-elotech.md).
