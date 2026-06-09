@@ -120,6 +120,39 @@ tables:
     scope: tenant
     filters: { entidade: __ENTIDADE__ }
 
+  # ── Planejamento: créditos adicionais (suplementação/redução) ───
+  - source: siscop.decreto # decretos de crédito adicional (suplementa/reduz)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.itemdecreto # itens do decreto (despesa suplementada/reduzida)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.itemdecretoreceita # itens do decreto (receita)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+
+  # ── Financeiro: conciliação + aplicações ────────────────────────
+  - source: siscop.conciliacao # conciliação bancária (cabeçalho)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.contaaplicacao # aplicações financeiras
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+
+  # ── Contexto: convênio / contrato / dívida (refs do empenho) ────
+  - source: siscop.cadastroconvenio # convênios (sem exercicio)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__ }
+  - source: siscop.contrato # contratos
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.divida # dívida (sem exercicio)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__ }
+  - source: siscop.dividalancamento # lançamentos da dívida
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+
   # ── Dimensões globais (referência; sem coluna entidade → _global/) ──
   - source: siscop.banco # cadastro de bancos
     scope: global
