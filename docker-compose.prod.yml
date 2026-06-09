@@ -18,9 +18,9 @@ services:
     env_file:
       - .env.production
     command:
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=mirante-painel_mirante"
+      # Provider de ARQUIVO (sem docker.sock): evita mismatch de API com Docker 29.
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
@@ -31,23 +31,16 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.storage=/acme/acme.json"
       # CA server: staging p/ validar sem queimar rate-limit; trocar p/ prod no cutover.
       - "--certificatesresolvers.letsencrypt.acme.caserver=${TRAEFIK_ACME_CASERVER}"
-      - "--api.dashboard=true"
+      # Dashboard adiado (file provider + usersFile no futuro); foco no app HTTPS.
+      - "--api.dashboard=false"
       - "--log.level=INFO"
       - "--accesslog=true"
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-acme:/acme
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_DASHBOARD_DOMAIN}`)"
-      - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.middlewares=dashboard-auth"
-      - "traefik.http.middlewares.dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
+      - ./infra/traefik/dynamic:/etc/traefik/dynamic:ro
     restart: unless-stopped
     networks:
       - mirante
@@ -72,31 +65,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`${APP_DOMAIN}`)"
-      - "traefik.http.routers.app.entrypoints=websecure"
-      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.app.middlewares=sec-headers@docker"
-      - "traefik.http.services.app.loadbalancer.server.port=3000"
-      - "traefik.http.services.app.loadbalancer.healthcheck.path=/api/health"
-      - "traefik.http.services.app.loadbalancer.healthcheck.interval=30s"
-      # Headers de segurança (E2.4)
-      - "traefik.http.middlewares.sec-headers.headers.stsSeconds=31536000"
-      - "traefik.http.middlewares.sec-headers.headers.stsIncludeSubdomains=true"
-      - "traefik.http.middlewares.sec-headers.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.sec-headers.headers.browserXssFilter=true"
-      - "traefik.http.middlewares.sec-headers.headers.frameDeny=true"
-      - "traefik.http.middlewares.sec-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
-      # Rate-limit só no login (E2.5): router dedicado de maior prioridade
-      - "traefik.http.middlewares.login-rl.ratelimit.average=5"
-      - "traefik.http.middlewares.login-rl.ratelimit.burst=10"
-      - "traefik.http.routers.app-login.rule=Host(`${APP_DOMAIN}`) && PathPrefix(`/api/auth/login`)"
-      - "traefik.http.routers.app-login.entrypoints=websecure"
-      - "traefik.http.routers.app-login.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.app-login.service=app"
-      - "traefik.http.routers.app-login.priority=100"
-      - "traefik.http.routers.app-login.middlewares=sec-headers@docker,login-rl@docker"
+    # Roteamento agora no file provider: infra/traefik/dynamic/app.yml
     restart: unless-stopped
     networks:
       - mirante

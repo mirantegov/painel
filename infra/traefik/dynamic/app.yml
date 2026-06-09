@@ -1,0 +1,54 @@
+# Traefik dynamic config (file provider) — Mirante Painel
+# Roteamento do app + middlewares. Domínio fixo (file provider não interpola env).
+# Dashboard do Traefik adiado: adicionar router api@internal + basicauth usersFile aqui.
+
+http:
+  routers:
+    app:
+      rule: "Host(`painel.mirantegov.cloud`)"
+      entryPoints:
+        - websecure
+      service: app
+      middlewares:
+        - sec-headers
+      tls:
+        certResolver: letsencrypt
+
+    # Rate-limit dedicado ao login (E2.5): maior prioridade que o router app.
+    app-login:
+      rule: "Host(`painel.mirantegov.cloud`) && PathPrefix(`/api/auth/login`)"
+      entryPoints:
+        - websecure
+      service: app
+      priority: 100
+      middlewares:
+        - sec-headers
+        - login-rl
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    app:
+      loadBalancer:
+        servers:
+          - url: "http://app:3000"
+        healthCheck:
+          path: /api/health
+          interval: "30s"
+
+  middlewares:
+    # Headers de segurança (E2.4)
+    sec-headers:
+      headers:
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        frameDeny: true
+        referrerPolicy: strict-origin-when-cross-origin
+
+    # Rate-limit do login (E2.5)
+    login-rl:
+      rateLimit:
+        average: 5
+        burst: 10
