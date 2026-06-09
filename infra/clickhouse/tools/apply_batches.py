@@ -11,8 +11,10 @@ import re
 import sys
 import urllib.request
 
-CH = "http://localhost:8123/"
-USER = ("default", "simam")
+# Ferramenta local de dev; sobrescreva via env se o servidor não for localhost.
+CH = os.getenv("CLICKHOUSE_URL", "http://localhost:8123/")
+USER = (os.getenv("CLICKHOUSE_USER", "default"),
+        os.getenv("CLICKHOUSE_PASSWORD", "simam"))
 BATCH = 10
 
 

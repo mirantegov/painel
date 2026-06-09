@@ -13,7 +13,9 @@ echo "[simam] criando databases..."
 apply_dir() {
   local dir="$1"
   [ -d "$dir" ] || return 0
-  for f in $(ls "$dir"/*.sql 2>/dev/null | sort); do
+  # glob ordenado (nomes gerados, sem espaços); evita word-splitting de `ls`
+  for f in "$dir"/*.sql; do
+    [ -e "$f" ] || continue
     echo "[simam] aplicando $f"
     "${CH[@]}" < "$f"
   done
