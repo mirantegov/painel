@@ -60,11 +60,13 @@
   DATABASE_URL="postgresql://USER:SENHA@HOST_ELOTECH:5432/BANCO" \
   S3_ENDPOINT="https://<ngrok-s3>" S3_ACCESS_KEY=minioadmin S3_SECRET_KEY=minioadmin S3_BUCKET=mirante-parquet \
   go run . --municipio 4117107 --ano 2026 \
-           --var ENTIDADES="1, 2, 3" --var EXERCICIO=2026 \
+           --var ENTIDADES="1, 2, 3" --var EXERCICIOS="2024, 2025, 2026" \
            --manifest manifests/elotech-eloweb.yaml
   # objetos: mc ls -r local/mirante-parquet/4117107/
   ```
-  (Substitua `"1, 2, 3"` pela lista real das entidades do município — ver query no header do manifest.)
+  - `ENTIDADES` = lista (todas as entidades do município — ver query no header do manifest).
+  - `EXERCICIOS` = lista de anos (multi-ano vai junto; ano fica como coluna `exercicio`).
+  - `--ano` é irrelevante p/ Elotech (filtro de ano = `--var EXERCICIOS`).
 
 ## Views siscop analisadas (sem matviews)
 
