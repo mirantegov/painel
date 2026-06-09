@@ -1,42 +1,58 @@
 # Manifest Elotech eloweb (legado) — despesa + receita (raw).
-# Schema contábil = `aise`; cliente/município = coluna `entidade` (NÃO é IBGE);
-# ano = coluna `exercicio`. Rode com:
-#   go run . --municipio <ibge> --ano <exercicio> --schema aise \
-#            --manifest manifests/elotech-eloweb.yaml
+# Schemas: `siscop` (orçamentária/classificação) e `aise` (execução contábil).
+# Cliente/município = coluna `entidade` (NÃO é IBGE); ano = coluna `exercicio`.
+# Schema explícito no `source` (schema.tabela) define de onde ler; `scope` define
+# só o path no MinIO (tenant=<ibge>/ · global=_global/).
 #
-# ⚠️ Preencha __ENTIDADE__ (código numérico do cliente em aise.entidade) e
-#    __EXERCICIO__ (ano, ex.: 2025) abaixo. O --municipio (IBGE) é só o path no MinIO.
+# Rode com:
+#   go run . --municipio <ibge> --ano <exercicio> \
+#            --manifest manifests/elotech-eloweb.yaml
+#   (--schema não é necessário: cada tabela traz o schema no source)
+#
+# ⚠️ Preencha __ENTIDADE__ (código do cliente em siscop.entidade / aise.entidade)
+#    e __EXERCICIO__ (ano, ex.: 2025).
+#
+# Obs.: derivação de órgão/unidade (SUBSTRING de programatica via niveismodelodespesa)
+#       NÃO é feita aqui — é transformação do ClickHouse (Épico 5). Aqui só raw.
 bucket: mirante-parquet
 tables:
-  # Dimensão do ente (entidade → nome/cnpj/identificacaotce). Contexto p/ o ETL.
-  - source: entidade
+  # ── SISCOP (orçamentária) ───────────────────────────────────────
+  - source: siscop.entidade # dimensão do ente (entidade, nome, identificacaotce, tipoentidade)
     scope: tenant
     filters: { entidade: __ENTIDADE__ }
+  - source: siscop.despesa # classificação/dotação da despesa (programatica, valorprevisto, modelodespesa)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.niveismodelodespesa # modelo de níveis p/ parsear programatica (referência; sem coluna entidade)
+    scope: global
 
-  # DESPESA
-  - source: contempenho # empenho (cabeçalho + valores acumulados)
+  # ── AISE (execução contábil) ────────────────────────────────────
+  - source: aise.contempenho # empenho (cabeçalho + valores)
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: contitemempenho # itens do empenho
+  - source: aise.contitemempenho # itens do empenho
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: contliquidacao # liquidação
+  - source: aise.contliquidacao # liquidação
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: contpagamento # pagamento
+  - source: aise.contpagamento # pagamento
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: contfichaempenho # ficha/dotação (contexto da despesa)
+  - source: aise.contfichaempenho # ficha/dotação (contexto)
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
 
-  # RECEITA
-  - source: contreceita # cadastro/previsão da receita
+  # ── RECEITA ─────────────────────────────────────────────────────
+  - source: aise.contreceita # cadastro/previsão
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: contrealizacaoreceita # arrecadação realizada
+  - source: aise.contrealizacaoreceita # arrecadação realizada
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: contfichareceita # ficha da receita (contexto)
+  - source: aise.contfichareceita # ficha da receita (contexto)
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+# NOTA: tabelas-fonte adicionais entram conforme as queries de referência do
+# cliente (FROM/JOIN). A lógica de negócio dessas queries vira o transform do
+# Épico 5 — ver docs/epico5-elotech-queries.md.

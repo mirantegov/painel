@@ -54,14 +54,14 @@ func Run(ctx context.Context, cfg Config) error {
 		tenantSchema = "mun_" + cfg.Municipio
 	}
 	for _, t := range man.Tables {
+		// Schema físico: explícito no source (schema.tabela) sempre vence
+		// (permite ERP multi-schema, ex.: siscop.* + aise.*). Senão, segue o scope.
+		// `scope` controla apenas o path no MinIO (tenant=<ibge>/ · global=_global/).
 		physSchema := tenantSchema
-		if t.Scope == "global" {
-			// global usa o schema explícito do source (ex.: public.x); senão public.
-			if s, _ := t.split(); s != "" {
-				physSchema = s
-			} else {
-				physSchema = "public"
-			}
+		if s, _ := t.split(); s != "" {
+			physSchema = s
+		} else if t.Scope == "global" {
+			physSchema = "public"
 		}
 		var ano *int
 		if t.PartitionByAno {
