@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
 ## Commands
 
@@ -61,7 +61,7 @@ Display data uses snapshot JSON in Postgres (`mod_<slug>.dados`) with bundled fa
 
 1. Create `components/my-module.tsx` (follow existing module structure)
 2. Register the module in `lib/modules-config.ts`
-3. Add `<slug> -> mod_<slug>` in `lib/data/modules.ts`
+3. Add `<slug> → mod_<slug>` in `lib/data/modules.ts`
 4. Add `lib/demo-my-module.ts` with `MY_MODULE_SNAPSHOT`
 5. Consume it with `useSnapshot("<slug>", MY_MODULE_SNAPSHOT)`
 6. Seed it in `scripts/seed-demo.ts`

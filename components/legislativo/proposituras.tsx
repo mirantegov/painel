@@ -1,5 +1,6 @@
 "use client";
 
+import { useLegislativoSnapshot } from "./snapshot-context";
 import {
   Card,
   CardContent,
@@ -25,7 +26,6 @@ import {
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
-  DATA_PROPOSITURAS,
   type TipoPropositura,
   type SituacaoPropositura,
 } from "@/lib/demo-legislativo";
@@ -112,6 +112,8 @@ function SituacaoBadge({ situacao }: { situacao: SituacaoPropositura }) {
 }
 
 function PropositurasTable() {
+  const { DATA_PROPOSITURAS } = useLegislativoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -159,6 +161,8 @@ function PropositurasTable() {
 }
 
 function PropositurasStats() {
+  const { DATA_PROPOSITURAS } = useLegislativoSnapshot();
+
   const total = DATA_PROPOSITURAS.length;
   const aprovadas = DATA_PROPOSITURAS.filter(
     (p) => p.situacao === "Aprovada" || p.situacao === "Sanção Positiva",
@@ -225,6 +229,8 @@ function PropositurasStats() {
 }
 
 function LeituraTramitacaoCard() {
+  const { DATA_PROPOSITURAS } = useLegislativoSnapshot();
+
   const total = DATA_PROPOSITURAS.length;
   const comParecer = DATA_PROPOSITURAS.filter(
     (item) => item.comissaoParecer,
@@ -269,6 +275,8 @@ function LeituraTramitacaoCard() {
 }
 
 function DistribuicaoTipoChart() {
+  const { DATA_PROPOSITURAS } = useLegislativoSnapshot();
+
   const tipoCount = DATA_PROPOSITURAS.reduce(
     (acc, p) => {
       acc[p.tipo] = (acc[p.tipo] || 0) + 1;
@@ -325,6 +333,8 @@ function DistribuicaoTipoChart() {
 }
 
 function DistribuicaoSituacaoChart() {
+  const { DATA_PROPOSITURAS } = useLegislativoSnapshot();
+
   const situacaoCount = DATA_PROPOSITURAS.reduce(
     (acc, p) => {
       const situacao =
@@ -382,6 +392,8 @@ function DistribuicaoSituacaoChart() {
 }
 
 function RankingProdutividade() {
+  const { DATA_PROPOSITURAS } = useLegislativoSnapshot();
+
   const autores = DATA_PROPOSITURAS.reduce(
     (acc, p) => {
       acc[p.autor] = (acc[p.autor] || 0) + 1;
@@ -427,6 +439,8 @@ function RankingProdutividade() {
 }
 
 export function Proposituras() {
+  const { DATA_PROPOSITURAS } = useLegislativoSnapshot();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">

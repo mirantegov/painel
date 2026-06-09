@@ -1,5 +1,6 @@
 "use client";
 
+import { useSaneamentoSnapshot } from "./snapshot-context";
 import * as React from "react";
 import {
   Card,
@@ -54,15 +55,6 @@ import {
   CheckmarkCircle01Icon,
 } from "@hugeicons/core-free-icons";
 import {
-  RECEITA_TOTAL_SANEAMENTO,
-  DESPESA_OPERACIONAL_SANEAMENTO,
-  CONTAS_RECEBER,
-  INADIMPLENCIA_PCT,
-  VOLUME_FATURADO_M3,
-  DATA_RECEITAS_MENSAIS,
-  DATA_DESPESAS_CATEGORIAS_SANEAMENTO,
-  DATA_CONTAS_RECEBER,
-  DATA_INADIMPLENCIA_MENSAL,
   formatCurrency,
   formatCurrencyCompact,
   formatPercent,
@@ -70,6 +62,8 @@ import {
 import { cn } from "@/lib/utils";
 
 function ReceitasVsDespesasChart() {
+  const { DATA_RECEITAS_MENSAIS } = useSaneamentoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -135,6 +129,8 @@ function ReceitasVsDespesasChart() {
 }
 
 function InadimplenciaMensalChart() {
+  const { DATA_INADIMPLENCIA_MENSAL } = useSaneamentoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -195,6 +191,8 @@ function InadimplenciaMensalChart() {
 }
 
 function AgingContasReceberChart() {
+  const { DATA_CONTAS_RECEBER } = useSaneamentoSnapshot();
+
   const ultimo = DATA_CONTAS_RECEBER[DATA_CONTAS_RECEBER.length - 1];
   const colors = [
     "var(--chart-1)",
@@ -273,6 +271,8 @@ function AgingContasReceberChart() {
 }
 
 function AgingEvolucaoChart() {
+  const { DATA_CONTAS_RECEBER } = useSaneamentoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -362,6 +362,8 @@ function AgingEvolucaoChart() {
 }
 
 function DespesasPorCategoriaChart() {
+  const { DATA_DESPESAS_CATEGORIAS_SANEAMENTO } = useSaneamentoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -430,6 +432,8 @@ function DespesasPorCategoriaChart() {
 }
 
 function TabelaDespesasDetalhada() {
+  const { DATA_DESPESAS_CATEGORIAS_SANEAMENTO } = useSaneamentoSnapshot();
+
   const totalEmpenhado = DATA_DESPESAS_CATEGORIAS_SANEAMENTO.reduce(
     (s, d) => s + d.empenhado,
     0,
@@ -514,6 +518,14 @@ function TabelaDespesasDetalhada() {
 }
 
 export function FinanceiroSaneamento() {
+  const {
+    VOLUME_FATURADO_M3,
+    RECEITA_TOTAL_SANEAMENTO,
+    DESPESA_OPERACIONAL_SANEAMENTO,
+    CONTAS_RECEBER,
+    INADIMPLENCIA_PCT,
+  } = useSaneamentoSnapshot();
+
   const superavit = RECEITA_TOTAL_SANEAMENTO - DESPESA_OPERACIONAL_SANEAMENTO;
   const tarifaMedia = RECEITA_TOTAL_SANEAMENTO / VOLUME_FATURADO_M3;
   const indiceAutoSuficiencia =

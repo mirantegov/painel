@@ -1,5 +1,6 @@
 "use client";
 
+import { useSaneamentoSnapshot } from "./snapshot-context";
 import * as React from "react";
 import {
   Card,
@@ -52,27 +53,12 @@ import {
   CheckmarkCircle01Icon,
   InformationCircleIcon,
 } from "@hugeicons/core-free-icons";
-import {
-  POPULACAO_ATENDIDA_AGUA,
-  COBERTURA_AGUA_PCT,
-  VOLUME_PRODUZIDO_M3,
-  VOLUME_FATURADO_M3,
-  INDICE_PERDA_AGUA_PCT,
-  ETA_CAPACIDADE_LS,
-  ETA_PRODUCAO_ATUAL_LS,
-  LIGACOES_ATIVAS_AGUA,
-  DATA_PARAMETROS_AGUA,
-  DATA_PONTOS_CAPTACAO,
-  DATA_DISTRIBUICAO_LIGACOES,
-  DATA_PERDA_AGUA_MENSAL,
-  DATA_QUALIDADE_AGUA,
-  DATA_CONSUMO_PERCAPITA_MENSAL,
-  formatNumber,
-  formatPercent,
-} from "@/lib/demo-saneamento";
+import { formatNumber, formatPercent } from "@/lib/demo-saneamento";
 import { cn } from "@/lib/utils";
 
 function EvolucaoPerdaChart() {
+  const { DATA_PERDA_AGUA_MENSAL } = useSaneamentoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -138,6 +124,8 @@ function EvolucaoPerdaChart() {
 }
 
 function QualidadeAguaChart() {
+  const { DATA_QUALIDADE_AGUA } = useSaneamentoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -199,6 +187,8 @@ function QualidadeAguaChart() {
 }
 
 function ConsumoPercaptaChart() {
+  const { DATA_CONSUMO_PERCAPITA_MENSAL } = useSaneamentoSnapshot();
+
   const media =
     DATA_CONSUMO_PERCAPITA_MENSAL.reduce((s, d) => s + d.valor, 0) /
     DATA_CONSUMO_PERCAPITA_MENSAL.length;
@@ -277,6 +267,8 @@ function ConsumoPercaptaChart() {
 }
 
 function PontosCaptacaoChart() {
+  const { DATA_PONTOS_CAPTACAO } = useSaneamentoSnapshot();
+
   const chartData = DATA_PONTOS_CAPTACAO.map((p) => ({
     nome: p.nome.split(" ")[0],
     vazao: p.vazaoLS,
@@ -332,6 +324,8 @@ function PontosCaptacaoChart() {
 }
 
 function DistribuicaoLigacoesChart() {
+  const { DATA_DISTRIBUICAO_LIGACOES } = useSaneamentoSnapshot();
+
   const colors = ["var(--chart-1)", "var(--chart-3)", "var(--chart-5)"];
 
   return (
@@ -390,6 +384,8 @@ function DistribuicaoLigacoesChart() {
 }
 
 function TabelaParametros() {
+  const { DATA_PARAMETROS_AGUA } = useSaneamentoSnapshot();
+
   const conformes = DATA_PARAMETROS_AGUA.filter((p) => p.conforme).length;
   const total = DATA_PARAMETROS_AGUA.length;
 
@@ -463,6 +459,13 @@ function TabelaParametros() {
 }
 
 function ComparativoSNISCard() {
+  const {
+    COBERTURA_AGUA_PCT,
+    INDICE_PERDA_AGUA_PCT,
+    LIGACOES_ATIVAS_AGUA,
+    DATA_CONSUMO_PERCAPITA_MENSAL,
+  } = useSaneamentoSnapshot();
+
   const consumoMedio = Math.round(
     DATA_CONSUMO_PERCAPITA_MENSAL.reduce((s, d) => s + d.valor, 0) /
       DATA_CONSUMO_PERCAPITA_MENSAL.length,
@@ -539,6 +542,17 @@ function ComparativoSNISCard() {
 }
 
 export function AbastecimentoAgua() {
+  const {
+    POPULACAO_ATENDIDA_AGUA,
+    COBERTURA_AGUA_PCT,
+    VOLUME_PRODUZIDO_M3,
+    VOLUME_FATURADO_M3,
+    INDICE_PERDA_AGUA_PCT,
+    ETA_CAPACIDADE_LS,
+    ETA_PRODUCAO_ATUAL_LS,
+    LIGACOES_ATIVAS_AGUA,
+  } = useSaneamentoSnapshot();
+
   const etaPct = (ETA_PRODUCAO_ATUAL_LS / ETA_CAPACIDADE_LS) * 100;
 
   return (

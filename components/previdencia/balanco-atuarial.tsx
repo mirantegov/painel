@@ -1,5 +1,6 @@
 "use client";
 
+import { usePrevidenciaSnapshot } from "./snapshot-context";
 import {
   Card,
   CardContent,
@@ -27,24 +28,7 @@ import {
   YAxis,
   ReferenceLine,
 } from "recharts";
-import {
-  PATRIMONIO_LIQUIDO,
-  PROVISOES_MATEMATICAS,
-  INDICE_SOLVENCIA,
-  RENTABILIDADE_ACUMULADA,
-  META_ATUARIAL,
-  DATA_PROJECAO_ATUARIAL,
-  DATA_SOLVENCIA,
-  PROVISAO_APOSENTADORIAS,
-  PROVISAO_PENSOES,
-  PROVISAO_AUXILIOS,
-  CRP_VALIDADE,
-  CRP_STATUS,
-  CRP_NUMERO,
-  DATA_COMPLIANCE,
-  formatCurrency,
-  formatCurrencyCompact,
-} from "@/lib/demo-previdencia";
+import { formatCurrency, formatCurrencyCompact } from "@/lib/demo-previdencia";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   TrendingUp,
@@ -56,6 +40,8 @@ import {
 } from "@hugeicons/core-free-icons";
 
 function ProjecaoAtuarialChart() {
+  const { DATA_PROJECAO_ATUARIAL } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -117,6 +103,8 @@ function ProjecaoAtuarialChart() {
 }
 
 function ProjecaoAtuarialLineChart() {
+  const { DATA_PROJECAO_ATUARIAL } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -177,6 +165,8 @@ function ProjecaoAtuarialLineChart() {
 }
 
 function EvolucaoSolvenciaLineChart() {
+  const { DATA_SOLVENCIA } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -239,6 +229,9 @@ function EvolucaoSolvenciaLineChart() {
 }
 
 function IndiceSolvencia() {
+  const { PATRIMONIO_LIQUIDO, PROVISOES_MATEMATICAS, INDICE_SOLVENCIA } =
+    usePrevidenciaSnapshot();
+
   const resultado = PATRIMONIO_LIQUIDO - PROVISOES_MATEMATICAS;
 
   return (
@@ -293,6 +286,8 @@ function IndiceSolvencia() {
 }
 
 function EvolucaoSolvencia() {
+  const { DATA_SOLVENCIA } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -345,6 +340,14 @@ function EvolucaoSolvencia() {
 }
 
 function DemonstrativoAtuarial() {
+  const {
+    PATRIMONIO_LIQUIDO,
+    PROVISOES_MATEMATICAS,
+    PROVISAO_APOSENTADORIAS,
+    PROVISAO_PENSOES,
+    PROVISAO_AUXILIOS,
+  } = usePrevidenciaSnapshot();
+
   const ativo = PATRIMONIO_LIQUIDO;
   const passivo = PROVISOES_MATEMATICAS;
   const resultado = ativo - passivo;
@@ -464,6 +467,8 @@ function VariaveisAtuariais() {
 }
 
 function RentabilidadeMeta() {
+  const { RENTABILIDADE_ACUMULADA, META_ATUARIAL } = usePrevidenciaSnapshot();
+
   const superavit = RENTABILIDADE_ACUMULADA - META_ATUARIAL;
 
   return (
@@ -508,6 +513,8 @@ function RentabilidadeMeta() {
 }
 
 function AlertaSolvencia() {
+  const { INDICE_SOLVENCIA } = usePrevidenciaSnapshot();
+
   if (INDICE_SOLVENCIA >= 100) {
     return (
       <Card className="border-emerald-500">
@@ -555,6 +562,9 @@ function AlertaSolvencia() {
 }
 
 function RiscoAtuarialCard() {
+  const { PATRIMONIO_LIQUIDO, PROVISOES_MATEMATICAS, DATA_PROJECAO_ATUARIAL } =
+    usePrevidenciaSnapshot();
+
   const deficit = PROVISOES_MATEMATICAS - PATRIMONIO_LIQUIDO;
   const anoEquilibrio = DATA_PROJECAO_ATUARIAL.find(
     (item) => item.resultado >= 0,
@@ -590,6 +600,9 @@ function RiscoAtuarialCard() {
 }
 
 function CrpComplianceCard() {
+  const { CRP_VALIDADE, CRP_STATUS, CRP_NUMERO, DATA_COMPLIANCE } =
+    usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -645,6 +658,14 @@ function CrpComplianceCard() {
 }
 
 export function BalancoAtuarial() {
+  const {
+    PATRIMONIO_LIQUIDO,
+    PROVISOES_MATEMATICAS,
+    RENTABILIDADE_ACUMULADA,
+    META_ATUARIAL,
+    INDICE_SOLVENCIA,
+  } = usePrevidenciaSnapshot();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">

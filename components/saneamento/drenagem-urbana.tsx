@@ -1,5 +1,6 @@
 "use client";
 
+import { useSaneamentoSnapshot } from "./snapshot-context";
 import * as React from "react";
 import {
   Card,
@@ -53,16 +54,10 @@ import {
   MapsLocation01Icon,
   Building06Icon,
 } from "@hugeicons/core-free-icons";
-import {
-  BACIAS_MONITORADAS,
-  PONTOS_CRITICOS_DRENAGEM,
-  VOLUME_DRENAGEM_DESTINADO_M3,
-  OBRAS_MACRODRENAGEM,
-  DATA_DRENAGEM_EVENTOS,
-  DATA_PONTOS_CRITICOS,
-} from "@/lib/demo-saneamento";
 
 function EventosMensaisChart() {
+  const { DATA_DRENAGEM_EVENTOS } = useSaneamentoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -111,6 +106,8 @@ function EventosMensaisChart() {
 }
 
 function EstatisticasEventos() {
+  const { DATA_DRENAGEM_EVENTOS } = useSaneamentoSnapshot();
+
   const totalEventos = DATA_DRENAGEM_EVENTOS.reduce(
     (s, d) => s + d.alagamentos + d.inundacoes,
     0,
@@ -160,6 +157,8 @@ function EstatisticasEventos() {
 }
 
 function RiscosPorBairroChart() {
+  const { DATA_PONTOS_CRITICOS } = useSaneamentoSnapshot();
+
   const riscoPorBairro = DATA_PONTOS_CRITICOS.reduce(
     (acc, p) => {
       acc[p.bairro] = (acc[p.bairro] || 0) + 1;
@@ -219,6 +218,8 @@ function RiscosPorBairroChart() {
 }
 
 function ProgressoIntervencoesChart() {
+  const { DATA_PONTOS_CRITICOS } = useSaneamentoSnapshot();
+
   const statusCount = DATA_PONTOS_CRITICOS.reduce(
     (acc, p) => {
       acc[p.status] = (acc[p.status] || 0) + 1;
@@ -303,6 +304,8 @@ function ProgressoIntervencoesChart() {
 }
 
 function TabelaPontosCriticosDetalhada() {
+  const { DATA_PONTOS_CRITICOS } = useSaneamentoSnapshot();
+
   const [riscoFilter, setRiscoFilter] = React.useState("todos");
   const [bairroFilter, setBairroFilter] = React.useState("todos");
 
@@ -426,6 +429,15 @@ function TabelaPontosCriticosDetalhada() {
 }
 
 export function DrenagemUrbana() {
+  const {
+    BACIAS_MONITORADAS,
+    PONTOS_CRITICOS_DRENAGEM,
+    VOLUME_DRENAGEM_DESTINADO_M3,
+    OBRAS_MACRODRENAGEM,
+    DATA_DRENAGEM_EVENTOS,
+    DATA_PONTOS_CRITICOS,
+  } = useSaneamentoSnapshot();
+
   const totalEventos = DATA_DRENAGEM_EVENTOS.reduce(
     (s, d) => s + d.alagamentos + d.inundacoes,
     0,

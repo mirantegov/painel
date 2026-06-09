@@ -5,7 +5,7 @@
 
 ## Contexto
 
-Sair do mock (dados estáticos em `lib/demo-*.ts` + consts inline; auth `admin/admin`) e montar backend real:
+Consolidar a transição dos fallbacks demo (`lib/demo-*.ts` + consts inline) para backend de serving, com snapshots `mod_*`, autenticação própria e ACL por módulo/submódulo:
 
 ```
 [Cliente ERP]                              [TCE/PR + SICONFI]
@@ -26,7 +26,7 @@ Decisões validadas: auth = tabela custom + JWT em cookie; S3 = MinIO self-hoste
 - **Regra universal:** toda tabela de fato/módulo carrega `municipio, entidade, ano, mes`. Toda tela tem filtro de **ano** (já) e **mês** (futuro, onde fizer sentido).
 - Dimensões: `dim_municipio`, `dim_entidade`.
 - Fatos: `fato_despesa` (municipio, entidade, ano, mes, data, lancamento, programatica, orgao, unidade, secretaria + valores); `fato_receita` (municipio, entidade, ano, mes, data, lancamento, receita + valores).
-- Demais 19 módulos: tabelas keyed `municipio, entidade, ano, mes`.
+- Demais módulos de display: tabelas `mod_*` por módulo, com chave por `municipio`/`entidade`/`ano` e payload snapshot em `dados` (jsonb).
 - Auth/ACL: `usuarios` (id_user, municipio_id_ibge, cpf, nome, cargo, secretaria?, senha_hash, ativo), `modulos`, `submodulos`, `usuario_modulos`, `usuario_submodulos`.
 
 Demo: município Nova Londrina `4117107`; usuário `00000000000` (Prefeito, acesso total).
@@ -50,7 +50,7 @@ Demo: município Nova Londrina `4117107`; usuário `00000000000` (Prefeito, aces
 - 1.1 docker-compose Supabase self-hosted (+ placeholder MinIO) e `.env`.
 - 1.2 Migrations: dimensões (`dim_municipio`, `dim_entidade`).
 - 1.3 Migrations: `fato_despesa` + `fato_receita`.
-- 1.4 Migrations: 19 tabelas por módulo.
+- 1.4 Migrations: tabelas `mod_*` por módulo de display.
 - 1.5 Migrations: auth/ACL.
 - 1.6 Import IBGE → `dim_municipio`.
 - 1.7 `scripts/seed-from-demo.ts`: seed Nova Londrina + usuário demo.

@@ -1,5 +1,6 @@
 "use client";
 
+import { useSaneamentoSnapshot } from "./snapshot-context";
 import * as React from "react";
 import {
   Card,
@@ -57,15 +58,6 @@ import {
   AlertCircleIcon,
 } from "@hugeicons/core-free-icons";
 import {
-  POPULACAO_TOTAL,
-  POPULACAO_ATENDIDA_ESGOTO,
-  COBERTURA_ESGOTO_PCT,
-  LIGACOES_ATIVAS_ESGOTO,
-  ETES_ATIVAS,
-  VOLUME_ESGOTO_COLETADO_M3,
-  VOLUME_ESGOTO_TRATADO_M3,
-  DATA_ESGOTO_TRATAMENTO,
-  DATA_SISTEMAS_TRATAMENTO,
   formatNumber,
   formatPercent,
   formatCurrencyCompact,
@@ -73,6 +65,8 @@ import {
 import { cn } from "@/lib/utils";
 
 function ColetaVsTratamentoChart() {
+  const { DATA_ESGOTO_TRATAMENTO } = useSaneamentoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -150,6 +144,8 @@ function ColetaVsTratamentoChart() {
 }
 
 function CapacidadePorTecnologiaChart() {
+  const { DATA_SISTEMAS_TRATAMENTO } = useSaneamentoSnapshot();
+
   const capacidadePorTipo = DATA_SISTEMAS_TRATAMENTO.reduce(
     (acc, s) => {
       acc[s.tipo] = (acc[s.tipo] || 0) + s.capacidadeM3Dia;
@@ -233,6 +229,8 @@ function CapacidadePorTecnologiaChart() {
 }
 
 function EficienciaETEsChart() {
+  const { DATA_SISTEMAS_TRATAMENTO } = useSaneamentoSnapshot();
+
   const chartData = DATA_SISTEMAS_TRATAMENTO.map((s) => ({
     nome: s.nome.replace(/^ETE\s+/, ""),
     eficiencia: s.eficiencia,
@@ -306,6 +304,9 @@ function EficienciaETEsChart() {
 }
 
 function DeficitCoberturaCard() {
+  const { POPULACAO_TOTAL, POPULACAO_ATENDIDA_ESGOTO, COBERTURA_ESGOTO_PCT } =
+    useSaneamentoSnapshot();
+
   const semColeta = POPULACAO_TOTAL - POPULACAO_ATENDIDA_ESGOTO;
   const pctSemColeta = 100 - COBERTURA_ESGOTO_PCT;
   const metaMarco = 90;
@@ -379,6 +380,8 @@ function DeficitCoberturaCard() {
 }
 
 function SistemasTratamentoDetalhada() {
+  const { DATA_SISTEMAS_TRATAMENTO } = useSaneamentoSnapshot();
+
   const [tipoFilter, setTipoFilter] = React.useState("todos");
 
   const filteredSistemas = DATA_SISTEMAS_TRATAMENTO.filter(
@@ -509,6 +512,16 @@ function SistemasTratamentoDetalhada() {
 }
 
 export function Esgoto() {
+  const {
+    POPULACAO_TOTAL,
+    POPULACAO_ATENDIDA_ESGOTO,
+    COBERTURA_ESGOTO_PCT,
+    LIGACOES_ATIVAS_ESGOTO,
+    ETES_ATIVAS,
+    VOLUME_ESGOTO_COLETADO_M3,
+    VOLUME_ESGOTO_TRATADO_M3,
+  } = useSaneamentoSnapshot();
+
   const eficienciaTratamento =
     (VOLUME_ESGOTO_TRATADO_M3 / VOLUME_ESGOTO_COLETADO_M3) * 100;
 

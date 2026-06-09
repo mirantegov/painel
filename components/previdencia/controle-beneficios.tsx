@@ -1,5 +1,6 @@
 "use client";
 
+import { usePrevidenciaSnapshot } from "./snapshot-context";
 import {
   Card,
   CardContent,
@@ -19,10 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import {
-  DATA_BENEFICIOS_ANALISE,
-  formatCurrency,
-} from "@/lib/demo-previdencia";
+import { formatCurrency } from "@/lib/demo-previdencia";
 import {
   CheckmarkCircle02Icon,
   ClockIcon,
@@ -64,6 +62,8 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function BeneficiariosEmAnaliseTable() {
+  const { DATA_BENEFICIOS_ANALISE } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -126,6 +126,8 @@ function BeneficiariosEmAnaliseTable() {
 }
 
 function ResumoAnalises() {
+  const { DATA_BENEFICIOS_ANALISE } = usePrevidenciaSnapshot();
+
   const emAnalise = DATA_BENEFICIOS_ANALISE.filter(
     (b) => b.situacao === "Em Análise",
   ).length;
@@ -207,6 +209,8 @@ function ResumoAnalises() {
 }
 
 function TempoMedioAnalise() {
+  const { DATA_BENEFICIOS_ANALISE } = usePrevidenciaSnapshot();
+
   const tempoMedio =
     DATA_BENEFICIOS_ANALISE.reduce((acc, b) => acc + b.tempoAnalise, 0) /
     DATA_BENEFICIOS_ANALISE.length;
@@ -245,6 +249,8 @@ function TempoMedioAnalise() {
 }
 
 function TopBeneficiosRecentes() {
+  const { DATA_BENEFICIOS_ANALISE } = usePrevidenciaSnapshot();
+
   const recentes = DATA_BENEFICIOS_ANALISE.slice(0, 5);
 
   return (
@@ -321,6 +327,8 @@ function CriteriosIndeferimento() {
 }
 
 function PainelOperacionalCard() {
+  const { DATA_BENEFICIOS_ANALISE } = usePrevidenciaSnapshot();
+
   const emAnalise = DATA_BENEFICIOS_ANALISE.filter(
     (item) => item.situacao === "Em Análise",
   );
@@ -362,6 +370,8 @@ function PainelOperacionalCard() {
 }
 
 function AgingAnalysis() {
+  const { DATA_BENEFICIOS_ANALISE } = usePrevidenciaSnapshot();
+
   const faixas = [
     { label: "0-5 dias", min: 0, max: 5, color: "bg-emerald-500" },
     { label: "6-10 dias", min: 6, max: 10, color: "bg-emerald-400" },
@@ -411,6 +421,8 @@ function AgingAnalysis() {
 }
 
 export function ControleBeneficios() {
+  const { DATA_BENEFICIOS_ANALISE } = usePrevidenciaSnapshot();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useSaneamentoSnapshot } from "./snapshot-context";
 import * as React from "react";
 import {
   Card,
@@ -56,8 +57,6 @@ import {
   InformationCircleIcon,
 } from "@hugeicons/core-free-icons";
 import {
-  INVESTIMENTO_OBRAS,
-  DATA_OBRAS_SANEAMENTO,
   formatCurrency,
   formatCurrencyCompact,
   formatPercent,
@@ -88,6 +87,8 @@ function parseMesAno(s: string): Date | null {
 }
 
 function InvestimentoPorTipoChart() {
+  const { INVESTIMENTO_OBRAS, DATA_OBRAS_SANEAMENTO } = useSaneamentoSnapshot();
+
   const tipoMap = new Map<string, number>();
   for (const o of DATA_OBRAS_SANEAMENTO) {
     tipoMap.set(o.tipo, (tipoMap.get(o.tipo) || 0) + o.valorTotal);
@@ -172,6 +173,8 @@ function InvestimentoPorTipoChart() {
 }
 
 function ProgressoObrasChart() {
+  const { DATA_OBRAS_SANEAMENTO } = useSaneamentoSnapshot();
+
   const chartData = DATA_OBRAS_SANEAMENTO.filter(
     (o) => o.status !== "Licitação",
   ).map((o) => ({
@@ -246,6 +249,8 @@ function ProgressoObrasChart() {
 }
 
 function AlertasAtrasoCard() {
+  const { DATA_OBRAS_SANEAMENTO } = useSaneamentoSnapshot();
+
   const hoje = new Date(2026, 3, 1); // Abril 2026
 
   const obrasAtrasadas = DATA_OBRAS_SANEAMENTO.filter((o) => {
@@ -356,6 +361,8 @@ function AlertasAtrasoCard() {
 }
 
 function TabelaObrasDetalhada() {
+  const { DATA_OBRAS_SANEAMENTO } = useSaneamentoSnapshot();
+
   const [statusFilter, setStatusFilter] = React.useState("todos");
   const [tipoFilter, setTipoFilter] = React.useState("todos");
 
@@ -511,6 +518,8 @@ function TabelaObrasDetalhada() {
 }
 
 export function ObrasSaneamento() {
+  const { INVESTIMENTO_OBRAS, DATA_OBRAS_SANEAMENTO } = useSaneamentoSnapshot();
+
   const totalValor = DATA_OBRAS_SANEAMENTO.reduce(
     (s, o) => s + o.valorTotal,
     0,

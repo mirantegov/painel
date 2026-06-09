@@ -1,5 +1,6 @@
 "use client";
 
+import { useLegislativoSnapshot } from "./snapshot-context";
 import {
   Card,
   CardContent,
@@ -18,7 +19,6 @@ import {
 } from "@/components/ui/table";
 import { KpiCard } from "@/components/ui/kpi-card";
 import {
-  DATA_SESSOES_COMPLETO,
   formatDateShort,
   type TipoSessao,
   type StatusSessao,
@@ -74,6 +74,8 @@ function StatusBadge({ status }: { status: StatusSessao }) {
 }
 
 function SessoesTable() {
+  const { DATA_SESSOES_COMPLETO } = useLegislativoSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -121,6 +123,8 @@ function SessoesTable() {
 }
 
 function SessoesStats() {
+  const { DATA_SESSOES_COMPLETO } = useLegislativoSnapshot();
+
   const total = DATA_SESSOES_COMPLETO.length;
   const ordinarias = DATA_SESSOES_COMPLETO.filter(
     (s) => s.tipo === "Ordinária",
@@ -197,6 +201,8 @@ function SessoesStats() {
 }
 
 function AgendaExecutivaCard() {
+  const { DATA_SESSOES_COMPLETO } = useLegislativoSnapshot();
+
   const proximas = DATA_SESSOES_COMPLETO.filter(
     (sessao) => sessao.status === "Agendada",
   ).slice(0, 3);
@@ -251,6 +257,8 @@ function AgendaExecutivaCard() {
 }
 
 function DistribuicaoTipoChart() {
+  const { DATA_SESSOES_COMPLETO } = useLegislativoSnapshot();
+
   const tipos = [
     {
       tipo: "Ordinária",
@@ -306,6 +314,8 @@ function DistribuicaoTipoChart() {
 }
 
 function SessoesPorMesChart() {
+  const { DATA_SESSOES_COMPLETO } = useLegislativoSnapshot();
+
   const meses = [
     "Jan",
     "Fev",

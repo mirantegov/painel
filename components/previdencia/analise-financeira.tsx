@@ -1,5 +1,6 @@
 "use client";
 
+import { usePrevidenciaSnapshot } from "./snapshot-context";
 import {
   Card,
   CardContent,
@@ -30,26 +31,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  RECEITA_CONTRIBUICOES,
-  RECEITA_INVESTIMENTOS,
-  RECEITA_TOTAL,
-  DESPESA_BENEFICIOS,
-  DESPESA_ADMINISTRATIVA,
-  DESPESA_TOTAL,
-  DESPESA_APOSENTADORIAS,
-  DESPESA_PENSOES,
-  DESPESA_AUXILIOS,
-  SALDO_FUNDO,
-  RENTABILIDADE_ACUMULADA,
-  META_ATUARIAL,
-  DATA_RECEITAS_MENSAL,
-  DATA_EVOLUCAO_BENEFICIARIOS,
-  DATA_ORGAOS,
-  DATA_CARTEIRA_INVESTIMENTOS,
-  formatCurrency,
-  formatCurrencyCompact,
-} from "@/lib/demo-previdencia";
+import { formatCurrency, formatCurrencyCompact } from "@/lib/demo-previdencia";
 import {
   MoneySendSquareIcon,
   MoneyReceiveSquareIcon,
@@ -58,6 +40,8 @@ import {
 } from "@hugeicons/core-free-icons";
 
 function ReceitasVsDespesasChart() {
+  const { DATA_EVOLUCAO_BENEFICIARIOS } = usePrevidenciaSnapshot();
+
   const max = Math.max(
     ...DATA_EVOLUCAO_BENEFICIARIOS.map((d) => Math.max(d.receitas, d.despesas)),
   );
@@ -112,6 +96,9 @@ function ReceitasVsDespesasChart() {
 }
 
 function ComposicaoReceitas() {
+  const { RECEITA_CONTRIBUICOES, RECEITA_INVESTIMENTOS, RECEITA_TOTAL } =
+    usePrevidenciaSnapshot();
+
   const total = RECEITA_TOTAL;
   const contribPct = (RECEITA_CONTRIBUICOES / total) * 100;
   const investPct = (RECEITA_INVESTIMENTOS / total) * 100;
@@ -166,6 +153,14 @@ function ComposicaoReceitas() {
 }
 
 function DespesasSeparadas() {
+  const {
+    DESPESA_BENEFICIOS,
+    DESPESA_APOSENTADORIAS,
+    DESPESA_PENSOES,
+    DESPESA_AUXILIOS,
+    DESPESA_ADMINISTRATIVA,
+  } = usePrevidenciaSnapshot();
+
   const totalDespesas = DESPESA_BENEFICIOS + DESPESA_ADMINISTRATIVA;
   const benefPct = (DESPESA_BENEFICIOS / totalDespesas) * 100;
   const adminPct = (DESPESA_ADMINISTRATIVA / totalDespesas) * 100;
@@ -235,6 +230,8 @@ function DespesasSeparadas() {
 }
 
 function RentabilidadeChart() {
+  const { RENTABILIDADE_ACUMULADA, META_ATUARIAL } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -282,6 +279,8 @@ function RentabilidadeChart() {
 }
 
 function ContribuicoesPorOrgao() {
+  const { DATA_ORGAOS } = usePrevidenciaSnapshot();
+
   const maxContrib = Math.max(...DATA_ORGAOS.map((o) => o.contribuicao));
 
   return (
@@ -316,6 +315,8 @@ function ContribuicoesPorOrgao() {
 }
 
 function DemonstrativoReceitas() {
+  const { DATA_RECEITAS_MENSAL } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -350,6 +351,8 @@ function DemonstrativoReceitas() {
 }
 
 function ReceitasMensaisAreaChart() {
+  const { DATA_RECEITAS_MENSAL } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -426,6 +429,8 @@ const CARTEIRA_CORES = [
 ];
 
 function CarteiraInvestimentosDonut() {
+  const { DATA_CARTEIRA_INVESTIMENTOS } = usePrevidenciaSnapshot();
+
   const carteiraConfig = DATA_CARTEIRA_INVESTIMENTOS.reduce(
     (acc, item, index) => {
       acc[item.classe] = {
@@ -494,6 +499,8 @@ function CarteiraInvestimentosDonut() {
 }
 
 function CarteiraInvestimentos() {
+  const { DATA_CARTEIRA_INVESTIMENTOS } = usePrevidenciaSnapshot();
+
   return (
     <Card>
       <CardHeader>
@@ -531,6 +538,9 @@ function CarteiraInvestimentos() {
 }
 
 function EquilibrioFinanceiroCard() {
+  const { RECEITA_INVESTIMENTOS, RECEITA_TOTAL, DESPESA_TOTAL } =
+    usePrevidenciaSnapshot();
+
   const saldoMensal = RECEITA_TOTAL - DESPESA_TOTAL;
   const dependenciaInvestimentos =
     (RECEITA_INVESTIMENTOS / RECEITA_TOTAL) * 100;
@@ -576,6 +586,14 @@ function EquilibrioFinanceiroCard() {
 }
 
 export function AnaliseFinanceira() {
+  const {
+    RECEITA_TOTAL,
+    DESPESA_TOTAL,
+    SALDO_FUNDO,
+    RENTABILIDADE_ACUMULADA,
+    META_ATUARIAL,
+  } = usePrevidenciaSnapshot();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
