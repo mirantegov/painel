@@ -64,6 +64,32 @@ tables:
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
 
+  # ── Dimensões globais (referência; sem coluna entidade → _global/) ──
+  - source: siscop.cidade # municípios (descricao, ibge) — base do IBGE do ente
+    scope: global
+  - source: siscop.unidadefederacao # UF (codigoibge) — base do IBGE do ente
+    scope: global
+  - source: siscop.fornecedor # credores (compartilhado; sem entidade)
+    scope: global
+  - source: siscop.fonterecurso # fonte de recurso (codigotce, codigofontepadrao…)
+    scope: global
+  - source: siscop.fonterecursopadrao # fonte padrão (liga às tabelas TCE de fonte)
+    scope: global
+  - source: siscop.fontepadraotce # fonte padrão TCE (UF='PR')
+    scope: global
+  - source: siscop.fonteorigemrecurso # origem da fonte
+    scope: global
+  - source: siscop.especificacaofonte # especificação da fonte
+    scope: global
+  - source: siscop.fonteaplicacaorecurso # aplicação da fonte (base do tipoaplicacao)
+    scope: global
+  - source: siscop.desdobramentofonte # desdobramento da fonte
+    scope: global
+  - source: siscop.detalhamentofonte # detalhamento da fonte
+    scope: global
+  - source: siscop.fontearea # área da fonte
+    scope: global
+
   # ── RECEITA (orçamentária) — habilitar quando chegarem as queries ──
   # Candidatas no dump (siscop): diarioarrecadacao (realizada), calculoprevisaoreceita,
   # contabancariareceita, ammrealizacaomensalreceitafonte. Aguardando FROM/JOIN.
