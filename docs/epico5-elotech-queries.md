@@ -62,5 +62,57 @@ FROM (SELECT DISTINCT D.ENTIDADE, D.EXERCICIO, UPPER(D.DESCRICAO) AS DESCRICAO,
 > No Épico 5 (ClickHouse) isso vira uma tabela de dimensões parseando `programatica`
 > por nível; no exportador (Épico 4) só dumpamos `siscop.despesa` + `niveismodelodespesa` raw.
 
-<!-- Próximas queries (empenho, liquidação, pagamento, receita realizada, …) entram abaixo.
-     Tabelas siscop candidatas no dump: empenho, emliquidacao, diarioarrecadacao. -->
+## 2) Layout do `programatica` (SUBSTRING — de "Detalhe dos Empenhos")
+
+Posições fixas em `siscop.empenho.programatica` / `siscop.despesa.programatica`:
+
+| Campo | `SUBSTRING(pos, tam)` |
+|---|---|
+| órgão | (1, 2) |
+| unidade | (1, 5) |
+| função | (6, 2) |
+| subfunção | (8, 3) |
+| programa | (11, 4) |
+| ação | (15, 4) |
+| categoria | (19, 1) |
+| grupo | (20, 1) |
+| modalidade | (21, 2) |
+| elemento | (23, 2) |
+| natureza | (19, 6) |
+
+Compostos (concatenações) no detalhe: `natureza+desdobramento+subdesdobramento`, `grupo+elemento`,
+`modalidade+elemento+desdobramento`, etc. `desdobradesp`/`subdesdobramento` são colunas de `siscop.empenho`.
+`tipo` (1..6) → Ordinário/Global/Estimativo (+ variantes COVID-19). Campos de processo/contrato/convênio/
+NAD/licitação compõem `no/ano` → `"no/ano"`.
+
+## 3) Movimentos da despesa — estágios e procedimentos
+
+Cada estágio é um `UNION ALL` de movimentos (valor + sinal), ligados ao empenho por
+`(entidade, exercicio, empenho[, unidadeorcamentaria])`. Tabelas-fonte → manifest.
+
+| Estágio (cd) | Procedimento | Origem (siscop) | Sinal |
+|---|---|---|---|
+| Empenho (16) | 161 empenho | `empenho` (contabilizado='S') | + |
+| | 162 anulação | `anulacaoempenho` | − |
+| | 163 anulação estorno | `anulacaoempenho` (dataestorno) | + |
+| | 164 cancel. restos | `cancelamentorestos` | − |
+| | 165 cancel. restos estorno | `cancelamentorestos` (dataestorno) | + |
+| Liquidação (17) | 171 liquidação | `liquidacao` (contabilizado='S') | + |
+| | 172 estorno | `estornoliquidacao` | − |
+| Pagamento (18) | 181 pagamento | `pagamento` ⋈ `ordempagamento_liquidacao` ⋈ `liquidacao` ⋈ `empenho` | + |
+| | 182 estorno | `estornopagamento` (mesma cadeia) | − |
+| Retenção (18) | 183 retenção | `retencoesliquidacao` ⋈ `liquidacao` ⋈ `empenho` | + |
+| | 184 retenção estorno | `retencoesliquidacao` (dataestcontabilizado) | − |
+
+`ordempagamento_liquidacao` (OPL) liga pagamento → liquidação → empenho. `lancamentosequencia`
+aparece nas retenções. Filtro de período nas queries = `exercicio = ano atual`.
+
+## 4) Restos a pagar
+
+Fonte: `siscop.fichaempenho` (saldos por empenho) ⋈ `siscop.exercicio` (anos) ⋈ `siscop.empenho`.
+`vlProcessar` / `vlProcessado` derivam dos `valor*` da ficha (empenhado − anulações − liquidações…).
+Usa a função `siscop.buscaano(data)` e `exercicio < ano_atual` (empenhos de anos anteriores ainda abertos).
+
+> **Receita** (orçamentária) ainda sem queries — tabelas siscop candidatas no dump:
+> `diarioarrecadacao` (realizada), `calculoprevisaoreceita`, `contabancariareceita`,
+> `ammrealizacaomensalreceitafonte`. Habilitar no manifest quando chegarem.
