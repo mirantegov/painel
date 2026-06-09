@@ -20,6 +20,12 @@ MinIO → ClickHouse**: cada ERP tem sua transformação raw→SIM-AM; daí pra 
 (marts, sync → Postgres) tudo é SIM-AM, ERP-agnóstico. O sync final ClickHouse → Postgres
 entrega o shape idêntico ao que a API serve.
 
+**Separação por IBGE (não por entidade):** MinIO (`<ibge>/...`) e ClickHouse (database
+`mun_<ibge>`) separam por **município**. Um município tem **várias entidades** (prefeitura,
+câmara, RPPS, autarquias, fundos) — a `entidade` (código do ERP) é **coluna/dimensão** dentro
+do município, não um nível de partição física. O exportador dumpa todas as entidades do
+município (`entidade IN (...)`) num só conjunto por IBGE.
+
 ## Provisionamento `mun_<ibge>` (gerado por script: loop nos 19 slugs + municípios)
 
 ```sql

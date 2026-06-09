@@ -20,7 +20,7 @@ tables:
     # filters: { entidade: 42, exercicio: 2025 } # WHERE col=$ AND … (recorta 1 cliente)
 ```
 
-`filters` gera `WHERE coluna = $ AND …` **parametrizado** (valores nunca interpolados; colunas validadas). Usado p/ recortar um cliente quando o ERP separa por coluna (ex.: Elotech `entidade`), não por schema.
+`filters` gera `WHERE coluna = $ AND …` **parametrizado** (valores nunca interpolados; colunas validadas). Valor **escalar** → `= $`; valor **lista** → `IN ($,$,…)`. Usado p/ recortar dados quando o ERP separa por coluna (ex.: Elotech: `entidade IN (...)` p/ todas as entidades do município), não por schema.
 
 **Placeholders `--var`:** o manifest pode ter tokens `__KEY__` resolvidos em runtime por `--var KEY=VALUE` (repetível) — mantém o manifest reusável por cliente/ano. Ex.: `filters: { entidade: __ENTIDADE__ }` + `--var ENTIDADE=1 --var EXERCICIO=2026`. Falta um `--var` → erro claro.
 
