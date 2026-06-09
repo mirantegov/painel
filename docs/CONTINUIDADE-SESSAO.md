@@ -5,7 +5,10 @@
 
 ## ✅ STATUS: Épico 3 FECHADO · Release v2.0.0 PUBLICADA (2026-06-08)
 Toda a fila abaixo foi concluída e mergeada. Issues fechadas: **#65** (Financeiro #73, Tributos #74, Compras #75, RH #76), **#32** (Contas Públicas #77), **#58** (docs #78: README + `ARCHITECTURE.md` + `docs/banco-de-dados.md`), **#64** (seed `mod_*`). Tag/release **`v2.0.0`** em `main`. Módulos de entrega (despesa, receita, orçamento, financeiro, tributação, compras, RH, contas públicas, painel de licitações) leem do Postgres.
-**Aberto (pós-v2.0.0):** **#33** (3.7 módulos restantes/long-tail — saúde, educação, obras, frotas, patrimônio, processos, previdência, saneamento, legislativo, assistência, defesa civil — incremental). **Próximo:** usuário detalha **Épico 4** (exportador Go→Parquet→MinIO) antes de iniciar.
+**Aberto (pós-v2.0.0):** **#33** (3.7 long-tail) — `processos` migrado p/ snapshot (#99); restam 10: saúde, educação, obras, frotas, patrimônio, previdência, saneamento, legislativo, assistência, defesa civil.
+
+### Épico 5 — Armazém canônico SIM-AM no ClickHouse (ENTREGUE 2026-06-08)
+`infra/clickhouse/` (#100 + #101 mergeados). Formato canônico SIM-AM 2026/TCE-PR gerado do PDF (848 págs) via `tools/parse_layout.py`→`gen_ddl.py`→`apply_batches.py`. **224 tabelas canônicas (`simam`) + 224 raw (`simam_raw`) + 115 domínio (106 populadas, ~2,5k linhas), 0 falhas.** ClickHouse Docker (HTTP 8123, nativo **9100** — 9000 é do MinIO), dados em volume `./data`. Pipeline `MinIO→simam_raw→ETL→simam`. Extração ~99,9% limpa; resíduos via `tools/overrides.json`. Plano/pendências: `docs/plano-simam-clickhouse.md` (ligar exportador Go→raw, materializar ETL raw→simam, sync simam→Postgres). Ver memória [[simam-clickhouse]].
 A seção "FILA RESTANTE" abaixo é histórica (já cumprida) — mantida para referência do padrão.
 
 ## Objetivo da fase
