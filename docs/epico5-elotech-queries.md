@@ -156,6 +156,31 @@ Fonte (siscop, **globais** — sem coluna `entidade`): `cidade`, `unidadefederac
 
 Esse é, na prática, o **fato despesa SIM-AM** que o sync ClickHouse→Postgres entrega à API.
 
-> **Receita** (orçamentária) ainda sem queries — tabelas siscop candidatas no dump:
-> `diarioarrecadacao` (realizada), `calculoprevisaoreceita`, `contabancariareceita`,
-> `ammrealizacaomensalreceitafonte`. Habilitar no manifest quando chegarem.
+## 7) Receita realizada + parâmetros
+
+**Tabelas-fonte (→ manifest):** `siscop.receita`, `siscop.realizacaoreceita`,
+`siscop.realizacaoreceitaitem`, `siscop.orcparametroreceita` (+ dims `entidade`, `fonterecurso`,
+`fonterecursopadrao`).
+
+**Joins:** `receita re` ⋈ `realizacaoreceita rr` (entidade, exercicio, receita, fonterecurso,
+idtipooperacaoreceita) ⋈ `realizacaoreceitaitem ri` (entidade, exercicio, lancamento). Valor em `ri.valor`.
+
+**Estágio receita = 26**, procedimento por `rr.grupoevento`:
+
+| grupoevento | procedimento | sinal | campo |
+|---|---|---|---|
+| 11 | 261 arrecadação | + | vlarrecadado |
+| 12 | 262 devolução | − | vldevolucao |
+| 13 | 263 estorno arrecadação | − | vlarrecadadoestorno |
+| 14 | 264 estorno devolução | + | vldevolucaoestorno |
+
+**Layout do código de receita** (`SUBSTRING(rr.receita, …)`): categoria `(1,1)`, origem `(2,1)`,
+espécie `(3,1)`, desdobr1 `(4,1)`, desdobr2 `(5,2)`, desdobr3 `(7,1)`, tipo `(8,1)`, níveis 8–12 em
+`(9,2)`,`(11,2)`,`(13,2)`,`(15,2)`,`(17,2)`. Ids acumulados = prefixos `(1,1)…(1,18)`.
+
+**Parâmetros/natureza** (`orcparametroreceita`, `sintetico='N'`, `exercicio>=2020`): `codigo`(natureza),
+`descricao`, `tipo`(tpReceita), `ordem`, `idTipoPermissaoDeducao`, `ModeloReceita`, `esferagoverno`,
+`sintetico→cdTipoNivelConta (S/A)`.
+
+> **Receita prevista/orçada** ainda sem query dedicada — candidatas no dump:
+> `calculoprevisaoreceita`, `contprevisaoreceita`, `diarioarrecadacao`. Habilitar quando chegar.

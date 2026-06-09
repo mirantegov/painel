@@ -90,6 +90,16 @@ tables:
   - source: siscop.fontearea # área da fonte
     scope: global
 
-  # ── RECEITA (orçamentária) — habilitar quando chegarem as queries ──
-  # Candidatas no dump (siscop): diarioarrecadacao (realizada), calculoprevisaoreceita,
-  # contabancariareceita, ammrealizacaomensalreceitafonte. Aguardando FROM/JOIN.
+  # ── RECEITA (orçamentária) ──────────────────────────────────────
+  - source: siscop.receita # cadastro da receita (receita, descricao, fonterecurso, idtipooperacaoreceita)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.realizacaoreceita # realização (grupoevento, data, fonterecurso, lancamento)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.realizacaoreceitaitem # itens da realização (valor, fonterecurso, idtipooperacaoreceita)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.orcparametroreceita # parâmetros/natureza da receita (sintetico, tipo, ordem, esferagoverno)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
