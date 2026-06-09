@@ -1,9 +1,8 @@
-# Manifest Elotech eloweb (legado) — despesa/receita orçamentária (raw).
-# Despesa e receita ORÇAMENTÁRIA ficam no schema `siscop`.
-# (No `aise` ficam TRIBUTOS e RH — não entram aqui.)
+# Manifest Elotech eloweb (legado) — despesa orçamentária (raw).
+# Despesa/receita ORÇAMENTÁRIA = schema `siscop`. (No `aise` ficam TRIBUTOS e RH.)
 # Cliente/município = coluna `entidade` (NÃO é IBGE); ano = coluna `exercicio`.
-# Schema explícito no `source` define de onde ler; `scope` define só o path no
-# MinIO (tenant=<ibge>/ · global=_global/).
+# Schema explícito no `source`; `scope` define só o path no MinIO
+# (tenant=<ibge>/ · global=_global/).
 #
 # Rode com:
 #   go run . --municipio <ibge> --ano <exercicio> \
@@ -12,34 +11,59 @@
 # ⚠️ Preencha __ENTIDADE__ (código do cliente em siscop.entidade) e
 #    __EXERCICIO__ (ano, ex.: 2025).
 #
-# Obs.: órgão/unidade/função/subfunção/programa/ação/natureza são DERIVADOS de
-#       siscop.despesa.programatica (SUBSTRING via niveismodelodespesa). Isso é
-#       transform do ClickHouse (Épico 5) — aqui só raw. Ver
-#       docs/epico5-elotech-queries.md.
+# Obs.: derivações (órgão/unidade/natureza por SUBSTRING de programatica; estágios/
+#       procedimentos; restos a pagar; funções como siscop.buscaano) são TRANSFORM
+#       do ClickHouse (Épico 5). Aqui só raw. Ver docs/epico5-elotech-queries.md.
 bucket: mirante-parquet
 tables:
-  # ── Dimensão do ente ────────────────────────────────────────────
+  # ── Dimensões ───────────────────────────────────────────────────
   - source: siscop.entidade # entidade, nome, cnpj, identificacaotce, tipoentidade
     scope: tenant
     filters: { entidade: __ENTIDADE__ }
-
-  # ── Classificação da despesa (orçamentária) ─────────────────────
-  - source: siscop.despesa # programatica, valorprevisto, modelodespesa, nivel, idnatureza…
+  - source: siscop.exercicio # exercícios do ente (p/ restos a pagar — anos anteriores)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__ }
+  - source: siscop.despesa # classificação/dotação (programatica, valorprevisto, modelodespesa, nivel)
     scope: tenant
     filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  - source: siscop.niveismodelodespesa # modelo de níveis (parse de programatica); referência, sem coluna entidade
+  - source: siscop.niveismodelodespesa # parse de programatica (referência; sem coluna entidade)
     scope: global
 
-  # ── Execução (despesa/receita) — confirmar tabelas com as próximas queries ──
-  # Candidatas encontradas no dump (siscop): empenho, emliquidacao, diarioarrecadacao.
-  # Serão habilitadas quando as queries de empenho/liquidação/pagamento/receita
-  # chegarem (cada FROM/JOIN confirma a tabela-fonte). Ex.:
-  # - source: siscop.empenho
-  #   scope: tenant
-  #   filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  # - source: siscop.emliquidacao
-  #   scope: tenant
-  #   filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
-  # - source: siscop.diarioarrecadacao
-  #   scope: tenant
-  #   filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  # ── Execução da despesa ─────────────────────────────────────────
+  - source: siscop.empenho # empenho (cabeçalho + valores; layout de programatica)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.anulacaoempenho # anulação de empenho (+ estorno via dataestorno)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.cancelamentorestos # cancelamento de restos (+ estorno)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.fichaempenho # saldos por empenho (base dos restos a pagar)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.liquidacao # liquidação
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.estornoliquidacao # estorno de liquidação
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.pagamento # pagamento
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.estornopagamento # estorno de pagamento
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.ordempagamento_liquidacao # OPL — liga pagamento ↔ liquidação ↔ empenho
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.retencoesliquidacao # retenções sobre liquidação (+ estorno)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+  - source: siscop.lancamentosequencia # sequência de lançamento (usado nas retenções)
+    scope: tenant
+    filters: { entidade: __ENTIDADE__, exercicio: __EXERCICIO__ }
+
+  # ── RECEITA (orçamentária) — habilitar quando chegarem as queries ──
+  # Candidatas no dump (siscop): diarioarrecadacao (realizada), calculoprevisaoreceita,
+  # contabancariareceita, ammrealizacaomensalreceitafonte. Aguardando FROM/JOIN.
