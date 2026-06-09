@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -47,7 +46,7 @@ import {
   pctShare,
   type OrcamentoBase,
 } from "@/lib/demo-orcamento";
-import { useYear } from "@/components/year-provider";
+import { useSnapshot } from "@/components/use-snapshot";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { OrcamentoPonteEquilibrio } from "@/components/orcamento/orcamento-ponte-equilibrio";
 import { OrcamentoRealizacaoGauge } from "@/components/orcamento/orcamento-realizacao-gauge";
@@ -431,21 +430,7 @@ function MixBreakdownCard({
 }
 
 export function OrcamentoMunicipal() {
-  const { ano } = useYear();
-  const [base, setBase] = React.useState<OrcamentoBase>(ORCAMENTO_BASE);
-
-  React.useEffect(() => {
-    let active = true;
-    fetch(`/api/data/orcamento?ano=${ano}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (active && d?.dados) setBase(d.dados as OrcamentoBase);
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
-  }, [ano]);
+  const base = useSnapshot<OrcamentoBase>("orcamento", ORCAMENTO_BASE);
 
   const {
     receitaPrevista,

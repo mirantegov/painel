@@ -71,10 +71,12 @@ CREATE TABLE IF NOT EXISTS mun_4117107.mod_saneamento (
 
 ## Ingestão raw (exportador Go → Parquet → MinIO → CH)
 
+> **Convenção canônica de paths MinIO (Épico 6.0):** `s3://mirante-parquet/<ibge>/<tabela>/[ano=<ano>/]part-0.parquet` para dados tenant e `s3://mirante-parquet/_global/<tabela>/part-0.parquet` para dimensões globais. Mantido sincronizado com `exporter/README.md` e `infra/clickhouse/schema/etl/README-pipeline.sql`.
+
 ```sql
 INSERT INTO mun_4117107.fato_despesa
 SELECT * EXCEPT (ingested_at), now() AS ingested_at
-FROM s3('http://minio:9000/mirante-parquet/4117107/despesa/ano=2026/*.parquet',
+FROM s3('http://mirante-minio:9000/mirante-parquet/4117107/fato_despesa/ano=2026/*.parquet',
         'minioadmin','minioadmin','Parquet');
 -- FINAL na leitura (ou OPTIMIZE ... FINAL agendado) p/ aplicar o dedup.
 ```

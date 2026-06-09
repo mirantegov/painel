@@ -29,6 +29,7 @@ import { ASSISTENCIA_SOCIAL_SNAPSHOT } from "../lib/demo-assistencia-social";
 import { PREVIDENCIA_SNAPSHOT } from "../lib/demo-previdencia";
 import { LEGISLATIVO_SNAPSHOT } from "../lib/demo-legislativo";
 import { SANEAMENTO_SNAPSHOT } from "../lib/demo-saneamento";
+import { VISAO_GERAL_SNAPSHOT } from "../lib/demo-visao-geral";
 
 const DATABASE_URL =
   process.env.DATABASE_URL ??
@@ -441,8 +442,9 @@ async function main() {
       [entidadeId, ANO, JSON.stringify(PROCESSOS_SNAPSHOT)],
     );
 
-    // Snapshots dos módulos long-tail (#33).
+    // Snapshots dos módulos long-tail (#33) + visão geral.
     const longTailSnapshots: [string, unknown][] = [
+      ["mod_visao_geral", VISAO_GERAL_SNAPSHOT],
       ["mod_defesa_civil", DEFESA_CIVIL_SNAPSHOT],
       ["mod_frotas", FROTAS_SNAPSHOT],
       ["mod_patrimonio", PATRIMONIO_SNAPSHOT],
