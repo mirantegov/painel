@@ -1,0 +1,15 @@
+# Segredos e estado — NUNCA commitar
+.env
+*.tfvars
+*.auto.tfvars
+
+# Plano salvo (pode conter valores sensíveis)
+tfplan
+*.tfplan
+
+# Estado do OpenTofu/Terraform (contém IPs, possíveis segredos)
+*.tfstate
+*.tfstate.*
+.terraform/
+crash.log
+crash.*.log
