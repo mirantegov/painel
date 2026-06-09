@@ -12,9 +12,9 @@ O **Mirante Painel** é uma aplicação web de **Next.js** pensada para **prefei
 
 - [ ] **E0** Governança (Linear+GitHub) — [MIR-2](https://linear.app/code42dev/issue/MIR-2) · [#119](https://github.com/mirantegov/painel/issues/119)
 - [ ] **Gate** Fechar long-tail antes da VPS — [MIR-3](https://linear.app/code42dev/issue/MIR-3) · [#120](https://github.com/mirantegov/painel/issues/120)
-- [ ] **E1** VPS, DNS (`painel.mirantegov.cloud`), segurança — [MIR-4](https://linear.app/code42dev/issue/MIR-4) · [#121](https://github.com/mirantegov/painel/issues/121)
-- [ ] **E2** Compose prod + TLS Traefik — [MIR-5](https://linear.app/code42dev/issue/MIR-5) · [#122](https://github.com/mirantegov/painel/issues/122)
-- [ ] **E3** Postgres produção + migrations + backup — [MIR-6](https://linear.app/code42dev/issue/MIR-6) · [#123](https://github.com/mirantegov/painel/issues/123)
+- [x] **E1** VPS, DNS (`painel.mirantegov.cloud`), segurança — IaC OpenTofu/EC2 no ar ([HANDOFF](docs/HANDOFF-vps-deploy-2026-06-09.md)) — [MIR-4](https://linear.app/code42dev/issue/MIR-4) · [#121](https://github.com/mirantegov/painel/issues/121)
+- [x] **E2** Compose prod + TLS Traefik — HTTPS válido (Let's Encrypt prod), file provider — [MIR-5](https://linear.app/code42dev/issue/MIR-5) · [#122](https://github.com/mirantegov/painel/issues/122)
+- [x] **E3** Postgres produção + migrations + seed (backup pendente) — login demo funcionando — [MIR-6](https://linear.app/code42dev/issue/MIR-6) · [#123](https://github.com/mirantegov/painel/issues/123)
 - [ ] **E4** Hardening auth/ACL — [MIR-7](https://linear.app/code42dev/issue/MIR-7) · [#124](https://github.com/mirantegov/painel/issues/124)
 - [ ] **E5** Qualidade dos módulos/snapshots — [MIR-8](https://linear.app/code42dev/issue/MIR-8) · [#125](https://github.com/mirantegov/painel/issues/125)
 - [ ] **E6** MinIO + exportador Go — [MIR-9](https://linear.app/code42dev/issue/MIR-9) · [#126](https://github.com/mirantegov/painel/issues/126)
