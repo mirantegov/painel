@@ -83,7 +83,7 @@ Rode os 3 manifests (o `--schema` não é preciso: cada manifest traz o schema n
 
 ## 6. Logs e tempo de execução
 
-Cada execução cria (se não existir) a pasta **`log/`** ao lado do exe e grava **`log/exporter_<AAAAMMDD_HHMMSS>.log`** com:
+Cada execução cria (se não existir) a pasta **`log/`** ao lado do exe e grava **`log/export_<ibge>_<AAAAMMDD_HHMMSS>.log`** (ex.: `log/export_4117107_20260610_041500.log`) com:
 
 - município, ano, schema, bucket
 - **início**, **fim** e **duração** da exportação
