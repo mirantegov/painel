@@ -15,7 +15,6 @@ import {
   FilterIcon,
   Flag01Icon,
   AlertCircleIcon,
-  InformationCircleIcon,
   Invoice01Icon,
   MoneyReceiveSquareIcon,
   RefreshIcon,
@@ -42,7 +41,6 @@ import {
   YAxis,
 } from "recharts";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -123,7 +121,6 @@ export function Educacao() {
     metasPME,
     infraestruturaEscolar,
     formacaoContinuada,
-    alertasEducacao,
   } = useSnapshot("educacao", EDUCACAO_SNAPSHOT);
   const [periodoSelecionado, setPeriodoSelecionado] = React.useState("2024");
   const [modalidadeSelecionada, setModalidadeSelecionada] =
@@ -243,36 +240,6 @@ export function Educacao() {
                 Acima da média estadual de 5,3
               </p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon
-                icon={InformationCircleIcon}
-                strokeWidth={2}
-                className="size-5"
-              />
-              Alertas de Gestão
-            </CardTitle>
-            <CardDescription>
-              Pontos que merecem acompanhamento dos gestores da educação.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {alertasEducacao.map((alerta) => (
-              <Alert
-                key={alerta.titulo}
-                variant={alerta.tipo === "warning" ? "destructive" : "default"}
-              >
-                <AlertTitle className="flex flex-wrap items-center gap-2">
-                  {alerta.titulo}
-                  <Badge variant="outline">{alerta.badge}</Badge>
-                </AlertTitle>
-                <AlertDescription>{alerta.descricao}</AlertDescription>
-              </Alert>
-            ))}
           </CardContent>
         </Card>
       </div>
@@ -1213,47 +1180,6 @@ export function Educacao() {
                 </Table>
               </CardContent>
             </Card>
-          </div>
-
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-foreground">
-              Alertas de Frequência
-            </h3>
-            <div className="grid gap-3 lg:grid-cols-3">
-              <Alert variant="destructive">
-                <HugeiconsIcon
-                  icon={Alert02Icon}
-                  strokeWidth={2}
-                  className="size-4"
-                />
-                <AlertTitle>Faltas Consecutivas</AlertTitle>
-                <AlertDescription>
-                  42 alunos com mais de 15 faltas consecutivas
-                </AlertDescription>
-              </Alert>
-              <Alert variant="destructive">
-                <HugeiconsIcon
-                  icon={Alert02Icon}
-                  strokeWidth={2}
-                  className="size-4"
-                />
-                <AlertTitle>Frequência Baixa</AlertTitle>
-                <AlertDescription>
-                  3 escolas com frequência média abaixo de 90%
-                </AlertDescription>
-              </Alert>
-              <Alert>
-                <HugeiconsIcon
-                  icon={InformationCircleIcon}
-                  strokeWidth={2}
-                  className="size-4"
-                />
-                <AlertTitle>Busca Ativa</AlertTitle>
-                <AlertDescription>
-                  Programa de Busca Ativa recuperou 198 alunos no semestre
-                </AlertDescription>
-              </Alert>
-            </div>
           </div>
         </TabsContent>
 

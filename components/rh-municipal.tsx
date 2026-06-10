@@ -58,7 +58,6 @@ import {
   Calendar01Icon,
   CheckmarkCircle02Icon,
   Alert02Icon,
-  InformationCircleIcon,
   Target01Icon,
   BulbIcon,
   SecurityCheckIcon,
@@ -76,7 +75,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { useSnapshot } from "@/components/use-snapshot";
 import { RH_SNAPSHOT } from "@/lib/demo-rh";
@@ -143,7 +141,6 @@ export function RHMunicipal() {
     verbasProventos,
     metasRH,
     peopleAnalytics,
-    alertasRH,
     eventosRH,
     limitePessoalLRF,
     custoPorFuncionario,
@@ -941,51 +938,6 @@ export function RHMunicipal() {
               </Table>
             </CardContent>
           </Card>
-
-          {/* Alertas */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <HugeiconsIcon
-                  icon={Alert02Icon}
-                  strokeWidth={2}
-                  className="size-5"
-                />
-                Alertas e Recomendações
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {alertasRH.map((alerta, index) => (
-                <Alert
-                  key={index}
-                  variant={
-                    alerta.tipo === "warning" ? "destructive" : "default"
-                  }
-                  className={
-                    alerta.tipo === "warning"
-                      ? "border-amber-500 bg-amber-50 dark:bg-amber-950/30"
-                      : alerta.tipo === "success"
-                        ? "border-green-500 bg-green-50 dark:bg-green-950/30"
-                        : ""
-                  }
-                >
-                  <HugeiconsIcon
-                    icon={
-                      alerta.tipo === "warning"
-                        ? Alert02Icon
-                        : alerta.tipo === "success"
-                          ? CheckmarkCircle02Icon
-                          : InformationCircleIcon
-                    }
-                    strokeWidth={2}
-                    className="size-4"
-                  />
-                  <AlertTitle>{alerta.titulo}</AlertTitle>
-                  <AlertDescription>{alerta.descricao}</AlertDescription>
-                </Alert>
-              ))}
-            </CardContent>
-          </Card>
         </TabsContent>
 
         {/* Tab Verbas */}
@@ -1675,26 +1627,6 @@ export function RHMunicipal() {
                 </LineChart>
               </ChartContainer>
             </div>
-
-            {limitePessoalLRF.percentualAtual > 48.6 && (
-              <Alert
-                variant="destructive"
-                className="border-amber-500 bg-amber-50 dark:bg-amber-950/30"
-              >
-                <HugeiconsIcon
-                  icon={Alert02Icon}
-                  strokeWidth={2}
-                  className="size-4"
-                />
-                <AlertTitle>Proximidade do Limite de Alerta</AlertTitle>
-                <AlertDescription>
-                  A despesa com pessoal está a{" "}
-                  {(51.3 - limitePessoalLRF.percentualAtual).toFixed(1)}pp do
-                  limite prudencial. Recomenda-se cautela na concessão de
-                  reajustes e novas contratações.
-                </AlertDescription>
-              </Alert>
-            )}
           </CardContent>
         </Card>
 
@@ -1861,21 +1793,6 @@ export function RHMunicipal() {
                 </TableRow>
               </TableFooter>
             </Table>
-
-            <Alert className="border-blue-500 bg-blue-50 dark:bg-blue-950/30">
-              <HugeiconsIcon
-                icon={InformationCircleIcon}
-                strokeWidth={2}
-                className="size-4"
-              />
-              <AlertTitle>Planejamento de Sucessao</AlertTitle>
-              <AlertDescription>
-                Recomenda-se iniciar plano de sucessao para os{" "}
-                {totalAposentadorias5Anos} cargos projetados, priorizando
-                Professores e profissionais de Saúde que representam a maior
-                demanda.
-              </AlertDescription>
-            </Alert>
           </CardContent>
         </Card>
 

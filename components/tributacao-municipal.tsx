@@ -71,7 +71,6 @@ import {
   DocumentValidationIcon,
   Analytics01Icon,
 } from "@hugeicons/core-free-icons";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { useSnapshot } from "@/components/use-snapshot";
 import { TRIBUTACAO_SNAPSHOT } from "@/lib/demo-tributacao";
@@ -2323,36 +2322,6 @@ export function TributacaoMunicipal() {
               </Table>
             </CardContent>
           </Card>
-
-          {/* Alertas NFS-e */}
-          <div className="space-y-3">
-            {dadosNFSe.alertasNFSe.map((alerta, i) => (
-              <Alert
-                key={i}
-                variant={alerta.tipo === "critico" ? "destructive" : "default"}
-              >
-                <HugeiconsIcon
-                  icon={
-                    alerta.tipo === "critico"
-                      ? Alert02Icon
-                      : alerta.tipo === "alerta"
-                        ? AlertCircleIcon
-                        : InformationCircleIcon
-                  }
-                  strokeWidth={2}
-                  className="size-4"
-                />
-                <AlertTitle>
-                  {alerta.tipo === "critico"
-                    ? "Atenção Crítica"
-                    : alerta.tipo === "alerta"
-                      ? "Atenção"
-                      : "Informação"}
-                </AlertTitle>
-                <AlertDescription>{alerta.descricao}</AlertDescription>
-              </Alert>
-            ))}
-          </div>
         </TabsContent>
 
         {/* ========================================== */}

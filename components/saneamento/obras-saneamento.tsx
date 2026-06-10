@@ -54,7 +54,6 @@ import {
   MoneyBag02Icon,
   CheckmarkCircle01Icon,
   AlertCircleIcon,
-  InformationCircleIcon,
 } from "@hugeicons/core-free-icons";
 import {
   formatCurrency,
@@ -62,29 +61,6 @@ import {
   formatPercent,
 } from "@/lib/demo-saneamento";
 import { cn } from "@/lib/utils";
-
-// Converte "Mar/2025" → Date, retorna null se "-"
-function parseMesAno(s: string): Date | null {
-  if (s === "-") return null;
-  const mesMap: Record<string, number> = {
-    Jan: 0,
-    Fev: 1,
-    Mar: 2,
-    Abr: 3,
-    Mai: 4,
-    Jun: 5,
-    Jul: 6,
-    Ago: 7,
-    Set: 8,
-    Out: 9,
-    Nov: 10,
-    Dez: 11,
-  };
-  const [mes, ano] = s.split("/");
-  const m = mesMap[mes];
-  if (m === undefined || !ano) return null;
-  return new Date(parseInt(ano), m);
-}
 
 function InvestimentoPorTipoChart() {
   const { INVESTIMENTO_OBRAS, DATA_OBRAS_SANEAMENTO } = useSaneamentoSnapshot();
@@ -243,118 +219,6 @@ function ProgressoObrasChart() {
             <ChartLegend content={<ChartLegendContent />} />
           </BarChart>
         </ChartContainer>
-      </CardContent>
-    </Card>
-  );
-}
-
-function AlertasAtrasoCard() {
-  const { DATA_OBRAS_SANEAMENTO } = useSaneamentoSnapshot();
-
-  const hoje = new Date(2026, 3, 1); // Abril 2026
-
-  const obrasAtrasadas = DATA_OBRAS_SANEAMENTO.filter((o) => {
-    if (o.status === "Concluída" || o.status === "Licitação") return false;
-    if (o.status === "Paralisada") return true;
-    const prazo = parseMesAno(o.mesPrevisto);
-    return prazo !== null && prazo < hoje;
-  });
-
-  const obrasParalisadas = obrasAtrasadas.filter(
-    (o) => o.status === "Paralisada",
-  );
-  const obrasAtrasadasEmExec = obrasAtrasadas.filter(
-    (o) => o.status === "Em Execução",
-  );
-
-  if (obrasAtrasadas.length === 0) {
-    return (
-      <Card className="border-l-4 border-l-emerald-500">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-emerald-600">
-            <HugeiconsIcon
-              icon={CheckmarkCircle01Icon}
-              strokeWidth={2}
-              className="h-5 w-5"
-            />
-            Cronograma em Dia
-          </CardTitle>
-          <CardDescription>
-            Todas as obras estão dentro do prazo previsto.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="border-l-4 border-l-red-500">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <HugeiconsIcon
-            icon={AlertCircleIcon}
-            strokeWidth={2}
-            className="h-5 w-5 text-red-600"
-          />
-          Alertas de Cronograma
-        </CardTitle>
-        <CardDescription>
-          {obrasAtrasadas.length} obra{obrasAtrasadas.length > 1 ? "s" : ""}{" "}
-          requerem atenção
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {obrasParalisadas.length > 0 && (
-            <div>
-              <p className="text-xs font-semibold text-red-600 mb-2 uppercase tracking-wide">
-                Paralisadas ({obrasParalisadas.length})
-              </p>
-              {obrasParalisadas.map((o) => (
-                <div
-                  key={o.id}
-                  className="flex items-start justify-between rounded-lg bg-red-50 dark:bg-red-950/20 p-3 mb-2"
-                >
-                  <div>
-                    <p className="text-sm font-medium">{o.nome}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {o.bairro} — prazo: {o.mesPrevisto}
-                    </p>
-                  </div>
-                  <Badge variant="destructive" className="shrink-0 ml-2">
-                    {o.percentualExecucao}% exec.
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          )}
-          {obrasAtrasadasEmExec.length > 0 && (
-            <div>
-              <p className="text-xs font-semibold text-amber-600 mb-2 uppercase tracking-wide">
-                Com prazo vencido ({obrasAtrasadasEmExec.length})
-              </p>
-              {obrasAtrasadasEmExec.map((o) => (
-                <div
-                  key={o.id}
-                  className="flex items-start justify-between rounded-lg bg-amber-50 dark:bg-amber-950/20 p-3 mb-2"
-                >
-                  <div>
-                    <p className="text-sm font-medium">{o.nome}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {o.bairro} — prazo: {o.mesPrevisto}
-                    </p>
-                  </div>
-                  <Badge
-                    variant="secondary"
-                    className="shrink-0 ml-2 bg-amber-100 text-amber-800"
-                  >
-                    {o.percentualExecucao}% exec.
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
       </CardContent>
     </Card>
   );
@@ -608,9 +472,6 @@ export function ObrasSaneamento() {
         </Alert>
       )}
 
-      {/* Alertas de cronograma */}
-      <AlertasAtrasoCard />
-
       {/* Gráficos */}
       <div className="grid gap-4 lg:grid-cols-2">
         <InvestimentoPorTipoChart />
@@ -619,49 +480,6 @@ export function ObrasSaneamento() {
 
       {/* Tabela Detalhada */}
       <TabelaObrasDetalhada />
-
-      {/* Leitura Executiva */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <HugeiconsIcon
-              icon={InformationCircleIcon}
-              strokeWidth={2}
-              className="h-5 w-5"
-            />
-            Leitura Executiva
-          </CardTitle>
-          <CardDescription>Obras de Saneamento</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-lg bg-muted/50 p-4">
-              <h4 className="font-semibold text-sm mb-2">Andamento</h4>
-              <p className="text-sm text-muted-foreground">
-                Das {DATA_OBRAS_SANEAMENTO.length} obras cadastradas,{" "}
-                {emExecucao} estão em execução, {concluidas} foram concluídas e{" "}
-                {paralisadas}{" "}
-                {paralisadas === 1
-                  ? "encontra-se paralisada"
-                  : "encontram-se paralisadas"}
-                . O investimento total previsto é de{" "}
-                {formatCurrencyCompact(INVESTIMENTO_OBRAS)}, com{" "}
-                {formatPercent((totalExecutado / totalValor) * 100)} executado.
-              </p>
-            </div>
-            <div className="rounded-lg bg-muted/50 p-4">
-              <h4 className="font-semibold text-sm mb-2">Prioridades</h4>
-              <p className="text-sm text-muted-foreground">
-                A obra da Nova ETE Zona Sul representa o maior investimento
-                individual. A canalização do Córrego Fundo (paralisada) e a
-                Galeria Pluvial Av. Brasil (prazo vencido) exigem atenção
-                imediata. Recomenda-se priorizar a conclusão das obras de
-                macrodrenagem antes do período chuvoso.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

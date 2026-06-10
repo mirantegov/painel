@@ -282,31 +282,6 @@ export const topContribuintes = [
   },
 ];
 
-// Alertas
-export const alertasReceita = [
-  {
-    tipo: "warning",
-    titulo: "ITBI abaixo da previsão",
-    descricao:
-      "A arrecadacao de ITBI esta 19% abaixo da previsão orcamentaria, indicando possivel desaceleracao do mercado imobiliario.",
-    tributo: "ITBI",
-  },
-  {
-    tipo: "success",
-    titulo: "ISS supera a meta",
-    descricao:
-      "A arrecadacao de ISS superou a previsao em 9.5%, refletindo aumento na atividade economica de servicos.",
-    tributo: "ISS",
-  },
-  {
-    tipo: "info",
-    titulo: "Convenios federais pendentes",
-    descricao:
-      "R$ 3.3M em convenios federais aguardam liberacao. Recomenda-se acompanhamento junto aos ministerios.",
-    tributo: "CONVENIOS",
-  },
-];
-
 // Timeline de eventos
 export const eventosReceita = [
   {
@@ -661,7 +636,6 @@ export const dadosPorPeriodo: Record<
     outrasReceitas: typeof outrasReceitas;
     evolucaoMensal: typeof evolucaoMensal;
     topContribuintes: typeof topContribuintes;
-    alertasReceita: typeof alertasReceita;
     eventosReceita: typeof eventosReceita;
     comparativoAnual: typeof comparativoAnual;
   }
@@ -673,7 +647,6 @@ export const dadosPorPeriodo: Record<
     outrasReceitas,
     evolucaoMensal,
     topContribuintes,
-    alertasReceita,
     eventosReceita,
     comparativoAnual,
   },
@@ -710,10 +683,6 @@ export const dadosPorPeriodo: Record<
     topContribuintes: topContribuintes.map((t) => ({
       ...t,
       valor: t.valor * 0.91,
-    })),
-    alertasReceita: alertasReceita.map((a) => ({
-      ...a,
-      descricao: a.descricao.replace(/2024/g, "2023"),
     })),
     eventosReceita: eventosReceita.map((e) => ({
       ...e,
@@ -755,10 +724,6 @@ export const dadosPorPeriodo: Record<
       ...t,
       valor: t.valor * 0.83,
     })),
-    alertasReceita: alertasReceita.map((a) => ({
-      ...a,
-      descricao: a.descricao.replace(/2024/g, "2022"),
-    })),
     eventosReceita: eventosReceita.map((e) => ({
       ...e,
       data: e.data.replace(/2024/g, "2022"),
@@ -783,7 +748,6 @@ export const RECEITA_SNAPSHOT = {
   totaisGerais,
   distribuicaoOrigem,
   topContribuintes,
-  alertasReceita,
   eventosReceita,
   metasArrecadacao,
   inadimplencia,

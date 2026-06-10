@@ -53,7 +53,6 @@ import {
   PieChart02Icon,
   Clock01Icon,
   StarIcon,
-  Alert02Icon,
   MoneyAdd01Icon,
   MoneySend01Icon,
   BankIcon,
@@ -65,7 +64,6 @@ import {
   Coins01Icon,
 } from "@hugeicons/core-free-icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { useSnapshot } from "@/components/use-snapshot";
@@ -1360,25 +1358,6 @@ export function FinanceiroMunicipal() {
                 </div>
               ))}
             </div>
-            <Alert
-              className="mt-3"
-              variant={
-                projecaoFluxoCaixa[0].saldoProjetado < 0
-                  ? "destructive"
-                  : "default"
-              }
-            >
-              <HugeiconsIcon
-                icon={Alert02Icon}
-                strokeWidth={2}
-                className="size-4"
-              />
-              <AlertTitle>Atenção: Dezembro com déficit projetado</AlertTitle>
-              <AlertDescription>
-                Saídas elevadas previstas para dezembro (13º salário +
-                fornecedores). Saldo disponível e suficiente para cobertura.
-              </AlertDescription>
-            </Alert>
           </CardContent>
         </Card>
       </div>

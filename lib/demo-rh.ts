@@ -378,38 +378,6 @@ const peopleAnalytics = {
   ],
 };
 
-// Alertas de RH
-const alertasRH = [
-  {
-    tipo: "warning",
-    titulo: "Alto Absenteísmo na Saúde",
-    descricao:
-      "A Secretaria de Saúde apresenta taxa de absenteísmo de 7.8%, acima da meta de 4%.",
-    setor: "SEMSA",
-  },
-  {
-    tipo: "warning",
-    titulo: "Excesso de Horas Extras",
-    descricao:
-      "Horas extras do mês superam o limite orçado em 27.8%, totalizando R$ 767.000.",
-    setor: "Geral",
-  },
-  {
-    tipo: "info",
-    titulo: "Vagas em Aberto",
-    descricao:
-      "Existem 64 vagas não preenchidas, sendo 28 na Secretaria de Saúde.",
-    setor: "Geral",
-  },
-  {
-    tipo: "success",
-    titulo: "Meta de Diversidade Atingida",
-    descricao:
-      "54.2% do quadro é composto por mulheres, superando meta de 50%.",
-    setor: "Geral",
-  },
-];
-
 // Timeline de eventos de RH
 const eventosRH = [
   {
@@ -635,7 +603,6 @@ export const RH_SNAPSHOT = {
   verbasProventos,
   metasRH,
   peopleAnalytics,
-  alertasRH,
   eventosRH,
   limitePessoalLRF,
   custoPorFuncionario,

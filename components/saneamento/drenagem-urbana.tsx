@@ -516,37 +516,6 @@ export function DrenagemUrbana() {
 
       {/* Tabela detalhada com filtros funcionais */}
       <TabelaPontosCriticosDetalhada />
-
-      {/* Leitura Executiva */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Leitura Executiva</CardTitle>
-          <CardDescription>Drenagem Urbana</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-lg bg-muted/50 p-4">
-              <h4 className="font-semibold text-sm mb-2">Eventos Climáticos</h4>
-              <p className="text-sm text-muted-foreground">
-                Foram registrados {totalEventos} eventos de alagamento/inundação
-                no ano, concentrados nos meses de verão (Out-Mar). O sistema
-                monitora {BACIAS_MONITORADAS} bacias hidrográficas com{" "}
-                {PONTOS_CRITICOS_DRENAGEM} pontos críticos mapeados.
-              </p>
-            </div>
-            <div className="rounded-lg bg-muted/50 p-4">
-              <h4 className="font-semibold text-sm mb-2">Intervenções</h4>
-              <p className="text-sm text-muted-foreground">
-                Dos {DATA_PONTOS_CRITICOS.length} pontos críticos,{" "}
-                {pontosAltoRisco} são de alto risco. As {OBRAS_MACRODRENAGEM}{" "}
-                obras de macrodrenagem em andamento visam reduzir a
-                vulnerabilidade nas áreas mais afetadas. Recomenda-se concluir a
-                galeria pluvial da Av. Brasil antes do próximo período chuvoso.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

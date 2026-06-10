@@ -34,7 +34,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -100,7 +99,6 @@ export function AssistenciaSocial() {
     chartProgramas,
     desempenhoProgramas,
     contasBancarias,
-    alertas,
     detalhamentoDespesa,
     receitasPorOrigem,
     chartReceitasOrigem,
@@ -261,36 +259,6 @@ export function AssistenciaSocial() {
                 Baixa incidência de divergências nas contas vinculadas.
               </p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon
-                icon={InformationCircleIcon}
-                strokeWidth={2}
-                className="size-5"
-              />
-              Alertas da Secretaria
-            </CardTitle>
-            <CardDescription>
-              Focos prioritários para gestão financeira e programas.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {alertas.map((alerta) => (
-              <Alert
-                key={alerta.titulo}
-                variant={alerta.tipo === "warning" ? "destructive" : "default"}
-              >
-                <AlertTitle className="flex flex-wrap items-center gap-2">
-                  {alerta.titulo}
-                  <Badge variant="outline">{alerta.badge}</Badge>
-                </AlertTitle>
-                <AlertDescription>{alerta.descricao}</AlertDescription>
-              </Alert>
-            ))}
           </CardContent>
         </Card>
       </div>

@@ -496,23 +496,6 @@ const dadosNFSe = {
       percentual: 5.0,
     },
   ],
-  alertasNFSe: [
-    {
-      tipo: "critico" as const,
-      descricao:
-        "640 empresas ativas não emitiram NFS-e nos últimos 30 dias — possível omissão de receita",
-    },
-    {
-      tipo: "alerta" as const,
-      descricao:
-        "3.420 notas canceladas no exercício (1,2% do total) — avaliar padrões de cancelamento",
-    },
-    {
-      tipo: "info" as const,
-      descricao:
-        "Setor de Tecnologia apresentou crescimento de 18,5% no volume de NFS-e em relação ao exercício anterior",
-    },
-  ],
 };
 
 // ==========================================

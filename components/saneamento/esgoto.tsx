@@ -54,7 +54,6 @@ import {
   DashboardSpeed02Icon,
   CheckmarkCircle01Icon,
   Building06Icon,
-  InformationCircleIcon,
   AlertCircleIcon,
 } from "@hugeicons/core-free-icons";
 import {
@@ -592,46 +591,6 @@ export function Esgoto() {
 
       {/* Table */}
       <SistemasTratamentoDetalhada />
-
-      {/* Leitura Executiva */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <HugeiconsIcon
-              icon={InformationCircleIcon}
-              strokeWidth={2}
-              className="h-5 w-5"
-            />
-            Leitura Executiva
-          </CardTitle>
-          <CardDescription>Esgotamento Sanitário</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-lg bg-muted/50 p-4">
-              <h4 className="font-semibold text-sm mb-2">Cobertura</h4>
-              <p className="text-sm text-muted-foreground">
-                O sistema de coleta atende {formatPercent(COBERTURA_ESGOTO_PCT)}{" "}
-                da população ({formatNumber(POPULACAO_ATENDIDA_ESGOTO)} hab),
-                com {formatNumber(LIGACOES_ATIVAS_ESGOTO)} ligações ativas.{" "}
-                {formatNumber(POPULACAO_TOTAL - POPULACAO_ATENDIDA_ESGOTO)}{" "}
-                habitantes ainda sem coleta. A meta do Novo Marco do Saneamento
-                é alcançar 90% até 2033.
-              </p>
-            </div>
-            <div className="rounded-lg bg-muted/50 p-4">
-              <h4 className="font-semibold text-sm mb-2">Tratamento</h4>
-              <p className="text-sm text-muted-foreground">
-                As {ETES_ATIVAS} ETEs operam com eficiência média de{" "}
-                {eficienciaTratamento.toFixed(1)}% de tratamento do esgoto
-                coletado. A ETE Central (Lodo Ativado) concentra a maior
-                capacidade. Prioridade: ampliação da ETE Sul e universalização
-                da coleta nos bairros periféricos.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
