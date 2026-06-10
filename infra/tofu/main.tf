@@ -159,3 +159,14 @@ resource "cloudflare_record" "painel" {
   ttl     = var.cloudflare_proxied ? 1 : 300
   comment = "Mirante Painel - gerenciado por OpenTofu"
 }
+
+# MinIO S3 API (via Traefik). DNS-only (proxied=false) p/ não quebrar SigV4/uploads.
+resource "cloudflare_record" "minio" {
+  zone_id = data.cloudflare_zone.this.id
+  name    = "minio"
+  type    = "A"
+  value   = aws_eip.mirante.public_ip
+  proxied = false
+  ttl     = 300
+  comment = "MinIO S3 API via Traefik - OpenTofu"
+}
