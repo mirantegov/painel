@@ -39,7 +39,7 @@ tables:
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: siscop.niveismodelodespesa # parse de programatica (referência; sem entidade)
-    scope: global
+    scope: tenant
 
   # ── Orçado / Previsto (estágio 10) ──────────────────────────────
   - source: siscop.orcdespesa # despesa orçada (versao, movsn, programatica, valor)
@@ -183,30 +183,32 @@ tables:
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
 
-  # ── Dimensões globais (referência; sem coluna entidade → _global/) ──
+  # ── Referência por-município (sem coluna entidade → <ibge>/, dump completo) ──
+  #    NÃO usar scope:global aqui: vêm do DB do município (siscop) e colidiriam
+  #    entre municípios no path _global/. Cada um fica sob <ibge>/.
   - source: siscop.banco # cadastro de bancos
-    scope: global
+    scope: tenant
   - source: siscop.cidade # municípios (descricao, ibge) — base do IBGE do ente
-    scope: global
+    scope: tenant
   - source: siscop.unidadefederacao # UF (codigoibge) — base do IBGE do ente
-    scope: global
+    scope: tenant
   - source: siscop.fornecedor # credores (compartilhado; sem entidade)
-    scope: global
+    scope: tenant
   - source: siscop.fonterecurso # fonte de recurso (codigotce, codigofontepadrao…)
-    scope: global
+    scope: tenant
   - source: siscop.fonterecursopadrao # fonte padrão (liga às tabelas TCE de fonte)
-    scope: global
+    scope: tenant
   - source: siscop.fontepadraotce # fonte padrão TCE (UF='PR')
-    scope: global
+    scope: tenant
   - source: siscop.fonteorigemrecurso # origem da fonte
-    scope: global
+    scope: tenant
   - source: siscop.especificacaofonte # especificação da fonte
-    scope: global
+    scope: tenant
   - source: siscop.fonteaplicacaorecurso # aplicação da fonte (base do tipoaplicacao)
-    scope: global
+    scope: tenant
   - source: siscop.desdobramentofonte # desdobramento da fonte
-    scope: global
+    scope: tenant
   - source: siscop.detalhamentofonte # detalhamento da fonte
-    scope: global
+    scope: tenant
   - source: siscop.fontearea # área da fonte
-    scope: global
+    scope: tenant
