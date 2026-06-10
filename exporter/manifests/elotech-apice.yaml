@@ -35,6 +35,7 @@ tables:
   # ── Licitação — núcleo ──
   - source: apice.cllicitacao
     scope: tenant
+    exclude_columns: [docedital, impbll, expbll, avisobll, errobll]  # bytea (blob) — não exporta
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: apice.cltipolicitacao
     scope: tenant
@@ -109,6 +110,7 @@ tables:
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: apice.clanexo
     scope: tenant
+    exclude_columns: [docanexo]  # bytea (blob) — não exporta
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: apice.clanexodespesa
     scope: tenant
@@ -134,6 +136,7 @@ tables:
   # ── Contrato + aditivos + documentação ──
   - source: apice.clcontrato
     scope: tenant
+    exclude_columns: [docata]  # bytea (blob) — não exporta
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: apice.clcontratoatocontratual
     scope: tenant
@@ -171,11 +174,13 @@ tables:
   # ── Arquivos (telas de upload) ──
   - source: apice.arquivo
     scope: tenant
+    exclude_columns: [arquivo]  # bytea (blob) — não exporta
   - source: apice.cllicitacaofornecedor
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: apice.clatapregao
     scope: tenant
+    exclude_columns: [docata, textoini, textofin, textoobs]  # bytea (blob) — não exporta
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: apice.pessoadocumentacao
     scope: tenant
@@ -189,6 +194,7 @@ tables:
     scope: tenant
   - source: apice.entidade
     scope: tenant
+    exclude_columns: [brasao]  # bytea (blob) — não exporta
     filters: { entidade: [__ENTIDADES__] }
 
   # ── CNAE ──

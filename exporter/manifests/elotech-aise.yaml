@@ -44,6 +44,7 @@ tables:
     filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
   - source: aise.rhhistoricofuncionario
     scope: tenant
+    exclude_columns: [memoriacalculo]  # bytea (blob) — não exporta
     filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
 
   # ── Cadastro funcional (entidade) ──
@@ -258,6 +259,7 @@ tables:
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribdocumento
     scope: tenant
+    exclude_columns: [cabecalho, rodape]  # bytea (blob) — não exporta
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribdocumentoitemdividaativa
     scope: tenant
@@ -361,12 +363,14 @@ tables:
   # ════════════════════════ COMPARTILHADAS (RH ↔ Tributos) ════════════════════════
   - source: aise.entidade
     scope: tenant
+    exclude_columns: [brasao, carimbocarnecorreios, codbarblob, brasaomenor]  # bytea (blob) — não exporta
     filters: { entidade: [__ENTIDADES__] }
   - source: aise.tribentidadetributacao
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.cgato
     scope: tenant
+    exclude_columns: [arquivo, modeloato]  # bytea (blob) — não exporta
     filters: { entidade: [__ENTIDADES__] }
   - source: aise.pessoa
     scope: tenant
