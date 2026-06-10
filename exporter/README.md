@@ -32,11 +32,12 @@ tables:
 
 | Caso | Path |
 |---|---|
-| global | `_global/<schema>/<tabela>.parquet` |
-| tenant (sem ano) | `<ibge>/<schema>/<tabela>.parquet` |
-| tenant + ano | `<ibge>/<schema>/<tabela>/ano=<ano>/<tabela>.parquet` |
+| sem ano | `<ibge>/<schema>/<tabela>.parquet` |
+| com ano (`partition_by_ano`) | `<ibge>/<schema>/<tabela>/ano=<ano>/<tabela>.parquet` |
 
-O **schema físico** entra no path (ex.: `4117107/siscop/entidade.parquet`) — evita colisão entre schemas com tabelas homônimas (ex.: `aise.entidade` vs `siscop.entidade`) e o arquivo nomeado pela tabela facilita o ETL.
+**Tudo fica sob o município (`<ibge>/`)** — não há mais `_global/`. Mesmo tabelas de referência (`scope: global`) ficam sob `<ibge>/`, cada município com sua própria cópia (sem risco de sobrescrita entre municípios). O `scope` agora só define o schema-default (`global` → `public`).
+
+O **schema físico** entra no path (ex.: `4117107/siscop/entidade.parquet`) — evita colisão entre schemas homônimos (ex.: `aise.entidade` vs `siscop.entidade`) e o arquivo nomeado pela tabela facilita o ETL.
 
 Idempotente: path determinístico (1 arquivo por schema/tabela/ano) → re-run sobrescreve.
 
