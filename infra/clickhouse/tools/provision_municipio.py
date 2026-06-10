@@ -86,8 +86,9 @@ def main(ibge):
     print("[provision] seeds (domínio em sim)...")
     fails += apply_dir("seeds", ibge)
     # raw_<ibge> fica VAZIO: suas tabelas espelham a origem do MinIO (Eloweb),
-    # criadas por inferência de schema do Parquet no import (import_raw.sh).
-    print(f"[provision] {raw}: criado vazio (tabelas vêm do MinIO via import_raw.sh)")
+    # criadas por inferência de schema do Parquet no importador Go
+    # (infra/clickhouse/importer; sucessor do antigo import_raw.sh).
+    print(f"[provision] {raw}: criado vazio (tabelas vêm do MinIO via infra/clickhouse/importer)")
     print(f"\n=== {canon} / {raw}: concluído, {fails} falhas ===")
     return 1 if fails else 0
 

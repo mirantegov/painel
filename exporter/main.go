@@ -11,6 +11,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -123,7 +124,31 @@ func writeLog(cfg exporter.Config, res *exporter.Result, start, end time.Time, r
 		totBytes += fr.Bytes
 	}
 	fmt.Fprintf(f, "\ntotal: %d arquivos, %d linhas, %d bytes\n", len(res.Files), totRows, totBytes)
+
+	// Cópia local machine-readable das contagens (espelha o JSON publicado no
+	// MinIO p/ reconciliação). Mesmo generated_at do artefato remoto, se houver.
+	if len(res.Files) > 0 {
+		gen := res.GeneratedAt
+		if gen == "" {
+			gen = start.UTC().Format(time.RFC3339)
+		}
+		if err := writeCountsJSON(filepath.Join(logDir, "export_"+cfg.Municipio+"_"+start.Format("20060102_150405")+".json"), res, gen); err != nil {
+			log.Printf("aviso: não gravou o .json de contagens: %v", err)
+		}
+	}
 	return path, nil
+}
+
+// writeCountsJSON grava a cópia local do artefato de contagens (ExportCounts).
+func writeCountsJSON(path string, res *exporter.Result, generatedAt string) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	enc := json.NewEncoder(f)
+	enc.SetIndent("", "  ")
+	return enc.Encode(exporter.BuildExportCounts(res, generatedAt))
 }
 
 func env(key, def string) string {

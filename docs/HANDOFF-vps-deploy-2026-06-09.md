@@ -55,7 +55,7 @@ Status: **homologação no ar com HTTPS válido em produção** + **pipeline de 
 **E7 — ClickHouse multi-tenant por IBGE**
 - Databases por município: **`raw_<ibge>`** (landing, espelha o MinIO/Eloweb) e **`sim_<ibge>`** (canônico SIM-AM). Postgres serving permanece `mun_<ibge>`.
 - Provisionar: `bash scripts/provision-cliente.sh <ibge>` (cria `raw_<ibge>` vazio + `sim_<ibge>` com schema SIM-AM 339 tab + domínio). Tool: `infra/clickhouse/tools/provision_municipio.py`.
-- Importar RAW do MinIO: `bash infra/clickhouse/tools/import_raw.sh <ibge>` — cria `raw_<ibge>.<schema>_<tabela>` (ex.: `siscop_empenho`) por inferência do Parquet, idêntico à origem. Difere as tabelas pesadas p/ o fim; preflight com erro claro.
+- Importar RAW do MinIO: importador Go `infra/clickhouse/importer` (`make build && ./importer --ibge <ibge>`; sucessor do `import_raw.sh`) — cria `raw_<ibge>.<schema>_<tabela>` (ex.: `siscop_empenho`) por inferência do Parquet, idêntico à origem. **Manifest-driven** (detecta tabela faltando/sobrando), **conta linhas** e **reconcilia** contra `<ibge>/_export/counts-*.json` publicado pelo exportador. Difere as pesadas; preflight com erro claro; log `import_<ibge>_<datahora>.log`+`.json`.
 - **Nova Londrina (4117107) provisionada e importada:** `raw_4117107` (59 tab `siscop_*`, com dados) + `sim_4117107` (339).
 - CLI no mac: `clickhouse client` (config `~/.clickhouse-client/config.xml` → `sim_4117107`). DataGrip via HTTP 8123.
 
@@ -71,7 +71,7 @@ Status: **homologação no ar com HTTPS válido em produção** + **pipeline de 
    exporter-windows-amd64.exe --municipio <ibge> --ano 2026 --manifest elotech-apice.yaml --var ENTIDADES="1, 2, 3" --var EXERCICIOS="2000, ... , 2026"
    ```
    O 1º run valida os filtros na prática (se uma tabela abortar por coluna, ajustar o manifest e reconferir com `make manifests-check`).
-2. **Importar p/ `raw_<ibge>`** (`aise_*`, `apice_*`): no mac, `export CLICKHOUSE_URL/USER/PASSWORD + S3_ACCESS_KEY/SECRET` (ver `docs/ACESSOS.local.md`) e `bash infra/clickhouse/tools/import_raw.sh <ibge>`.
+2. **Importar p/ `raw_<ibge>`** (`aise_*`, `apice_*`): `cd infra/clickhouse/importer && make build`, `export CLICKHOUSE_URL/USER/PASSWORD + S3_ACCESS_KEY/SECRET + MINIO_ENDPOINT + S3_INTERNAL` (ver `docs/ACESSOS.local.md`) e `./importer --ibge <ibge>`. Confira o relatório de reconciliação no log (origem × raw).
 3. **ETL `raw_<ibge>.{siscop,aise,apice}_*` → `sim_<ibge>.*`** (Elotech→SIM-AM; **reimplementar a lógica das views** da Elotech — referência em `docs/coleta-*.md` + `docs/epico5-elotech-queries.md`). Depois sync `sim_<ibge>` → Postgres `mun_<ibge>` (E8).
 4. **Gap analysis** Marts (componentes visuais) × dados coletados (backlog na memória) — antes/junto do ETL.
 

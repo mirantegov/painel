@@ -92,6 +92,10 @@ Cada execução cria (se não existir) a pasta **`log/`** ao lado do exe e grava
 
 A duração também aparece no fim da saída (`concluído em 1m23s (45 arquivos).`). Use os logs p/ monitorar volume gerado e detectar falha/lentidão ao longo do tempo.
 
+### Contagens publicadas (reconciliação)
+
+Ao fim de cada execução o exportador publica, **no próprio MinIO**, um JSON com a contagem de linhas por tabela em **`<ibge>/_export/counts-<AAAAMMDD_HHMMSS>.json`** (e grava uma cópia local em `log/export_<ibge>_<datahora>.json`). Cada run gera um arquivo datado — os três schemas (siscop/aise/apice) **não** se sobrescrevem. O importador na VPS (`infra/clickhouse/importer`) lê esses JSONs e **reconcilia** a contagem da origem com a materializada no ClickHouse raw, sinalizando divergências de ingestão. Nada a fazer no Windows além de rodar normalmente.
+
 ## Troubleshooting
 
 | Sintoma | Causa provável |

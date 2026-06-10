@@ -7,7 +7,8 @@
 > (cria os databases; aplica o schema SIM-AM em `sim_<ibge>`; `raw_<ibge>` fica vazio).
 > **`raw_<ibge>` ESPELHA a origem do MinIO** (Eloweb): 1 tabela por Parquet,
 > nomeada `<schema>_<tabela>` (ex.: `siscop_empenho`, `aise_entidade` — prefixo
-> evita colisão), schema inferido do Parquet. Ingestão: `import_raw.sh <ibge>`.
+> evita colisão), schema inferido do Parquet. Ingestão: importador Go
+> `infra/clickhouse/importer` (`./importer --ibge <ibge>`).
 > A canonicalização (Elotech→SIM-AM) é o ETL `raw_<ibge>` → `sim_<ibge>`.
 > Engines `MergeTree`/`ReplacingMergeTree`. Em CH evita-se `Nullable` na chave de
 > ordenação → `mes` usa `0` (= agregado anual) e `data` usa sentinela.

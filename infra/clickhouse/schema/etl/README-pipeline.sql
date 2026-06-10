@@ -32,10 +32,13 @@
 -- ---------------------------------------------------------------------
 
 -- 1) INGESTÃO (automatizada — NÃO roda neste arquivo):
---      bash infra/clickhouse/tools/import_raw.sh <ibge>
---    Lista o MinIO e cria 1 tabela por Parquet via s3() + inferência:
+--      cd infra/clickhouse/importer && make build && ./importer --ibge <ibge>
+--      (importador Go, manifest-driven; sucessor do antigo tools/import_raw.sh)
+--    Cria 1 tabela por Parquet via s3() + inferência:
 --      raw_<ibge>.siscop_empenho, raw_<ibge>.siscop_fornecedor, ...
 --    Estrutura idêntica à origem Eloweb (colunas Nullable, tipos do Parquet).
+--    Conta as linhas e reconcilia contra <ibge>/_export/counts-*.json. Ver
+--    infra/clickhouse/importer/README.md.
 
 -- 2) ETL: transforma a ORIGEM (raw_<ibge>.siscop_*) -> CANÔNICO SIM-AM (sim_<ibge>.*).
 --    O mapeamento de colunas é ERP-específico (Elotech siscop -> SIM-AM);

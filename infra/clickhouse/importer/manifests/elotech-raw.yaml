@@ -1,0 +1,486 @@
+# Import manifest (raw) — GERADO por cmd/genmanifest. NÃO editar à mão.
+# Conjunto de tabelas raw ESPERADAS no MinIO, derivado do contrato do
+# exportador. Regenere com `make manifests-gen`; confira com `make manifests-check`.
+# Fontes:
+#   - ../../../exporter/manifests/elotech-eloweb.yaml
+#   - ../../../exporter/manifests/elotech-aise.yaml
+#   - ../../../exporter/manifests/elotech-apice.yaml
+#
+# Para fixar tipos onde a inferência do ClickHouse erra, adicione (à mão, e
+# então mude para um arquivo curado fora do gerado) um bloco `types:` por tabela:
+#   - raw_table: siscop_empenho
+#     object: siscop/empenho.parquet
+#     types: { vlempenho: "Decimal(18,2)" }
+bucket: mirante-parquet
+tables:
+  - raw_table: aise_bairro
+    object: aise/bairro.parquet
+  - raw_table: aise_banco
+    object: aise/banco.parquet
+  - raw_table: aise_cartorio
+    object: aise/cartorio.parquet
+  - raw_table: aise_cgato
+    object: aise/cgato.parquet
+  - raw_table: aise_cidade
+    object: aise/cidade.parquet
+  - raw_table: aise_cnae
+    object: aise/cnae.parquet
+  - raw_table: aise_contabancaria
+    object: aise/contabancaria.parquet
+  - raw_table: aise_contatopessoa
+    object: aise/contatopessoa.parquet
+  - raw_table: aise_enderecopessoa
+    object: aise/enderecopessoa.parquet
+  - raw_table: aise_entidade
+    object: aise/entidade.parquet
+  - raw_table: aise_formacorrecao
+    object: aise/formacorrecao.parquet
+  - raw_table: aise_logradouro
+    object: aise/logradouro.parquet
+  - raw_table: aise_parametroentidade
+    object: aise/parametroentidade.parquet
+  - raw_table: aise_pessoa
+    object: aise/pessoa.parquet
+  - raw_table: aise_ptcprocesso
+    object: aise/ptcprocesso.parquet
+  - raw_table: aise_rhafastamento
+    object: aise/rhafastamento.parquet
+  - raw_table: aise_rhatividade
+    object: aise/rhatividade.parquet
+  - raw_table: aise_rhcargo
+    object: aise/rhcargo.parquet
+  - raw_table: aise_rhcargoatividade
+    object: aise/rhcargoatividade.parquet
+  - raw_table: aise_rhcbo
+    object: aise/rhcbo.parquet
+  - raw_table: aise_rhclasse
+    object: aise/rhclasse.parquet
+  - raw_table: aise_rhevento
+    object: aise/rhevento.parquet
+  - raw_table: aise_rheventocalculo
+    object: aise/rheventocalculo.parquet
+  - raw_table: aise_rheventodefinicao
+    object: aise/rheventodefinicao.parquet
+  - raw_table: aise_rhexerciciomes
+    object: aise/rhexerciciomes.parquet
+  - raw_table: aise_rhfichafinanceira
+    object: aise/rhfichafinanceira.parquet
+  - raw_table: aise_rhfuncionario
+    object: aise/rhfuncionario.parquet
+  - raw_table: aise_rhfuncionarioincidenciaevento
+    object: aise/rhfuncionarioincidenciaevento.parquet
+  - raw_table: aise_rhhistoricofuncionario
+    object: aise/rhhistoricofuncionario.parquet
+  - raw_table: aise_rhirrf
+    object: aise/rhirrf.parquet
+  - raw_table: aise_rhlotacao
+    object: aise/rhlotacao.parquet
+  - raw_table: aise_rhmodelolotacao
+    object: aise/rhmodelolotacao.parquet
+  - raw_table: aise_rhmovimentacaoafastamento
+    object: aise/rhmovimentacaoafastamento.parquet
+  - raw_table: aise_rhmovimentacaolegal
+    object: aise/rhmovimentacaolegal.parquet
+  - raw_table: aise_rhmovimentacaonomeacao
+    object: aise/rhmovimentacaonomeacao.parquet
+  - raw_table: aise_rhmovimentacaooutros
+    object: aise/rhmovimentacaooutros.parquet
+  - raw_table: aise_rhmovimentacaopessoal
+    object: aise/rhmovimentacaopessoal.parquet
+  - raw_table: aise_rhpessoa
+    object: aise/rhpessoa.parquet
+  - raw_table: aise_rhprogramacaofalta
+    object: aise/rhprogramacaofalta.parquet
+  - raw_table: aise_rhprogramacaoferias
+    object: aise/rhprogramacaoferias.parquet
+  - raw_table: aise_rhprogramacaopremio
+    object: aise/rhprogramacaopremio.parquet
+  - raw_table: aise_rhprogramacaorescisao
+    object: aise/rhprogramacaorescisao.parquet
+  - raw_table: aise_rhrescisao
+    object: aise/rhrescisao.parquet
+  - raw_table: aise_rhtipofolha
+    object: aise/rhtipofolha.parquet
+  - raw_table: aise_rhtipomovimentacao
+    object: aise/rhtipomovimentacao.parquet
+  - raw_table: aise_tipologradouro
+    object: aise/tipologradouro.parquet
+  - raw_table: aise_tribatividade
+    object: aise/tribatividade.parquet
+  - raw_table: aise_tribautoinfracaofiscal
+    object: aise/tribautoinfracaofiscal.parquet
+  - raw_table: aise_tribbaixaautomaticadetalhe
+    object: aise/tribbaixaautomaticadetalhe.parquet
+  - raw_table: aise_tribbloquetodebito
+    object: aise/tribbloquetodebito.parquet
+  - raw_table: aise_tribboletimavulso
+    object: aise/tribboletimavulso.parquet
+  - raw_table: aise_tribboletimimobiliariosegmento
+    object: aise/tribboletimimobiliariosegmento.parquet
+  - raw_table: aise_tribboletimmobiliario
+    object: aise/tribboletimmobiliario.parquet
+  - raw_table: aise_tribcadastrogeral
+    object: aise/tribcadastrogeral.parquet
+  - raw_table: aise_tribcadastrogeralisencao
+    object: aise/tribcadastrogeralisencao.parquet
+  - raw_table: aise_tribcadastroimobiliario
+    object: aise/tribcadastroimobiliario.parquet
+  - raw_table: aise_tribcadastromobiliario
+    object: aise/tribcadastromobiliario.parquet
+  - raw_table: aise_tribcalculoanual
+    object: aise/tribcalculoanual.parquet
+  - raw_table: aise_tribcartorioajuizamento
+    object: aise/tribcartorioajuizamento.parquet
+  - raw_table: aise_tribclassificacaoreceitatipo
+    object: aise/tribclassificacaoreceitatipo.parquet
+  - raw_table: aise_tribcondominio
+    object: aise/tribcondominio.parquet
+  - raw_table: aise_tribcontencioso
+    object: aise/tribcontencioso.parquet
+  - raw_table: aise_tribcreditocontribuinte
+    object: aise/tribcreditocontribuinte.parquet
+  - raw_table: aise_tribcreditocontribuinteitem
+    object: aise/tribcreditocontribuinteitem.parquet
+  - raw_table: aise_tribdebito
+    object: aise/tribdebito.parquet
+  - raw_table: aise_tribdebitocalc
+    object: aise/tribdebitocalc.parquet
+  - raw_table: aise_tribdebitoobservacao
+    object: aise/tribdebitoobservacao.parquet
+  - raw_table: aise_tribdebitoparcela
+    object: aise/tribdebitoparcela.parquet
+  - raw_table: aise_tribdebitoparcelareceita
+    object: aise/tribdebitoparcelareceita.parquet
+  - raw_table: aise_tribdebitoreceita
+    object: aise/tribdebitoreceita.parquet
+  - raw_table: aise_tribdevolucaocreditomov
+    object: aise/tribdevolucaocreditomov.parquet
+  - raw_table: aise_tribdistrito
+    object: aise/tribdistrito.parquet
+  - raw_table: aise_tribdocumento
+    object: aise/tribdocumento.parquet
+  - raw_table: aise_tribdocumentoitemdividaativa
+    object: aise/tribdocumentoitemdividaativa.parquet
+  - raw_table: aise_tribentidadetributacao
+    object: aise/tribentidadetributacao.parquet
+  - raw_table: aise_tribfiscal
+    object: aise/tribfiscal.parquet
+  - raw_table: aise_tribguiarecolhimento
+    object: aise/tribguiarecolhimento.parquet
+  - raw_table: aise_tribimobiliaria
+    object: aise/tribimobiliaria.parquet
+  - raw_table: aise_tribimobiliariacadastro
+    object: aise/tribimobiliariacadastro.parquet
+  - raw_table: aise_tribimobiliarioareaverde
+    object: aise/tribimobiliarioareaverde.parquet
+  - raw_table: aise_tribimobiliarioitbi
+    object: aise/tribimobiliarioitbi.parquet
+  - raw_table: aise_tribimobiliariosegmento
+    object: aise/tribimobiliariosegmento.parquet
+  - raw_table: aise_tribisencao
+    object: aise/tribisencao.parquet
+  - raw_table: aise_tribisencaotipo
+    object: aise/tribisencaotipo.parquet
+  - raw_table: aise_triblivro
+    object: aise/triblivro.parquet
+  - raw_table: aise_triblivroparcelareceita
+    object: aise/triblivroparcelareceita.parquet
+  - raw_table: aise_triblivroregistro
+    object: aise/triblivroregistro.parquet
+  - raw_table: aise_tribloteamento
+    object: aise/tribloteamento.parquet
+  - raw_table: aise_tribmobiliarioatividade
+    object: aise/tribmobiliarioatividade.parquet
+  - raw_table: aise_tribmobiliarioservico
+    object: aise/tribmobiliarioservico.parquet
+  - raw_table: aise_tribmobiliariosituacao
+    object: aise/tribmobiliariosituacao.parquet
+  - raw_table: aise_tribmodelocampo
+    object: aise/tribmodelocampo.parquet
+  - raw_table: aise_tribmodeloresposta
+    object: aise/tribmodeloresposta.parquet
+  - raw_table: aise_tribmotivodesconto
+    object: aise/tribmotivodesconto.parquet
+  - raw_table: aise_tribmovimentacao
+    object: aise/tribmovimentacao.parquet
+  - raw_table: aise_tribmovimentacaodetalhe
+    object: aise/tribmovimentacaodetalhe.parquet
+  - raw_table: aise_tribpagamento
+    object: aise/tribpagamento.parquet
+  - raw_table: aise_tribpagamentobloqueto
+    object: aise/tribpagamentobloqueto.parquet
+  - raw_table: aise_tribpagamentodebito
+    object: aise/tribpagamentodebito.parquet
+  - raw_table: aise_tribpagamentolote
+    object: aise/tribpagamentolote.parquet
+  - raw_table: aise_tribparcelamento
+    object: aise/tribparcelamento.parquet
+  - raw_table: aise_tribpessoamobiliario
+    object: aise/tribpessoamobiliario.parquet
+  - raw_table: aise_tribproprietario
+    object: aise/tribproprietario.parquet
+  - raw_table: aise_tribproprietarioitbi
+    object: aise/tribproprietarioitbi.parquet
+  - raw_table: aise_tribprotesto
+    object: aise/tribprotesto.parquet
+  - raw_table: aise_tribreceita
+    object: aise/tribreceita.parquet
+  - raw_table: aise_tribreceitaconta
+    object: aise/tribreceitaconta.parquet
+  - raw_table: aise_tribreceitatipo
+    object: aise/tribreceitatipo.parquet
+  - raw_table: aise_tribsetor
+    object: aise/tribsetor.parquet
+  - raw_table: aise_tribsetorquadra
+    object: aise/tribsetorquadra.parquet
+  - raw_table: aise_tribsituacaomobiliario
+    object: aise/tribsituacaomobiliario.parquet
+  - raw_table: aise_tribsituacaoparcela
+    object: aise/tribsituacaoparcela.parquet
+  - raw_table: aise_tribtipoareaverde
+    object: aise/tribtipoareaverde.parquet
+  - raw_table: aise_tribtipodeducao
+    object: aise/tribtipodeducao.parquet
+  - raw_table: aise_tribtipomovimentacao
+    object: aise/tribtipomovimentacao.parquet
+  - raw_table: aise_tribtipomovimentacaointeg
+    object: aise/tribtipomovimentacaointeg.parquet
+  - raw_table: aise_tribtipooperacaotce
+    object: aise/tribtipooperacaotce.parquet
+  - raw_table: aise_tribtiposegmento
+    object: aise/tribtiposegmento.parquet
+  - raw_table: aise_tribtrecho
+    object: aise/tribtrecho.parquet
+  - raw_table: aise_tribvinculo
+    object: aise/tribvinculo.parquet
+  - raw_table: aise_unidadefederacao
+    object: aise/unidadefederacao.parquet
+  - raw_table: aise_vinculacaodivida
+    object: aise/vinculacaodivida.parquet
+  - raw_table: apice_arquivo
+    object: apice/arquivo.parquet
+  - raw_table: apice_cidade
+    object: apice/cidade.parquet
+  - raw_table: apice_claditivoitem
+    object: apice/claditivoitem.parquet
+  - raw_table: apice_claditivopublicacao
+    object: apice/claditivopublicacao.parquet
+  - raw_table: apice_clanalisevencedor
+    object: apice/clanalisevencedor.parquet
+  - raw_table: apice_clanexo
+    object: apice/clanexo.parquet
+  - raw_table: apice_clanexodespesa
+    object: apice/clanexodespesa.parquet
+  - raw_table: apice_clatapregao
+    object: apice/clatapregao.parquet
+  - raw_table: apice_clcontrato
+    object: apice/clcontrato.parquet
+  - raw_table: apice_clcontratoatocontratual
+    object: apice/clcontratoatocontratual.parquet
+  - raw_table: apice_clcontratodocumentacao
+    object: apice/clcontratodocumentacao.parquet
+  - raw_table: apice_clcontratopublicacao
+    object: apice/clcontratopublicacao.parquet
+  - raw_table: apice_clcotacao
+    object: apice/clcotacao.parquet
+  - raw_table: apice_clcotacaoitem
+    object: apice/clcotacaoitem.parquet
+  - raw_table: apice_cldocumentacao
+    object: apice/cldocumentacao.parquet
+  - raw_table: apice_clhistoricovencedor
+    object: apice/clhistoricovencedor.parquet
+  - raw_table: apice_clhomologacao
+    object: apice/clhomologacao.parquet
+  - raw_table: apice_cllicitacao
+    object: apice/cllicitacao.parquet
+  - raw_table: apice_cllicitacaocentrocusto
+    object: apice/cllicitacaocentrocusto.parquet
+  - raw_table: apice_cllicitacaofornecedor
+    object: apice/cllicitacaofornecedor.parquet
+  - raw_table: apice_cllicitacaofundamentolegal
+    object: apice/cllicitacaofundamentolegal.parquet
+  - raw_table: apice_cllicitacaoitem
+    object: apice/cllicitacaoitem.parquet
+  - raw_table: apice_cllicitacaoitemcentrocusto
+    object: apice/cllicitacaoitemcentrocusto.parquet
+  - raw_table: apice_cllicitacaopublicacao
+    object: apice/cllicitacaopublicacao.parquet
+  - raw_table: apice_cllicitacaorecurso
+    object: apice/cllicitacaorecurso.parquet
+  - raw_table: apice_cllistaarquivos
+    object: apice/cllistaarquivos.parquet
+  - raw_table: apice_clmidiasonline
+    object: apice/clmidiasonline.parquet
+  - raw_table: apice_clminuta
+    object: apice/clminuta.parquet
+  - raw_table: apice_clnad
+    object: apice/clnad.parquet
+  - raw_table: apice_clnaditem
+    object: apice/clnaditem.parquet
+  - raw_table: apice_clorgaopublicacao
+    object: apice/clorgaopublicacao.parquet
+  - raw_table: apice_clparecer
+    object: apice/clparecer.parquet
+  - raw_table: apice_clpedido
+    object: apice/clpedido.parquet
+  - raw_table: apice_clpropostacomercial
+    object: apice/clpropostacomercial.parquet
+  - raw_table: apice_clrealinhaitem
+    object: apice/clrealinhaitem.parquet
+  - raw_table: apice_clrealinhamento
+    object: apice/clrealinhamento.parquet
+  - raw_table: apice_clregimeexecucao
+    object: apice/clregimeexecucao.parquet
+  - raw_table: apice_clreqlicitacao
+    object: apice/clreqlicitacao.parquet
+  - raw_table: apice_clreqlicitacaoitem
+    object: apice/clreqlicitacaoitem.parquet
+  - raw_table: apice_clsolicitacao
+    object: apice/clsolicitacao.parquet
+  - raw_table: apice_clsolicitacaoitem
+    object: apice/clsolicitacaoitem.parquet
+  - raw_table: apice_cltipolicitacao
+    object: apice/cltipolicitacao.parquet
+  - raw_table: apice_cltransferenciacc
+    object: apice/cltransferenciacc.parquet
+  - raw_table: apice_cltransferenciaitem
+    object: apice/cltransferenciaitem.parquet
+  - raw_table: apice_cnaesubclasse
+    object: apice/cnaesubclasse.parquet
+  - raw_table: apice_contratosuspenso
+    object: apice/contratosuspenso.parquet
+  - raw_table: apice_enderecopessoa
+    object: apice/enderecopessoa.parquet
+  - raw_table: apice_entidade
+    object: apice/entidade.parquet
+  - raw_table: apice_naturezaprocedimento
+    object: apice/naturezaprocedimento.parquet
+  - raw_table: apice_parametro
+    object: apice/parametro.parquet
+  - raw_table: apice_pessoa
+    object: apice/pessoa.parquet
+  - raw_table: apice_pessoadocumentacao
+    object: apice/pessoadocumentacao.parquet
+  - raw_table: apice_tipoparticipacao
+    object: apice/tipoparticipacao.parquet
+  - raw_table: siscop_anulacaoempenho
+    object: siscop/anulacaoempenho.parquet
+  - raw_table: siscop_banco
+    object: siscop/banco.parquet
+  - raw_table: siscop_cadastroconvenio
+    object: siscop/cadastroconvenio.parquet
+  - raw_table: siscop_cadastroextra
+    object: siscop/cadastroextra.parquet
+  - raw_table: siscop_cancelamentorestos
+    object: siscop/cancelamentorestos.parquet
+  - raw_table: siscop_cidade
+    object: siscop/cidade.parquet
+  - raw_table: siscop_conciliacao
+    object: siscop/conciliacao.parquet
+  - raw_table: siscop_contaaplicacao
+    object: siscop/contaaplicacao.parquet
+  - raw_table: siscop_contabancaria
+    object: siscop/contabancaria.parquet
+  - raw_table: siscop_contabancariavinculo
+    object: siscop/contabancariavinculo.parquet
+  - raw_table: siscop_contacorrente
+    object: siscop/contacorrente.parquet
+  - raw_table: siscop_contrato
+    object: siscop/contrato.parquet
+  - raw_table: siscop_decreto
+    object: siscop/decreto.parquet
+  - raw_table: siscop_desdobramentofonte
+    object: siscop/desdobramentofonte.parquet
+  - raw_table: siscop_despesa
+    object: siscop/despesa.parquet
+  - raw_table: siscop_detalhamentofonte
+    object: siscop/detalhamentofonte.parquet
+  - raw_table: siscop_divida
+    object: siscop/divida.parquet
+  - raw_table: siscop_dividalancamento
+    object: siscop/dividalancamento.parquet
+  - raw_table: siscop_empenho
+    object: siscop/empenho.parquet
+  - raw_table: siscop_entidade
+    object: siscop/entidade.parquet
+  - raw_table: siscop_especificacaofonte
+    object: siscop/especificacaofonte.parquet
+  - raw_table: siscop_estornoextraorcamentario
+    object: siscop/estornoextraorcamentario.parquet
+  - raw_table: siscop_estornoliquidacao
+    object: siscop/estornoliquidacao.parquet
+  - raw_table: siscop_estornopagamento
+    object: siscop/estornopagamento.parquet
+  - raw_table: siscop_estornopagamentoextra
+    object: siscop/estornopagamentoextra.parquet
+  - raw_table: siscop_eventoslancados
+    object: siscop/eventoslancados.parquet
+    defer: true
+  - raw_table: siscop_eventoslancadosconta
+    object: siscop/eventoslancadosconta.parquet
+    defer: true
+  - raw_table: siscop_exercicio
+    object: siscop/exercicio.parquet
+  - raw_table: siscop_extraorcamentario
+    object: siscop/extraorcamentario.parquet
+  - raw_table: siscop_fichaempenho
+    object: siscop/fichaempenho.parquet
+  - raw_table: siscop_fonteaplicacaorecurso
+    object: siscop/fonteaplicacaorecurso.parquet
+  - raw_table: siscop_fontearea
+    object: siscop/fontearea.parquet
+  - raw_table: siscop_fonteorigemrecurso
+    object: siscop/fonteorigemrecurso.parquet
+  - raw_table: siscop_fontepadraotce
+    object: siscop/fontepadraotce.parquet
+  - raw_table: siscop_fonterecurso
+    object: siscop/fonterecurso.parquet
+  - raw_table: siscop_fonterecursopadrao
+    object: siscop/fonterecursopadrao.parquet
+  - raw_table: siscop_fornecedor
+    object: siscop/fornecedor.parquet
+  - raw_table: siscop_itemdecreto
+    object: siscop/itemdecreto.parquet
+  - raw_table: siscop_itemdecretoreceita
+    object: siscop/itemdecretoreceita.parquet
+  - raw_table: siscop_lancamentosequencia
+    object: siscop/lancamentosequencia.parquet
+    defer: true
+  - raw_table: siscop_liquidacao
+    object: siscop/liquidacao.parquet
+  - raw_table: siscop_niveismodelodespesa
+    object: siscop/niveismodelodespesa.parquet
+  - raw_table: siscop_orcdespesa
+    object: siscop/orcdespesa.parquet
+  - raw_table: siscop_orcparametroreceita
+    object: siscop/orcparametroreceita.parquet
+  - raw_table: siscop_orcreceita
+    object: siscop/orcreceita.parquet
+  - raw_table: siscop_orcreceita_fontetce
+    object: siscop/orcreceita_fontetce.parquet
+  - raw_table: siscop_orcversaoorcamento
+    object: siscop/orcversaoorcamento.parquet
+  - raw_table: siscop_ordempagamento
+    object: siscop/ordempagamento.parquet
+  - raw_table: siscop_ordempagamento_liquidacao
+    object: siscop/ordempagamento_liquidacao.parquet
+  - raw_table: siscop_pagamento
+    object: siscop/pagamento.parquet
+  - raw_table: siscop_pagamentoextra
+    object: siscop/pagamentoextra.parquet
+  - raw_table: siscop_plano
+    object: siscop/plano.parquet
+  - raw_table: siscop_planocontacorrente
+    object: siscop/planocontacorrente.parquet
+  - raw_table: siscop_realizacaoreceita
+    object: siscop/realizacaoreceita.parquet
+  - raw_table: siscop_realizacaoreceitaitem
+    object: siscop/realizacaoreceitaitem.parquet
+  - raw_table: siscop_receita
+    object: siscop/receita.parquet
+  - raw_table: siscop_retencoesliquidacao
+    object: siscop/retencoesliquidacao.parquet
+  - raw_table: siscop_tabelaevento
+    object: siscop/tabelaevento.parquet
+  - raw_table: siscop_unidadefederacao
+    object: siscop/unidadefederacao.parquet
