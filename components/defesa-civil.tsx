@@ -627,46 +627,6 @@ function PainelOcorrencias() {
           </ChartContainer>
         </CardContent>
       </Card>
-
-      {/* Análise */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Alert>
-          <HugeiconsIcon
-            icon={Alert02Icon}
-            strokeWidth={2}
-            className="size-4"
-          />
-          <AlertTitle>Pico em dezembro</AlertTitle>
-          <AlertDescription className="text-xs">
-            Dezembro concentrou 29 ocorrências — maior volume dos últimos 7
-            meses. Reforço de equipes necessário para a temporada de chuvas.
-          </AlertDescription>
-        </Alert>
-        <Alert>
-          <HugeiconsIcon
-            icon={InformationCircleIcon}
-            strokeWidth={2}
-            className="size-4"
-          />
-          <AlertTitle>Enchentes dominam</AlertTitle>
-          <AlertDescription className="text-xs">
-            Enchentes representaram 49% de todas as ocorrências. Vila Ribeirinha
-            é a comunidade mais recorrente nos registros.
-          </AlertDescription>
-        </Alert>
-        <Alert>
-          <HugeiconsIcon
-            icon={SecurityCheckIcon}
-            strokeWidth={2}
-            className="size-4"
-          />
-          <AlertTitle>Tempo médio de resposta</AlertTitle>
-          <AlertDescription className="text-xs">
-            Média de 22 minutos entre abertura e início do atendimento. Meta da
-            Defesa Civil: ≤ 15 minutos em nível de Alerta.
-          </AlertDescription>
-        </Alert>
-      </div>
     </div>
   );
 }

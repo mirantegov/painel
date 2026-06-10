@@ -1769,8 +1769,6 @@ export function Educacao() {
             </Card>
           </div>
         </TabsContent>
-
-        {/* ── Tab: Análises ── */}
       </Tabs>
     </div>
   );
