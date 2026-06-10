@@ -24,6 +24,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
+      - name: audit-modules (invariante - todo módulo ativo tem snapshot)
+        run: node scripts/audit-modules.mjs --check
 
   exporter:
     name: Exportador Go · build · test

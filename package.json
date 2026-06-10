@@ -10,6 +10,7 @@
     "lint": "eslint",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "audit:modules": "node scripts/audit-modules.mjs",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:status": "supabase status",
