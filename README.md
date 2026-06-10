@@ -10,8 +10,8 @@ O **Mirante Painel** é uma aplicação web de **Next.js** pensada para **prefei
 
 > Plano completo: [`docs/plano-consolidado-vps-pipeline.md`](docs/plano-consolidado-vps-pipeline.md) · Execução no [Linear (MIR)](https://linear.app/code42dev/project/mirante-painel-vps-pipeline-v2x-937f65e421e8) · Milestones espelho no GitHub. Subtarefas detalhadas nas issues `E<n>.<t>` do Linear. **Ao concluir cada épico, gerar `docs/HANDOFF-<épico>.md`.**
 
-- [ ] **E0** Governança (Linear+GitHub) — [MIR-2](https://linear.app/code42dev/issue/MIR-2) · [#119](https://github.com/mirantegov/painel/issues/119)
-- [ ] **Gate** Fechar long-tail antes da VPS — [MIR-3](https://linear.app/code42dev/issue/MIR-3) · [#120](https://github.com/mirantegov/painel/issues/120)
+- [ ] **E0** Governança (Linear+GitHub) — CI gate ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) no ar; faltam itens de doc de governança (MIR-17/18/20) — [MIR-2](https://linear.app/code42dev/issue/MIR-2) · [#119](https://github.com/mirantegov/painel/issues/119)
+- [x] **Gate** Fechar long-tail antes da VPS — 21/21 módulos com snapshot; version 2.0.0; baseline ([`docs/audit-modules-baseline.md`](docs/audit-modules-baseline.md)); quality-check OK — [MIR-3](https://linear.app/code42dev/issue/MIR-3) · [#120](https://github.com/mirantegov/painel/issues/120)
 - [x] **E1** VPS, DNS (`painel.mirantegov.cloud`), segurança — IaC OpenTofu/EC2 no ar ([HANDOFF](docs/HANDOFF-vps-deploy-2026-06-09.md)) — [MIR-4](https://linear.app/code42dev/issue/MIR-4) · [#121](https://github.com/mirantegov/painel/issues/121)
 - [x] **E2** Compose prod + TLS Traefik — HTTPS válido (Let's Encrypt prod), file provider — [MIR-5](https://linear.app/code42dev/issue/MIR-5) · [#122](https://github.com/mirantegov/painel/issues/122)
 - [x] **E3** Postgres produção + migrations + seed (backup pendente) — login demo funcionando — [MIR-6](https://linear.app/code42dev/issue/MIR-6) · [#123](https://github.com/mirantegov/painel/issues/123)
