@@ -7,7 +7,7 @@ Sucessor em Go do antigo `tools/import_raw.sh`. Ganhos:
 - **Manifest-driven**: o conjunto de tabelas esperadas vem de `manifests/elotech-raw.yaml` (gerado por inferência dos manifests do exportador). Detecta tabela **faltando** (no manifest, ausente no MinIO) e **sobrando** (no MinIO, fora do manifest).
 - **Contagem como verificação**: após criar cada tabela, faz `count()` no ClickHouse.
 - **Reconciliação origem × destino**: lê as contagens publicadas pelo exportador em `<ibge>/_export/counts-*.json` no MinIO e compara linha a linha (`ok` / `divergente` / `sem_contagem_origem`).
-- **Fixar tipos onde a inferência erra**: bloco `types:` por tabela no manifest (DESCRIBE do Parquet + `structure` no `s3()`, com cast no read).
+- **Tipar o que a inferência não alcança**: o exportador grava `numeric`/`date`/`timestamp` como **String** no Parquet (texto lossless), então a inferência os mantém String. O bloco `types:` por tabela (derivado do **DDL real da origem**) re-tipa essas colunas via `SELECT * REPLACE(<cast> AS col)` — mantendo a inferência nas demais. Casts `*OrNull` (valor sujo → NULL, não derruba a tabela): `accurateCastOrNull` p/ Decimal/Int (preserva a precisão exata do DDL e aceita String ou numérico), `toDate32OrNull` p/ datas, `parseDateTime64BestEffortOrNull` p/ timestamps (o RFC3339 com `Z` quebra o cast estrito).
 - **Log estruturado**: `log/import_<ibge>_<datahora>.log` + `.json` (sidecar p/ automação).
 - **Robustez**: preflight de ClickHouse e MinIO (falha cedo e claro), retentativa em erro transitório, tabelas pesadas (`defer: true`) por último.
 
@@ -30,18 +30,20 @@ Flags: `--manifest` (default `manifests/elotech-raw.yaml`), `--no-recon` (pula a
 ## Manifest
 
 ```bash
-make manifests-gen      # (re)gera manifests/elotech-raw.yaml dos manifests do exportador
-make manifests-check    # diff; sai 1 se drift (use no CI)
+make manifests-gen DUMP=../../../tmp/eloweb.dump   # (re)gera com tipos do DDL
+make manifests-check                               # confere o CONJUNTO; sai 1 se drift (CI)
 ```
 
-O manifest enumera as tabelas raw esperadas. Para fixar tipos:
+`elotech-raw.yaml` é **gerado** (`cmd/genmanifest`): o **conjunto** de tabelas vem dos manifests do exportador; os **tipos** (`types:`) vêm do DDL real da origem (`pg_dump`, gitignored — passe via `DUMP=`). `manifests-check` valida só o conjunto (não precisa do dump → roda no CI). Cada entrada:
 
 ```yaml
 tables:
   - raw_table: siscop_empenho
     object: siscop/empenho.parquet
-    types:
-      vlempenho: "Decimal(18,2)"
+    types:                       # derivado do DDL; só numeric/date/timestamp
+      data: "DateTime64(6)"
+      idcontrato: "Int64"
+      aliquotaiss: "Decimal(15,2)"
 ```
 
 ## Reconciliação

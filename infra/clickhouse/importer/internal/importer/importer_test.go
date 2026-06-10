@@ -87,26 +87,29 @@ func TestReconcile(t *testing.T) {
 	}
 }
 
-func TestBuildStructure(t *testing.T) {
-	inferred := [][2]string{
-		{"id", "Nullable(Int64)"},
-		{"vlempenho", "Nullable(Float64)"},
-		{"descricao", "Nullable(String)"},
+func TestCastExpr(t *testing.T) {
+	cases := map[string]string{
+		"Decimal(15,2)":   "accurateCastOrNull(`c`, 'Decimal(15,2)')",
+		"Decimal(22,0)":   "accurateCastOrNull(`c`, 'Decimal(22,0)')",
+		"Int64":           "accurateCastOrNull(`c`, 'Int64')",
+		"Int32":           "accurateCastOrNull(`c`, 'Int32')",
+		"FixedString(10)": "accurateCastOrNull(`c`, 'FixedString(10)')",
+		"Date32":          "toDate32OrNull(`c`)",
+		"DateTime64(6)":   "parseDateTime64BestEffortOrNull(`c`, 6)",
+		"DateTime64(3)":   "parseDateTime64BestEffortOrNull(`c`, 3)",
 	}
-	got := buildStructure(inferred, map[string]string{"vlempenho": "Decimal(18,2)"})
-	want := "`id` Nullable(Int64), `vlempenho` Decimal(18,2), `descricao` Nullable(String)"
-	if got != want {
-		t.Fatalf("buildStructure:\n got=%q\nwant=%q", got, want)
+	for chType, want := range cases {
+		if got := castExpr("c", chType); got != want {
+			t.Errorf("castExpr(c, %q) = %q, queria %q", chType, got, want)
+		}
 	}
 }
 
-func TestValidateOverrides(t *testing.T) {
-	inferred := [][2]string{{"id", "Int64"}, {"vl", "Float64"}}
-	if err := validateOverrides(inferred, map[string]string{"vl": "Decimal(18,2)"}); err != nil {
-		t.Fatalf("override válido não deveria falhar: %v", err)
-	}
-	if err := validateOverrides(inferred, map[string]string{"naoexiste": "String"}); err == nil {
-		t.Fatal("override órfão deveria falhar")
+func TestDt64Prec(t *testing.T) {
+	for in, want := range map[string]int{"DateTime64(6)": 6, "DateTime64(3)": 3, "DateTime64(0)": 0} {
+		if got := dt64Prec(in); got != want {
+			t.Errorf("dt64Prec(%q) = %d, queria %d", in, got, want)
+		}
 	}
 }
 

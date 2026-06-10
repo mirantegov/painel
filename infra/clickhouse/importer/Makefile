@@ -5,6 +5,9 @@ DIST   := dist
 GOFLAGS := -trimpath
 LDFLAGS := -s -w
 
+# DUMP: DDL da origem (pg_dump texto, gitignored) p/ derivar os tipos do manifest.
+DUMP ?= ../../../tmp/eloweb.dump
+
 .PHONY: build linux mac test vet fmt manifests-gen manifests-check clean
 
 # binário para o host atual
@@ -27,11 +30,12 @@ vet:
 fmt:
 	gofmt -l .
 
-# (Re)gera o import manifest por inferência a partir dos manifests do exportador.
+# (Re)gera o import manifest: conjunto dos manifests do exportador + tipos do DDL.
 manifests-gen:
-	go run ./cmd/genmanifest --write
+	go run ./cmd/genmanifest --write --dump $(DUMP)
 
-# Confere o manifest contra os manifests do exportador. Sai 1 se drift.
+# Confere o CONJUNTO de tabelas contra os manifests do exportador (ignora tipos,
+# que dependem do dump gitignored). Sai 1 se drift. Usado no CI.
 manifests-check:
 	go run ./cmd/genmanifest --check
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"sort"
 	"strconv"
@@ -100,34 +101,28 @@ func (c *CH) CountRows(ctx context.Context, db, tbl string) (uint64, error) {
 	return strconv.ParseUint(strings.TrimSpace(out), 10, 64)
 }
 
-// s3Expr monta a chamada s3(); structure vazia = inferência do Parquet.
-func s3Expr(s3url, ak, sk, structure string) string {
-	args := fmt.Sprintf("'%s', '%s', '%s', 'Parquet'", chEsc(s3url), chEsc(ak), chEsc(sk))
-	if structure != "" {
-		args += fmt.Sprintf(", '%s'", structure)
-	}
-	return "s3(" + args + ")"
+// s3Expr monta a chamada s3() com inferência de schema do Parquet.
+func s3Expr(s3url, ak, sk string) string {
+	return fmt.Sprintf("s3('%s', '%s', '%s', 'Parquet')", chEsc(s3url), chEsc(ak), chEsc(sk))
 }
 
-// DescribeS3 retorna as colunas (nome, tipo) inferidas do Parquet, na ordem.
-// Usado p/ aplicar overrides de tipo parciais (override de algumas colunas,
-// inferência nas demais) — a `structure` do s3() exige TODAS as colunas.
-func (c *CH) DescribeS3(ctx context.Context, s3url, ak, sk string) ([][2]string, error) {
-	q := "DESCRIBE TABLE " + s3Expr(s3url, ak, sk, "") + " FORMAT TabSeparated"
+// DescribeS3 retorna os nomes de coluna inferidos do Parquet. Usado p/ só
+// aplicar `REPLACE` nas colunas de `types:` que de fato existem no arquivo
+// (versões do ERP variam; coluna ausente daria erro no CREATE).
+func (c *CH) DescribeS3(ctx context.Context, s3url, ak, sk string) (map[string]bool, error) {
+	q := "DESCRIBE TABLE " + s3Expr(s3url, ak, sk) + " FORMAT TabSeparated"
 	out, err := c.execRetry(ctx, q, 2)
 	if err != nil {
 		return nil, err
 	}
-	var cols [][2]string
+	cols := map[string]bool{}
 	for _, line := range strings.Split(strings.TrimRight(out, "\n"), "\n") {
 		if line == "" {
 			continue
 		}
-		f := strings.Split(line, "\t")
-		if len(f) < 2 {
-			continue
+		if f := strings.SplitN(line, "\t", 2); len(f) >= 1 && f[0] != "" {
+			cols[f[0]] = true
 		}
-		cols = append(cols, [2]string{f[0], f[1]})
 	}
 	if len(cols) == 0 {
 		return nil, fmt.Errorf("DESCRIBE não retornou colunas")
@@ -135,62 +130,83 @@ func (c *CH) DescribeS3(ctx context.Context, s3url, ak, sk string) ([][2]string,
 	return cols, nil
 }
 
-// buildStructure aplica os overrides de tipo sobre as colunas inferidas e monta
-// a `structure` completa do s3() (todas as colunas, na ordem da origem).
-func buildStructure(inferred [][2]string, overrides map[string]string) string {
-	parts := make([]string, len(inferred))
-	for i, c := range inferred {
-		typ := c[1]
-		if ov, ok := overrides[c[0]]; ok {
-			typ = ov
-		}
-		parts[i] = fmt.Sprintf("`%s` %s", c[0], typ)
-	}
-	return strings.Join(parts, ", ")
-}
-
 // CreateRawTable cria raw_<ibge>.<tbl> a partir do Parquet no MinIO via s3().
-// Sem overrides: inferência pura (idêntico ao import_raw.sh). Com overrides:
-// DESCRIBE + structure completa (cast no read). Sempre DROP antes (reload idempotente).
-func (c *CH) CreateRawTable(ctx context.Context, db, tbl, s3url, ak, sk string, overrides map[string]string, tries int) error {
+//
+// Sem `types`: inferência pura (`CREATE … AS SELECT * FROM s3(...)`).
+//
+// Com `types`: o exportador grava numeric/date/timestamp como STRING no Parquet
+// (texto lossless), então a inferência os mantém String. Aqui re-tipamos essas
+// colunas com `SELECT * REPLACE(<castOrNull> AS col)` — mantendo a inferência
+// nas demais. Os casts são `*OrNull` (valor sujo vira NULL, não derruba a tabela).
+// Sempre DROP antes (reload idempotente).
+func (c *CH) CreateRawTable(ctx context.Context, db, tbl, s3url, ak, sk string, types map[string]string, tries int) error {
 	if _, err := c.execRetry(ctx, fmt.Sprintf("DROP TABLE IF EXISTS `%s`.`%s` SYNC", db, tbl), tries); err != nil {
 		return err
 	}
-	structure := ""
-	if len(overrides) > 0 {
-		inferred, err := c.DescribeS3(ctx, s3url, ak, sk)
+	replace := ""
+	if len(types) > 0 {
+		have, err := c.DescribeS3(ctx, s3url, ak, sk)
 		if err != nil {
-			return fmt.Errorf("describe p/ overrides: %w", err)
+			return fmt.Errorf("describe p/ tipos: %w", err)
 		}
-		if err := validateOverrides(inferred, overrides); err != nil {
-			return err
+		var parts []string
+		for _, col := range sortedKeys(types) {
+			if !have[col] {
+				log.Printf("aviso: %s.%s: coluna %q do manifest ausente no Parquet — REPLACE ignorado", db, tbl, col)
+				continue
+			}
+			parts = append(parts, fmt.Sprintf("%s AS `%s`", castExpr(col, types[col]), col))
 		}
-		structure = buildStructure(inferred, overrides)
+		if len(parts) > 0 {
+			replace = " REPLACE (" + strings.Join(parts, ", ") + ")"
+		}
 	}
-	create := fmt.Sprintf("CREATE TABLE `%s`.`%s` ENGINE=MergeTree ORDER BY tuple() AS SELECT * FROM %s",
-		db, tbl, s3Expr(s3url, ak, sk, structure))
+	create := fmt.Sprintf("CREATE TABLE `%s`.`%s` ENGINE=MergeTree ORDER BY tuple() AS SELECT *%s FROM %s",
+		db, tbl, replace, s3Expr(s3url, ak, sk))
 	_, err := c.execRetry(ctx, create, tries)
 	return err
 }
 
-// validateOverrides garante que toda coluna de `types` existe no Parquet —
-// um override órfão (nome de coluna errado) seria silenciosamente ignorado.
-func validateOverrides(inferred [][2]string, overrides map[string]string) error {
-	have := make(map[string]bool, len(inferred))
-	for _, c := range inferred {
-		have[c[0]] = true
+// castExpr devolve a expressão de cast `*OrNull` p/ tipar uma coluna String do
+// Parquet no tipo-alvo do manifest (derivado do DDL da origem). Valor sujo/
+// incompatível vira NULL (não derruba a tabela).
+//
+// Decimal/Int e demais usam accurateCastOrNull (preserva a precisão EXATA do DDL
+// — ex.: Decimal(15,2), não a classe Decimal64 — e aceita tanto String quanto
+// numérico). Datas/timestamps usam parsers dedicados: accurateCast falha no
+// timestamp RFC3339 ("...Z") que o exportador grava.
+func castExpr(col, chType string) string {
+	q := "`" + col + "`"
+	switch {
+	case chType == "Date32":
+		return fmt.Sprintf("toDate32OrNull(%s)", q)
+	case chType == "Date":
+		return fmt.Sprintf("toDateOrNull(%s)", q)
+	case strings.HasPrefix(chType, "DateTime64("):
+		return fmt.Sprintf("parseDateTime64BestEffortOrNull(%s, %d)", q, dt64Prec(chType))
+	case chType == "DateTime":
+		return fmt.Sprintf("parseDateTimeBestEffortOrNull(%s)", q)
+	default:
+		return fmt.Sprintf("accurateCastOrNull(%s, '%s')", q, chEsc(chType))
 	}
-	var orphans []string
-	for col := range overrides {
-		if !have[col] {
-			orphans = append(orphans, col)
-		}
+}
+
+// dt64Prec extrai a precisão de "DateTime64(N)" (default 6).
+func dt64Prec(chType string) int {
+	inside := chType[strings.IndexByte(chType, '(')+1 : strings.IndexByte(chType, ')')]
+	if n, err := strconv.Atoi(strings.TrimSpace(inside)); err == nil && n >= 0 && n <= 9 {
+		return n
 	}
-	if len(orphans) > 0 {
-		sort.Strings(orphans)
-		return fmt.Errorf("override de tipo p/ coluna(s) inexistente(s) no Parquet: %s", strings.Join(orphans, ", "))
+	return 6
+}
+
+func sortedKeys(m map[string]string) []string {
+	ks := make([]string, 0, len(m))
+	for k := range m {
+		ks = append(ks, k)
 	}
-	return nil
+	sort.Strings(ks)
+	return ks
 }
 
 // chEsc escapa uma string p/ literal SQL do ClickHouse (\ e ').
