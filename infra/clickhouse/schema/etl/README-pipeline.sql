@@ -24,45 +24,32 @@
 --   TUDO sob o município (<ibge>/) -- não há _global/; referência também por IBGE.
 --   (schema físico no path evita colisão entre schemas homônimos, ex.: aise.entidade vs siscop.entidade)
 --
--- Em todos os ERPs (Elotech eloweb, Betha, IPM, etc.) o path do MinIO usa
--- a tabela do destino RAW (camelCase do leiaute SIM-AM) -- a origem
--- ERP-específica é apenas dimensão. O _fonte registra de qual ERP veio.
+-- O MinIO guarda a tabela da ORIGEM (ex.: siscop/empenho.parquet). O RAW no
+-- ClickHouse ESPELHA a origem: raw_<ibge>.<schema>_<tabela>
+-- (ex.: raw_4117107.siscop_empenho), com o schema INFERIDO do Parquet.
+-- O prefixo <schema>_ evita colisão (aise_entidade vs siscop_entidade).
+-- A canonicalização p/ o leiaute SIM-AM acontece no ETL (passo 2).
 -- ---------------------------------------------------------------------
 
--- 1) INGESTÃO: lê o Parquet do MinIO direto para a tabela RAW (tudo String).
---    Use a função s3() apontando para o endpoint do MinIO.
-INSERT INTO raw_4117107.Empenho
-SELECT
-    toString(idPessoa)        AS idPessoa,
-    toString(nrEmpenho)       AS nrEmpenho,
-    toString(nrAnoEmpenho)    AS nrAnoEmpenho,
-    toString(idOrigemEmpenho) AS idOrigemEmpenho,
-    '4117107'                 AS _id_entidade,
-    '2026'                    AS _exercicio,
-    '0'                       AS _competencia,
-    'eloweb'                  AS _fonte,
-    'siscop/empenho.parquet'  AS _arquivo,
-    now()                     AS _ingerido_em
-FROM s3(
-    'http://mirante-minio:9000/mirante-parquet/4117107/siscop/empenho.parquet',
-    'minioadmin', '<secret>', 'Parquet'
-);
+-- 1) INGESTÃO (automatizada — NÃO roda neste arquivo):
+--      bash infra/clickhouse/tools/import_raw.sh <ibge>
+--    Lista o MinIO e cria 1 tabela por Parquet via s3() + inferência:
+--      raw_<ibge>.siscop_empenho, raw_<ibge>.siscop_fornecedor, ...
+--    Estrutura idêntica à origem Eloweb (colunas Nullable, tipos do Parquet).
 
--- 2) ETL: transforma RAW -> CANÔNICO (cast de tipos do layout SIM-AM),
---    deduplicando por ReplacingMergeTree na carga.
+-- 2) ETL: transforma a ORIGEM (raw_<ibge>.siscop_*) -> CANÔNICO SIM-AM (sim_<ibge>.*).
+--    O mapeamento de colunas é ERP-específico (Elotech siscop -> SIM-AM);
+--    ver docs/epico5-elotech-queries.md. Exemplo ILUSTRATIVO (colunas reais
+--    conforme o leiaute siscop):
 INSERT INTO sim_4117107.Empenho
 SELECT
-    toUInt32OrZero(idPessoa)        AS idPessoa,
-    toUInt32OrZero(nrEmpenho)       AS nrEmpenho,
-    toUInt32OrZero(nrAnoEmpenho)    AS nrAnoEmpenho,
-    toUInt32OrZero(idOrigemEmpenho) AS idOrigemEmpenhopenho,
-    toUInt32OrZero(_id_entidade)    AS _id_entidade,
-    toUInt16OrZero(_exercicio)      AS _exercicio,
-    toUInt8OrZero(_competencia)     AS _competencia,
-    _fonte,
-    now()                           AS _ingerido_em
-FROM raw_4117107.Empenho
-WHERE _id_entidade = '4117107' AND _exercicio = '2026';
+    toUInt32OrZero(entidade)   AS idEntidade,
+    toUInt32OrZero(empenho)    AS nrEmpenho,
+    toUInt16OrZero(exercicio)  AS nrAnoEmpenho,
+    -- ... demais colunas mapeadas do siscop p/ o SIM-AM
+    'eloweb'                   AS _fonte,
+    now()                      AS _ingerido_em
+FROM raw_4117107.siscop_empenho;
 
--- 3) Consulta canônica (já tipada, pronta para o ETL de marts/Postgres).
--- SELECT count(), sum(...) FROM sim_4117107.Empenho WHERE _exercicio = 2026;
+-- 3) Consulta canônica (já tipada, pronta para o sync de marts -> Postgres).
+-- SELECT count() FROM sim_4117107.Empenho;
