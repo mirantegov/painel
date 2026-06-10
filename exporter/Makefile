@@ -1,12 +1,14 @@
 # Build do exportador. Sem cgo → cross-compile limpo.
 # Uso: make windows | linux | mac | dist | package | build | clean
+#      make manifests-check | manifests-gen   (DUMP=tmp/eloweb.dump)
 BINARY := exporter
 DIST   := dist
 PKG    := $(DIST)/exporter-win
 GOFLAGS := -trimpath
 LDFLAGS := -s -w
+DUMP   ?= ../tmp/eloweb.dump
 
-.PHONY: build windows linux mac dist package clean
+.PHONY: build windows linux mac dist package manifests-check manifests-gen clean
 
 # binário para o host atual
 build:
@@ -39,6 +41,14 @@ package: windows
 	cp manifests/elotech-eloweb.yaml manifests/elotech-aise.yaml manifests/elotech-apice.yaml $(PKG)/
 	cd $(DIST) && rm -f exporter-win.zip && zip -rq exporter-win.zip exporter-win
 	@echo "--- pacote: $(DIST)/exporter-win.zip ---" && unzip -l $(DIST)/exporter-win.zip
+
+# Confere os manifests contra os DDLs (exclude bytea + filtros). Sai 1 se drift.
+manifests-check:
+	python3 tools/gen_manifests.py --dump $(DUMP) --check
+
+# (Re)gera os blocos scope/exclude_columns/filters dos manifests a partir do dump.
+manifests-gen:
+	python3 tools/gen_manifests.py --dump $(DUMP) --write
 
 clean:
 	rm -rf $(DIST) $(BINARY) inspect
