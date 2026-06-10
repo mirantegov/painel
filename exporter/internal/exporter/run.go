@@ -2,9 +2,11 @@ package exporter
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"regexp"
+	"time"
 )
 
 // Config são os parâmetros de uma execução do exportador.
@@ -34,11 +36,13 @@ type FileResult struct {
 
 // Result acumula o que a execução produziu (p/ log/monitoramento).
 type Result struct {
-	Municipio string
-	Ano       int
-	Schema    string // schema físico do tenant usado
-	Bucket    string
-	Files     []FileResult
+	Municipio   string
+	Ano         int
+	Schema      string // schema físico do tenant usado
+	Bucket      string
+	Files       []FileResult
+	GeneratedAt string // RFC3339; preenchido ao publicar as contagens
+	CountsKey   string // path do JSON de contagens no MinIO (vazio se não publicado)
 }
 
 // Run executa o dump raw de todas as tabelas do manifest pro MinIO.
@@ -112,7 +116,32 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		log.Printf("ok  %-28s → %s  (%d linhas, %d colunas, %d bytes)",
 			t.Source, key, len(rows), len(cols), len(data))
 	}
+
+	// Publica as contagens no MinIO p/ reconciliação posterior pelo importador.
+	// Falha aqui NÃO invalida o export (artefato auxiliar) — só registra aviso.
+	publishCounts(ctx, sink, res, cfg.Municipio)
 	return res, nil
+}
+
+// publishCounts grava <ibge>/_export/counts-<datahora>.json no MinIO com a
+// contagem de linhas por tabela. Cada execução escreve um arquivo datado (não
+// sobrescreve as contagens de outros schemas/runs).
+func publishCounts(ctx context.Context, sink *Sink, res *Result, ibge string) {
+	now := time.Now().UTC()
+	res.GeneratedAt = now.Format(time.RFC3339)
+	ec := BuildExportCounts(res, res.GeneratedAt)
+	data, err := json.MarshalIndent(ec, "", "  ")
+	if err != nil {
+		log.Printf("aviso: serializando contagens: %v", err)
+		return
+	}
+	key := fmt.Sprintf("%s/_export/counts-%s.json", ibge, now.Format("20060102_150405"))
+	if err := sink.Put(ctx, key, data); err != nil {
+		log.Printf("aviso: publicando contagens em %s: %v", key, err)
+		return
+	}
+	res.CountsKey = key
+	log.Printf("contagens: %s (%d tabelas)", key, len(ec.Tables))
 }
 
 // objectKey monta o caminho do objeto no bucket (RAW landing).

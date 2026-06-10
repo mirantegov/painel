@@ -45,3 +45,25 @@ jobs:
       - name: go test
         working-directory: exporter
         run: go test ./...
+
+  importer:
+    name: Importador Go · build · test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.26.x
+          cache-dependency-path: infra/clickhouse/importer/go.sum
+      - name: go build
+        working-directory: infra/clickhouse/importer
+        run: go build ./...
+      - name: go vet
+        working-directory: infra/clickhouse/importer
+        run: go vet ./...
+      - name: go test
+        working-directory: infra/clickhouse/importer
+        run: go test ./...
+      - name: manifest em dia (sem drift vs exportador)
+        working-directory: infra/clickhouse/importer
+        run: go run ./cmd/genmanifest --check
