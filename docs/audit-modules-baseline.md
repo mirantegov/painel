@@ -1,53 +1,48 @@
 # Auditoria de módulos — baseline (Gate.5 / MIR-26)
 
-> Gerado em 2026-06-10 por detecção estrutural (grep de features no componente de
-> cada módulo ativo de `lib/modules-config.ts`). É um **baseline** de consistência —
-> não um gate bloqueante. Itens ausentes viram backlog de qualidade (E5).
+> Gerado por `scripts/audit-modules.mjs` (folder-aware) a partir de `lib/modules-config.ts`.
+> Regenerar: `node scripts/audit-modules.mjs --write`. Invariante (CI): `--check`.
+> É um **baseline** de consistência, não um gate bloqueante (salvo o invariante de snapshot).
 
-Legenda: ✅ presente · ❌ ausente · ⚠️ parcial · `(n)` = nº de `AccordionItem`.
+Legenda: ✅ presente · ❌ ausente · ⚠️ parcial · `— (alt)` layout alternativo aceito · `(n)` nº de AccordionItem.
+Detecção **agrega todos os `.tsx` da pasta** do módulo (módulos complexos não são subreportados).
 
-| Módulo | Arquivo | KpiCard | Gráficos | Sub-tabs | Análises | Accordion(4) | Resumo | Alertas | Demo/Snapshot |
-|---|---|---|---|---|---|---|---|---|---|
-| visao-geral | visao-geral.tsx | ✅ | ✅ | ❌ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
-| despesa | despesa-municipal.tsx | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
-| receita | receita-municipal.tsx | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
-| financeiro | financeiro-municipal.tsx | ✅ | ✅ | ✅ | ✅ | ❌(0) | ❌ | ✅ | ✅ |
-| tributacao | tributacao-municipal.tsx | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ✅ | ✅ |
-| orcamento | orcamento-municipal.tsx | ✅ | ✅ | ❌ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
-| prestacao-contas | prestacao-contas.tsx | ✅ | ✅ | ✅ | ✅ | ⚠️(1) | ❌ | ✅ | ✅ |
-| compras | compras-municipais.tsx | ✅ | ✅ | ✅ | ✅ | ❌(0) | ❌ | ❌ | ✅ |
-| rh | rh-municipal.tsx | ✅ | ✅ | ✅ | ✅ | ⚠️(2) | ❌ | ✅ | ✅ |
-| licitacoes-painel | licitacoes-painel.tsx | ❌ | ❌ | ❌ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
-| saude | saude.tsx | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ✅ | ✅ |
-| educacao | educacao.tsx | ✅ | ✅ | ✅ | ✅ | ❌(0) | ❌ | ✅ | ✅ |
-| assistencia-social | assistencia-social.tsx | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ✅ | ✅ |
-| defesa-civil | defesa-civil.tsx | ✅ | ✅ | ✅ | ✅ | ❌(0) | ❌ | ✅ | ✅ |
-| obras | obras.tsx | ✅ | ✅ | ✅ | ✅ | ❌(0) | ❌ | ❌ | ✅ |
-| frotas | frotas.tsx | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
-| patrimonio | patrimonio.tsx | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ✅ | ✅ |
-| processos | processos.tsx | ✅ | ✅ | ❌ | ✅ | ❌(0) | ❌ | ❌ | ✅ |
-| previdencia | previdencia/previdencia.tsx | ⚠️ | ⚠️ | ✅ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
-| saneamento | saneamento/saneamento.tsx | ⚠️ | ⚠️ | ✅ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
-| legislativo | legislativo/legislativo.tsx | ⚠️ | ⚠️ | ✅ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
+*Gerado em: 2026-06-10*
 
-**Totais:** KpiCard 17/21 · Gráficos 17/21 · Sub-tabs 17/21 · Análises 8/21 · Resumo Analítico 0/21 · Alertas 9/21 · **Demo/Snapshot 21/21 ✅**.
+| Módulo | Arq. | Ativo | KpiCard | Gráficos | Sub-tabs | Análises | Accordion | Resumo | Alertas | Snapshot |
+|---|---|---|---|---|---|---|---|---|---|---|
+| visao-geral | 1 | ✅ | ✅ | ✅ | ❌ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
+| despesa | 1 | ✅ | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
+| receita | 1 | ✅ | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
+| financeiro | 1 | ✅ | ✅ | ✅ | ✅ | ⚠️ | ❌(0) | ❌ | ✅ | ✅ |
+| tributacao | 1 | ✅ | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ✅ | ✅ |
+| orcamento | 1 | ✅ | ✅ | ✅ | ❌ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
+| prestacao-contas | 1 | ✅ | ✅ | ✅ | ✅ | ⚠️ | ⚠️(1) | ❌ | ✅ | ✅ |
+| compras | 1 | ✅ | ✅ | ✅ | ✅ | ⚠️ | ❌(0) | ❌ | ❌ | ✅ |
+| rh | 1 | ✅ | ✅ | ✅ | ✅ | ⚠️ | ⚠️(2) | ❌ | ✅ | ✅ |
+| saude | 1 | — | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ✅ | ✅ |
+| educacao | 1 | — | ✅ | ✅ | ✅ | ⚠️ | ❌(0) | ❌ | ✅ | ✅ |
+| assistencia-social | 1 | — | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ✅ | ✅ |
+| defesa-civil | 1 | — | ✅ | ✅ | ✅ | ⚠️ | ❌(0) | ❌ | ✅ | ✅ |
+| obras | 1 | — | ✅ | ✅ | ✅ | ⚠️ | ❌(0) | ❌ | ❌ | ✅ |
+| frotas | 1 | — | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
+| patrimonio | 1 | — | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ✅ | ✅ |
+| processos | 1 | — | ✅ | ✅ | ❌ | ⚠️ | ❌(0) | ❌ | ❌ | ✅ |
+| previdencia | 6 | — | ✅ | ✅ | ✅ | ⚠️ | ❌(0) | ❌ | ❌ | ✅ |
+| saneamento | 7 | — | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ✅ | ✅ |
+| legislativo | 8 | — | ✅ | ✅ | ✅ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
+| licitacoes-painel | 1 | ✅ | — *(alt)* | — *(alt)* | ❌ | ❌ | ❌(0) | ❌ | ❌ | ✅ |
 
-## Caveats da detecção
+**Totais (21 módulos ativos):** Snapshot 21/21 · KpiCard 20/21 · Gráficos 20/21 · Sub-tabs 17/21 · Análises(seção) 0/21 · Resumo 0/21 · Alertas 10/21.
 
-- **Módulos complexos** (`previdencia`, `saneamento`, `legislativo`): a detecção roda no
-  arquivo de topo, mas KPIs/gráficos vivem nos **sub-componentes** dessas pastas →
-  marcados ⚠️ (têm as features, em arquivos filhos). Não são pendência real de KPI/gráfico.
-- **`licitacoes-painel`**: painel executivo baseado em **tabela/lista** (sem KpiCard/Recharts
-  por design) — layout alternativo aceito.
-- **Demo/Snapshot 21/21**: todos os módulos têm fallback (`useSnapshot`/`lib/demo-*`) —
-  consistência da camada de dados OK.
+## Como ler
 
-## Pendências de qualidade (backlog E5 — não bloqueiam o Gate)
+- **Snapshot** é o **invariante** (camada de dados): todo módulo ativo deve ter `useSnapshot`/`lib/demo-*`. Protegido por `--check` no CI.
+- **Layouts alternativos aceitos** (`— (alt)`): `licitacoes-painel` (tabela executiva). Não contam como pendência de KPI/gráfico.
+- **Análises**: ✅ = seção padrão (`Análise Inteligente`, via `/add-analise`); ⚠️ = só menção avulsa de "Análise"; ❌ = ausente.
 
-- **Seção "Análises" ausente (13)**: visao-geral, despesa, receita, tributacao, orcamento,
-  saude, assistencia-social, frotas, patrimonio (+ os 3 complexos e licitacoes). Usar `/add-analise`.
-- **"Resumo Analítico" 0/21**: padrão ainda não adotado em nenhum módulo — decidir se entra no padrão.
-- **Alertas ausentes (12)**: avaliar caso a caso (nem todo módulo precisa de `<Alert>`).
+## Backlog de qualidade (E5 — não bloqueia a fase de pipeline)
 
-> Este baseline serve de referência para o **E5 (qualidade dos módulos)**. O Gate apenas
-> registra o estado atual; a evolução é incremental e não bloqueia a fase de VPS/pipeline.
+- **Seção "Análises" padrão ausente:** visao-geral, despesa, receita, financeiro, tributacao, orcamento, prestacao-contas, compras, rh, saude, educacao, assistencia-social, defesa-civil, obras, frotas, patrimonio, processos, previdencia, saneamento, legislativo. Usar `/add-analise`.
+- **"Resumo Analítico"**: padrão ainda não adotado (0/21) — decidir se entra no design.
+- **Alertas**: avaliar caso a caso (nem todo módulo precisa de `<Alert>`).
