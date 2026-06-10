@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """Provisiona os databases ClickHouse de um município (multi-tenant por IBGE).
 
-Cria simam_<ibge> (canônico) e simam_raw_<ibge> (landing) e aplica o schema
-SIM-AM (schema/simam + schema/raw + schema/seeds), substituindo o nome do
-database em cada DDL. Cada município fica self-contained (inclui as tabelas
+Cria raw_<ibge> (landing do MinIO) e sim_<ibge> (canônico pós-ETL) e aplica o
+schema SIM-AM (schema/simam + schema/raw + schema/seeds), substituindo o nome
+do database em cada DDL. Cada município fica self-contained (inclui as tabelas
 de domínio).
 
 Uso:  python3 provision_municipio.py <ibge>
 Env:  CLICKHOUSE_URL (default http://localhost:8123/), CLICKHOUSE_USER, CLICKHOUSE_PASSWORD
 
 Substituição precisa (não colidem como substring):
-  'simam_raw.' -> 'simam_raw_<ibge>.'   (aplicada primeiro)
-  'simam.'     -> 'simam_<ibge>.'
+  'simam_raw.' -> 'raw_<ibge>.'   (aplicada primeiro)
+  'simam.'     -> 'sim_<ibge>.'
 """
 import glob
 import os
@@ -47,8 +47,8 @@ def split_statements(text):
 
 
 def retarget(text, ibge):
-    return (text.replace("simam_raw.", f"simam_raw_{ibge}.")
-                .replace("simam.", f"simam_{ibge}."))
+    return (text.replace("simam_raw.", f"raw_{ibge}.")
+                .replace("simam.", f"sim_{ibge}."))
 
 
 def apply_dir(subdir, ibge):
@@ -73,8 +73,8 @@ def main(ibge):
     if not IBGE_RE.match(ibge):
         print(f"IBGE inválido: {ibge!r} (esperado 7 dígitos)")
         return 1
-    canon, raw = f"simam_{ibge}", f"simam_raw_{ibge}"
-    print(f"[provision] databases: {canon} + {raw}")
+    canon, raw = f"sim_{ibge}", f"raw_{ibge}"
+    print(f"[provision] databases: {raw} (landing) + {canon} (canônico)")
     for db in (raw, canon):
         err = run(f"CREATE DATABASE IF NOT EXISTS {db}")
         if err:

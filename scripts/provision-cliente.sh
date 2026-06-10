@@ -2,8 +2,8 @@
 # Instalador de novo cliente (município) por IBGE.  cliente = municipio = ibge.
 #
 # v1: provisiona os databases ClickHouse do município:
-#       simam_<ibge>      (canônico SIM-AM)
-#       simam_raw_<ibge>  (landing raw)
+#       raw_<ibge>  (landing do MinIO)
+#       sim_<ibge>  (canônico SIM-AM, pós-ETL)
 #
 # Uso:   bash scripts/provision-cliente.sh <ibge>
 # Env:   CLICKHOUSE_URL, CLICKHOUSE_USER, CLICKHOUSE_PASSWORD
@@ -27,10 +27,10 @@ echo "════════════════════════�
 echo " Provisionando cliente — IBGE $IBGE"
 echo "════════════════════════════════════════════"
 
-echo "[1/1] ClickHouse: simam_${IBGE} + simam_raw_${IBGE}"
+echo "[1/1] ClickHouse: raw_${IBGE} + sim_${IBGE}"
 python3 "$ROOT/infra/clickhouse/tools/provision_municipio.py" "$IBGE"
 
 echo "════════════════════════════════════════════"
 echo " Cliente $IBGE provisionado (ClickHouse)."
-echo " Próximo: ETL lê MinIO ${IBGE}/<schema>/*.parquet -> simam_raw_${IBGE} -> simam_${IBGE}"
+echo " Próximo: ETL lê MinIO ${IBGE}/<schema>/*.parquet -> raw_${IBGE} -> sim_${IBGE}"
 echo "════════════════════════════════════════════"

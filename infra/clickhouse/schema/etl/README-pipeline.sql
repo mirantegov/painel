@@ -1,14 +1,14 @@
 -- =====================================================================
--- PIPELINE CANÔNICO SIM-AM   MinIO -> simam_raw_<ibge> -> (ETL) -> simam_<ibge>
+-- PIPELINE CANÔNICO SIM-AM   MinIO -> raw_<ibge> -> (ETL) -> sim_<ibge>
 -- =====================================================================
 -- Este arquivo é um TEMPLATE de referência (não roda no init). Mostra o
 -- padrão de ingestão e transformação para UMA tabela (Empenho). Replicar
 -- por tabela conforme as bases de origem forem mapeadas.
 --
 -- MULTI-TENANT por IBGE: cada município tem seus próprios databases
---   simam_<ibge>      (canônico)   e   simam_raw_<ibge>  (landing).
+--   sim_<ibge>      (canônico)   e   raw_<ibge>  (landing).
 -- Provisionar com: bash scripts/provision-cliente.sh <ibge>
--- O exemplo abaixo usa <ibge>=4117107 (simam_raw_4117107 / simam_4117107).
+-- O exemplo abaixo usa <ibge>=4117107 (raw_4117107 / sim_4117107).
 --
 -- MinIO já roda em mirante-minio (host 9000). Para o ClickHouse enxergar o
 -- MinIO, ambos precisam estar na mesma rede docker (rede `mirante` no
@@ -31,7 +31,7 @@
 
 -- 1) INGESTÃO: lê o Parquet do MinIO direto para a tabela RAW (tudo String).
 --    Use a função s3() apontando para o endpoint do MinIO.
-INSERT INTO simam_raw_4117107.Empenho
+INSERT INTO raw_4117107.Empenho
 SELECT
     toString(idPessoa)        AS idPessoa,
     toString(nrEmpenho)       AS nrEmpenho,
@@ -50,7 +50,7 @@ FROM s3(
 
 -- 2) ETL: transforma RAW -> CANÔNICO (cast de tipos do layout SIM-AM),
 --    deduplicando por ReplacingMergeTree na carga.
-INSERT INTO simam_4117107.Empenho
+INSERT INTO sim_4117107.Empenho
 SELECT
     toUInt32OrZero(idPessoa)        AS idPessoa,
     toUInt32OrZero(nrEmpenho)       AS nrEmpenho,
@@ -61,8 +61,8 @@ SELECT
     toUInt8OrZero(_competencia)     AS _competencia,
     _fonte,
     now()                           AS _ingerido_em
-FROM simam_raw_4117107.Empenho
+FROM raw_4117107.Empenho
 WHERE _id_entidade = '4117107' AND _exercicio = '2026';
 
 -- 3) Consulta canônica (já tipada, pronta para o ETL de marts/Postgres).
--- SELECT count(), sum(...) FROM simam_4117107.Empenho WHERE _exercicio = 2026;
+-- SELECT count(), sum(...) FROM sim_4117107.Empenho WHERE _exercicio = 2026;

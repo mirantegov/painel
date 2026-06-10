@@ -1,8 +1,8 @@
 # ClickHouse — design do Épico 5 (SSoT + ETL + sync → Postgres)
 
 > Design capturado para execução no Épico 5. Espelha o multi-tenant do Postgres:
-> **databases por município**, nomeados por IBGE — `simam_<ibge>` (canônico) e
-> `simam_raw_<ibge>` (landing) — espelhando o schema Postgres `mun_<ibge>`.
+> **databases por município**, nomeados por IBGE — `sim_<ibge>` (canônico) e
+> `raw_<ibge>` (landing) — espelhando o schema Postgres `mun_<ibge>`.
 > Provisionar um novo município: `bash scripts/provision-cliente.sh <ibge>`
 > (cria os dois databases e aplica o schema SIM-AM via substituição de DB).
 > Engines `MergeTree`/`ReplacingMergeTree`. Em CH evita-se `Nullable` na chave de
