@@ -34,9 +34,37 @@ ch() { curl -s --max-time 600 "$CH_URL" -H "X-ClickHouse-User: $CH_USER" -H "X-C
 echo "[import] raw_${IBGE} <- ${MC_ALIAS}/${BUCKET}/${IBGE}/"
 ch "CREATE DATABASE IF NOT EXISTS raw_${IBGE}" >/dev/null
 
-# Lista os Parquet sob <ibge>/ e cria uma tabela por arquivo.
+# --- Coleta a lista de objetos num array, de forma portável entre SOs ---
+# Linux (VPS) costuma ter bash >= 4 (mapfile/readarray); macOS vem com bash 3.2.
+echo "[import] SO=$(uname -s) bash=${BASH_VERSINFO[0]:-?}.${BASH_VERSINFO[1]:-?}"
+list_objs() { mc ls --recursive "${MC_ALIAS}/${BUCKET}/${IBGE}/" 2>/dev/null | awk '{print $NF}'; }
+
+objs=()
+if type mapfile >/dev/null 2>&1; then
+  # bash >= 4: usa o builtin mapfile
+  mapfile -t objs < <(list_objs)
+else
+  # bash 3.2 (sem mapfile): fallback portável
+  while IFS= read -r line; do [ -n "$line" ] && objs+=("$line"); done < <(list_objs)
+fi
+[ "${#objs[@]}" -gt 0 ] || { echo "  nenhum objeto em ${IBGE}/ — exporte primeiro"; exit 1; }
+
+# --- Reordena: difere as tabelas grandes do siscop para o FIM ---
+# (as menores terminam primeiro; as pesadas não bloqueiam as rápidas)
+DEFER="eventoslancados eventoslancadosconta lancamentosequencia"
+normal=(); deferred=()
+for o in "${objs[@]}"; do
+  t="$(basename "${o##*/}" .parquet)"
+  case " $DEFER " in
+    *" $t "*) deferred+=("$o") ;;
+    *)        normal+=("$o") ;;
+  esac
+done
+objs=( ${normal[@]+"${normal[@]}"} ${deferred[@]+"${deferred[@]}"} )
+
+# --- Cria 1 tabela por arquivo (raw_<ibge>.<schema>_<tabela>) ---
 ok=0; fail=0
-while read -r o; do
+for o in "${objs[@]}"; do
   [ -n "$o" ] || continue
   # o relativo a <ibge>/, ex.: siscop/empenho.parquet
   IFS='/' read -ra seg <<< "$o"
@@ -55,7 +83,6 @@ while read -r o; do
     echo "  ok ${tbl}"
     ok=$((ok+1))
   fi
-done < <(mc ls --recursive "${MC_ALIAS}/${BUCKET}/${IBGE}/" 2>/dev/null | awk '{print $NF}')
-[ $((ok+fail)) -gt 0 ] || { echo "  nenhum objeto em ${IBGE}/ — exporte primeiro"; exit 1; }
+done
 echo "=== raw_${IBGE}: ${ok} tabelas OK, ${fail} falhas ==="
 exit $([ "$fail" -eq 0 ] && echo 0 || echo 1)
