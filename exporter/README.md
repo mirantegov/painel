@@ -32,11 +32,13 @@ tables:
 
 | Caso | Path |
 |---|---|
-| global | `_global/<tabela>/part-0.parquet` |
-| tenant (sem ano) | `<ibge>/<tabela>/part-0.parquet` |
-| tenant + ano | `<ibge>/<tabela>/ano=<ano>/part-0.parquet` |
+| global | `_global/<schema>/<tabela>.parquet` |
+| tenant (sem ano) | `<ibge>/<schema>/<tabela>.parquet` |
+| tenant + ano | `<ibge>/<schema>/<tabela>/ano=<ano>/<tabela>.parquet` |
 
-Idempotente: path determinístico (1 arquivo por tabela/ano) → re-run sobrescreve.
+O **schema físico** entra no path (ex.: `4117107/siscop/entidade.parquet`) — evita colisão entre schemas com tabelas homônimas (ex.: `aise.entidade` vs `siscop.entidade`) e o arquivo nomeado pela tabela facilita o ETL.
+
+Idempotente: path determinístico (1 arquivo por schema/tabela/ano) → re-run sobrescreve.
 
 ## Mapeamento de tipos (fiel à origem)
 
@@ -67,7 +69,7 @@ Env (com defaults p/ o stack local):
 `cmd/inspect` lê um `.parquet` e imprime contagem/colunas/valores:
 
 ```bash
-mc cp local/mirante-parquet/4117107/fato_despesa/ano=2026/part-0.parquet /tmp/x.parquet
+mc cp local/mirante-parquet/4117107/siscop/empenho.parquet /tmp/x.parquet
 go run ./cmd/inspect /tmp/x.parquet
 ```
 

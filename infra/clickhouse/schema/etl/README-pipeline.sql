@@ -14,8 +14,10 @@
 -- alinhada ao exportador Go em exporter/README.md):
 --
 --   bucket: mirante-parquet
---   tenant: s3://mirante-parquet/<ibge>/<tabela>/[ano=<ano>/]part-0.parquet
---   global: s3://mirante-parquet/_global/<tabela>/part-0.parquet
+--   tenant: s3://mirante-parquet/<ibge>/<schema>/<tabela>.parquet
+--           (ou <ibge>/<schema>/<tabela>/ano=<ano>/<tabela>.parquet se partition_by_ano)
+--   global: s3://mirante-parquet/_global/<schema>/<tabela>.parquet
+--   (schema físico no path evita colisão entre schemas homônimos, ex.: aise.entidade vs siscop.entidade)
 --
 -- Em todos os ERPs (Elotech eloweb, Betha, IPM, etc.) o path do MinIO usa
 -- a tabela do destino RAW (camelCase do leiaute SIM-AM) -- a origem
@@ -34,10 +36,10 @@ SELECT
     '2026'                    AS _exercicio,
     '0'                       AS _competencia,
     'eloweb'                  AS _fonte,
-    'Empenho.parquet'         AS _arquivo,
+    'siscop/empenho.parquet'  AS _arquivo,
     now()                     AS _ingerido_em
 FROM s3(
-    'http://mirante-minio:9000/mirante-parquet/4117107/Empenho/ano=2026/part-0.parquet',
+    'http://mirante-minio:9000/mirante-parquet/4117107/siscop/empenho.parquet',
     'minioadmin', '<secret>', 'Parquet'
 );
 
