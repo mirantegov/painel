@@ -83,7 +83,7 @@ func main() {
 	log.Printf("concluído em %s (%d arquivos).", elapsed, len(res.Files))
 }
 
-// writeLog grava log/exporter_<data_hora>.log com início/fim, duração,
+// writeLog grava log/export_<ibge>_<data_hora>.log com início/fim, duração,
 // status e a lista de arquivos exportados. Cria a pasta log/ se não existir.
 func writeLog(cfg exporter.Config, res *exporter.Result, start, end time.Time, runErr error) (string, error) {
 	const logDir = "log"
