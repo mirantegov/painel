@@ -12,37 +12,6 @@ export const patrimonioResumo = {
   manutencoesProgramadas: 19,
 };
 
-export const alertasPatrimonio = [
-  {
-    tipo: "warning" as const,
-    titulo: "Imóveis de saúde concentram pendências documentais",
-    badge: "Regularização",
-    descricao:
-      "Três unidades de saúde e um almoxarifado central ainda aguardam averbação e atualização cadastral para fechamento do inventário anual.",
-  },
-  {
-    tipo: "info" as const,
-    titulo: "Educação mantém melhor índice de conservação predial",
-    badge: "Conservação",
-    descricao:
-      "As escolas municipais apresentam 88% de conformidade física após execução dos contratos de manutenção preventiva do primeiro semestre.",
-  },
-  {
-    tipo: "warning" as const,
-    titulo: "Estoque crítico de TI e limpeza abaixo da cobertura ideal",
-    badge: "Suprimentos",
-    descricao:
-      "Itens essenciais para unidades administrativas e equipamentos de rede operam com cobertura inferior a 20 dias em parte das secretarias.",
-  },
-  {
-    tipo: "success" as const,
-    titulo: "Áreas públicas de lazer com cronograma ativo de cuidado",
-    badge: "Zeladoria",
-    descricao:
-      "Praças, parques e campos esportivos têm 92% das rotinas trimestrais lançadas, favorecendo previsibilidade de manutenção.",
-  },
-];
-
 export const composicaoPatrimonio = [
   { categoria: "Prédios públicos", valor: 118_000_000, fill: "var(--chart-1)" },
   { categoria: "Equipamentos", valor: 64_500_000, fill: "var(--chart-2)" },
@@ -549,7 +518,6 @@ export const termosResponsabilidade = [
 
 export const PATRIMONIO_SNAPSHOT = {
   patrimonioResumo,
-  alertasPatrimonio,
   composicaoPatrimonio,
   chartConfigComposicao,
   evolucaoPatrimonio,

@@ -20,8 +20,6 @@ import {
   FilterIcon,
   RefreshIcon,
   Alert02Icon,
-  CheckmarkCircle02Icon,
-  InformationCircleIcon,
   Target01Icon,
   AlertCircleIcon,
   SecurityCheckIcon,
@@ -52,7 +50,6 @@ import {
   AreaChart,
 } from "recharts";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -117,14 +114,12 @@ export function Saude() {
     produtividadeProfissionais,
     estoqueMedicamentos,
     programasSaude,
-    alertasSaude,
     aspsCompliance,
     indicadoresMortalidade,
     vigilanciaDoencas,
     notificacoesSINAN,
     chartConfigNotificacoes,
     coberturaVacinal,
-    alertasVigilancia,
     filasEspecialidades,
     filasExames,
     regulacaoResumo,
@@ -286,33 +281,6 @@ export function Saude() {
                 Consultas + exames aguardando
               </p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon
-                icon={InformationCircleIcon}
-                strokeWidth={2}
-                className="size-5"
-              />
-              Alertas de Gestão
-            </CardTitle>
-            <CardDescription>
-              Pontos que merecem acompanhamento dos gestores de saúde.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {alertasSaude.map((alerta) => (
-              <Alert key={alerta.titulo}>
-                <AlertTitle className="flex flex-wrap items-center gap-2">
-                  {alerta.titulo}
-                  <Badge variant="secondary">{alerta.badge}</Badge>
-                </AlertTitle>
-                <AlertDescription>{alerta.descricao}</AlertDescription>
-              </Alert>
-            ))}
           </CardContent>
         </Card>
       </div>
@@ -1384,42 +1352,6 @@ export function Saude() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Vigilância Alerts */}
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-foreground">
-              Alertas Epidemiológicos
-            </h3>
-            <div className="grid gap-3 lg:grid-cols-2">
-              {alertasVigilancia.map((alerta, index) => (
-                <Alert
-                  key={index}
-                  variant={
-                    alerta.tipo === "warning" ? "destructive" : "default"
-                  }
-                >
-                  <HugeiconsIcon
-                    icon={
-                      alerta.tipo === "warning"
-                        ? Alert02Icon
-                        : alerta.tipo === "success"
-                          ? CheckmarkCircle02Icon
-                          : InformationCircleIcon
-                    }
-                    strokeWidth={2}
-                    className="size-4"
-                  />
-                  <AlertTitle className="flex items-center gap-2">
-                    {alerta.titulo}
-                    <Badge variant="outline" className="text-xs">
-                      {alerta.badge}
-                    </Badge>
-                  </AlertTitle>
-                  <AlertDescription>{alerta.descricao}</AlertDescription>
-                </Alert>
-              ))}
-            </div>
           </div>
         </TabsContent>
 

@@ -51,7 +51,6 @@ import {
   MoneySendSquareIcon,
   InvoiceIcon,
   AlertCircleIcon,
-  InformationCircleIcon,
   CheckmarkCircle01Icon,
 } from "@hugeicons/core-free-icons";
 import {
@@ -669,46 +668,6 @@ export function FinanceiroSaneamento() {
 
       {/* Tabela Detalhada */}
       <TabelaDespesasDetalhada />
-
-      {/* Leitura Executiva */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <HugeiconsIcon
-              icon={InformationCircleIcon}
-              strokeWidth={2}
-              className="h-5 w-5"
-            />
-            Leitura Executiva
-          </CardTitle>
-          <CardDescription>Financeiro do Saneamento</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-lg bg-muted/50 p-4">
-              <h4 className="font-semibold text-sm mb-2">Receita e Despesa</h4>
-              <p className="text-sm text-muted-foreground">
-                A receita total de{" "}
-                {formatCurrencyCompact(RECEITA_TOTAL_SANEAMENTO)} gera superávit
-                de {formatCurrencyCompact(superavit)}, com índice de
-                autossuficiência de {indiceAutoSuficiencia.toFixed(0)}%. A
-                tarifa média é de R$ {tarifaMedia.toFixed(2)}/m³. Energia
-                elétrica e pessoal concentram as maiores rubricas de despesa.
-              </p>
-            </div>
-            <div className="rounded-lg bg-muted/50 p-4">
-              <h4 className="font-semibold text-sm mb-2">Inadimplência</h4>
-              <p className="text-sm text-muted-foreground">
-                A inadimplência de {formatPercent(INADIMPLENCIA_PCT)} está acima
-                da meta de 15%. O contas a receber acumula{" "}
-                {formatCurrencyCompact(CONTAS_RECEBER)}, com maior concentração
-                nas faixas até 30 dias. Recomenda-se intensificar a cobrança
-                administrativa e renegociação de débitos acima de 90 dias.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

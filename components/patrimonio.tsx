@@ -13,7 +13,6 @@ import {
   ChartLineData02Icon,
   CheckmarkCircle02Icon,
   FileValidationIcon,
-  InformationCircleIcon,
   AlertCircleIcon,
   SecurityCheckIcon,
   Target01Icon,
@@ -39,7 +38,6 @@ import {
   YAxis,
 } from "recharts";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -108,7 +106,6 @@ function badgeClassForCriticality(level: string) {
 export function Patrimonio() {
   const {
     patrimonioResumo,
-    alertasPatrimonio,
     composicaoPatrimonio,
     chartConfigComposicao,
     evolucaoPatrimonio,
@@ -248,34 +245,6 @@ export function Patrimonio() {
                 19 frentes de manutenção preventiva já programadas.
               </p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <HugeiconsIcon
-                icon={InformationCircleIcon}
-                strokeWidth={2}
-                className="size-5"
-              />
-              Alertas de Gestão
-            </CardTitle>
-            <CardDescription>
-              Pontos que merecem acompanhamento do gestor patrimonial e das
-              secretarias finalísticas.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {alertasPatrimonio.map((alerta) => (
-              <Alert key={alerta.titulo}>
-                <AlertTitle className="flex flex-wrap items-center gap-2">
-                  {alerta.titulo}
-                  <Badge variant="secondary">{alerta.badge}</Badge>
-                </AlertTitle>
-                <AlertDescription>{alerta.descricao}</AlertDescription>
-              </Alert>
-            ))}
           </CardContent>
         </Card>
       </div>

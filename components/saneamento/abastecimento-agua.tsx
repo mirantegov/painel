@@ -672,50 +672,6 @@ export function AbastecimentoAgua() {
 
       {/* Tabela Detalhada */}
       <TabelaParametros />
-
-      {/* Leitura Executiva */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <HugeiconsIcon
-              icon={InformationCircleIcon}
-              strokeWidth={2}
-              className="h-5 w-5"
-            />
-            Leitura Executiva
-          </CardTitle>
-          <CardDescription>Abastecimento de Água Potável</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-lg bg-muted/50 p-4">
-              <h4 className="font-semibold text-sm mb-2">
-                Cobertura e Qualidade
-              </h4>
-              <p className="text-sm text-muted-foreground">
-                O sistema de abastecimento atende{" "}
-                {formatPercent(COBERTURA_AGUA_PCT)} da população, com{" "}
-                {formatNumber(LIGACOES_ATIVAS_AGUA)} ligações ativas. A
-                qualidade da água mantém conformidade média acima de 98% nos
-                parâmetros de potabilidade da Portaria GM/MS 888, com todos os
-                parâmetros dentro dos limites estabelecidos.
-              </p>
-            </div>
-            <div className="rounded-lg bg-muted/50 p-4">
-              <h4 className="font-semibold text-sm mb-2">
-                Perdas e Eficiência
-              </h4>
-              <p className="text-sm text-muted-foreground">
-                O índice de perda de {formatPercent(INDICE_PERDA_AGUA_PCT)} está
-                abaixo da média nacional (40,1% SNIS), mas ainda acima da meta
-                de 25%. A ETA opera a {etaPct.toFixed(0)}% da capacidade, com
-                folga para atender o crescimento projetado. Prioridade: redução
-                de perdas reais via setorização e controle de pressão.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

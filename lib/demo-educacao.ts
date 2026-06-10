@@ -894,37 +894,6 @@ export const formacaoContinuada = [
 
 // ── Dados de Análise ───────────────────────────────────────────────
 
-export const alertasEducacao = [
-  {
-    tipo: "warning" as const,
-    titulo: "IDEB dos anos finais abaixo da meta",
-    badge: "Qualidade",
-    descricao:
-      "IDEB de 5,1 nos anos finais está 0,4 pontos abaixo da meta de 5,5. Necessário reforço em Língua Portuguesa e Matemática.",
-  },
-  {
-    tipo: "warning" as const,
-    titulo: "Compra da agricultura familiar abaixo de 30%",
-    badge: "Alimentação",
-    descricao:
-      "Apenas 42,8% da meta de 30% do PNAE está sendo cumprida com agricultura familiar. Risco de descumprimento legal.",
-  },
-  {
-    tipo: "info" as const,
-    titulo: "IDEB dos anos iniciais supera meta nacional",
-    badge: "Desempenho",
-    descricao:
-      "6,2 nos anos iniciais supera a meta de 6,0 e posiciona o município acima da média estadual de 5,8.",
-  },
-  {
-    tipo: "success" as const,
-    titulo: "Taxa de evasão abaixo da meta estabelecida",
-    badge: "Permanência",
-    descricao:
-      "1,8% de evasão, abaixo da meta de 2,0%, demonstrando efetividade das políticas de busca ativa e permanência escolar.",
-  },
-];
-
 export const EDUCACAO_SNAPSHOT = {
   greenPalette,
   educacaoResumo,
@@ -955,5 +924,4 @@ export const EDUCACAO_SNAPSHOT = {
   metasPME,
   infraestruturaEscolar,
   formacaoContinuada,
-  alertasEducacao,
 };

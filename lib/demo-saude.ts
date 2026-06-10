@@ -387,37 +387,6 @@ export const programasSaude = [
   },
 ];
 
-export const alertasSaude = [
-  {
-    tipo: "warning" as const,
-    titulo: "Estoque crítico de insulina NPH",
-    badge: "Medicamentos",
-    descricao:
-      "Cobertura de apenas 41 dias. Necessário processo emergencial de aquisição para atender pacientes diabéticos.",
-  },
-  {
-    tipo: "warning" as const,
-    titulo: "Tempo de espera acima da meta",
-    badge: "Atendimento",
-    descricao:
-      "Tempo médio de 18 dias está 20% acima da meta de 15 dias. Concentrado em especialidades de cardiologia e ortopedia.",
-  },
-  {
-    tipo: "info" as const,
-    titulo: "Cobertura ESF supera meta estabelecida",
-    badge: "Atenção Básica",
-    descricao:
-      "87,4% da população coberta pela Estratégia Saúde da Família, superando a meta de 85% e a média nacional de 75%.",
-  },
-  {
-    tipo: "success" as const,
-    titulo: "Resolutividade da APS acima de 90%",
-    badge: "Qualidade",
-    descricao:
-      "91,2% dos casos resolvidos na Atenção Primária, reduzindo sobrecarga no hospital e na UPA.",
-  },
-];
-
 // ─── ASPS Compliance (EC 29 / LC 141) ─────────────────────────────────
 export const aspsCompliance = {
   receitaImpostos: 248_600_000,
@@ -555,37 +524,6 @@ export const coberturaVacinal = [
     cobertura: 62.8,
     meta: 80.0,
     publicoAlvo: "Adultos 60+",
-  },
-];
-
-export const alertasVigilancia = [
-  {
-    tipo: "warning" as const,
-    titulo: "Surto de dengue na região Norte",
-    badge: "Arboviroses",
-    descricao:
-      "Aumento de 180% nos casos de dengue no bairro Jardim Esperança. LIRAa indica 4,2% de infestação predial, acima do limite de 3,9%.",
-  },
-  {
-    tipo: "warning" as const,
-    titulo: "Sífilis congênita acima do aceitável",
-    badge: "IST",
-    descricao:
-      "6 casos confirmados no semestre, acima da meta de eliminação (0,5/1.000 NV). Necessário fortalecer pré-natal e testagem rápida.",
-  },
-  {
-    tipo: "info" as const,
-    titulo: "Campanha de vacinação contra Influenza",
-    badge: "Imunização",
-    descricao:
-      "Cobertura vacinal de 72,4% para influenza. Meta de 90% requer intensificação da busca ativa em idosos e gestantes.",
-  },
-  {
-    tipo: "success" as const,
-    titulo: "Hanseníase em tendência de queda",
-    badge: "Doenças Crônicas",
-    descricao:
-      "Redução de 25% nos casos novos em relação ao mesmo período do ano anterior. Manter vigilância de contatos.",
   },
 ];
 
@@ -983,14 +921,12 @@ export const SAUDE_SNAPSHOT = {
   produtividadeProfissionais,
   estoqueMedicamentos,
   programasSaude,
-  alertasSaude,
   aspsCompliance,
   indicadoresMortalidade,
   vigilanciaDoencas,
   notificacoesSINAN,
   chartConfigNotificacoes,
   coberturaVacinal,
-  alertasVigilancia,
   filasEspecialidades,
   filasExames,
   regulacaoResumo,

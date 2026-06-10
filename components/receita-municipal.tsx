@@ -135,7 +135,6 @@ export function ReceitaMunicipal() {
     totaisGerais,
     distribuicaoOrigem,
     topContribuintes,
-    alertasReceita,
     eventosReceita,
     metasArrecadacao,
     inadimplencia,

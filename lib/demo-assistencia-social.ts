@@ -153,30 +153,6 @@ export const contasBancarias = [
   },
 ];
 
-export const alertas = [
-  {
-    tipo: "warning" as const,
-    titulo: "Habitação e regularização fundiária abaixo da meta",
-    badge: "Prioridade",
-    descricao:
-      "O avanço do programa está em 73% e demanda reforço documental e operacional.",
-  },
-  {
-    tipo: "info" as const,
-    titulo: "CadÚnico mantém alta cobertura cadastral",
-    badge: "CadÚnico",
-    descricao:
-      "O monitoramento territorial dos CRAS sustenta 92% de cobertura no período.",
-  },
-  {
-    tipo: "success" as const,
-    titulo: "Conciliação bancária do FMAS está estabilizada",
-    badge: "Financeiro",
-    descricao:
-      "As principais contas vinculadas permanecem acima de 95% de conciliação.",
-  },
-];
-
 export const detalhamentoDespesa = [
   {
     grupo: "Proteção Social Básica",
@@ -1243,7 +1219,6 @@ export const ASSISTENCIA_SOCIAL_SNAPSHOT = {
   chartProgramas,
   desempenhoProgramas,
   contasBancarias,
-  alertas,
   detalhamentoDespesa,
   receitasPorOrigem,
   chartReceitasOrigem,
