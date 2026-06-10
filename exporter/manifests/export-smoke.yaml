@@ -3,7 +3,7 @@
 bucket: mirante-parquet
 tables:
   - source: siscop.banco        # global, pequena — testa leitura + upload
-    scope: global
+    scope: tenant
   - source: siscop.entidade     # tenant filtrada — testa filtro por entidade + path <ibge>/
     scope: tenant
     filters: { entidade: [__ENTIDADES__] }
