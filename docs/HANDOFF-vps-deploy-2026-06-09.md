@@ -40,7 +40,14 @@ Status: **homologação no ar com HTTPS válido em produção** + **pipeline de 
 - MinIO exposto via Traefik: **`https://minio.mirantegov.cloud`** (router em `infra/traefik/dynamic/minio.yml`, DNS Cloudflare). Console segue por túnel SSH.
 - Layout MinIO: **`<ibge>/<schema>/<tabela>.parquet`** (ex.: `4117107/siscop/empenho.parquet`). **Sem `_global/`** — tudo sob o município (evita colisão entre municípios).
 - Parquet **preserva a ordem das colunas da origem** (fix `orderedGroup` no parquet-go; teste em `writer_order_test.go`).
-- Elotech eloweb = schema `siscop`. Já exportado p/ Nova Londrina (59 tabelas siscop).
+- **3 manifests por schema** (decisão (b) — só tabelas-base; lógica das views vai pro ETL):
+  - `manifests/elotech-eloweb.yaml` — **siscop** (59 tab, contábil). Já exportado p/ Nova Londrina.
+  - `manifests/elotech-aise.yaml` — **aise** (122 tab, RH + Tributos no mesmo schema).
+  - `manifests/elotech-apice.yaml` — **apice** (53 tab, licitações/contratos).
+- **Filtros DERIVADOS dos DDLs reais** (`tmp/eloweb.dump`, gitignored): `entidade` onde a coluna existe; `+ano` (anocompetencia→exercicio→exerciciopagamento→exerciciobloqueto) onde existe; full nas demais. Filtro com coluna inexistente aborta o run, então todos foram conferidos contra a coluna real.
+  - Views detectadas no dump foram REMOVIDAS dos manifests: `aise.endereco` (1) e as 10 `apice.*arquivo` + 3 views derivadas.
+  - **APICE: piso de ano = 2000** (não 2004 como a contabilidade) — contratos antigos em andamento referenciam licitações antigas. Passar `--var EXERCICIOS` começando em 2000.
+- Coleta documentada: [`docs/coleta-rh-tabelas.md`](coleta-rh-tabelas.md), [`docs/coleta-tributos-tabelas.md`](coleta-tributos-tabelas.md), [`docs/coleta-apice-tabelas.md`](coleta-apice-tabelas.md).
 
 **E7 — ClickHouse multi-tenant por IBGE**
 - Databases por município: **`raw_<ibge>`** (landing, espelha o MinIO/Eloweb) e **`sim_<ibge>`** (canônico SIM-AM). Postgres serving permanece `mun_<ibge>`.
@@ -49,12 +56,12 @@ Status: **homologação no ar com HTTPS válido em produção** + **pipeline de 
 - **Nova Londrina (4117107) provisionada e importada:** `raw_4117107` (59 tab `siscop_*`, com dados) + `sim_4117107` (339).
 - CLI no mac: `clickhouse client` (config `~/.clickhouse-client/config.xml` → `sim_4117107`). DataGrip via HTTP 8123.
 
-**Em andamento — coleta APICE (licitações/contratos)**
-- 19 SQLs analisados → **63 tabelas + 3 views** do schema `apice` levantadas (lista no histórico da sessão). **Ainda NÃO adicionadas ao exportador.** Decisão pendente: exportar as 3 views direto vs base.
-- **Falta:** SQLs de **tributos e RH (schema AISE)**. Depois consolidar manifests por schema.
-- Backlog registrado: após RH+tributos, gap analysis Marts × dados coletados (ver memória).
+**Coleta concluída (siscop + aise + apice)** — decisão (b) fechada (só tabelas-base; views = lógica de ETL). Manifests prontos e validados (parse + colunas reais). Backlog registrado: após coleta, gap analysis Marts × dados coletados (ver memória).
 
-**Próximo do pipeline:** ETL `raw_<ibge>.siscop_*` → `sim_<ibge>.*` (mapeamento Elotech→SIM-AM, ver `docs/epico5-elotech-queries.md` + template `infra/clickhouse/schema/etl/README-pipeline.sql`). Depois sync `sim_<ibge>` → Postgres `mun_<ibge>` (E8).
+**Próximo do pipeline:**
+1. **Rodar o exportador `aise` e `apice`** no Windows do cliente — precisa da lista de `entidades` do município (`--var ENTIDADES`) e `--var EXERCICIOS` (apice ≥ 2000). O 1º run valida os filtros na prática.
+2. Importar p/ `raw_<ibge>` (`aise_*`, `apice_*`) via `import_raw.sh`.
+3. **ETL `raw_<ibge>.{siscop,aise,apice}_*` → `sim_<ibge>.*`** (Elotech→SIM-AM; reimplementar a lógica das views da Elotech). Depois sync `sim_<ibge>` → Postgres `mun_<ibge>` (E8).
 
 ## Segredos
 
@@ -68,7 +75,7 @@ Status: **homologação no ar com HTTPS válido em produção** + **pipeline de 
 - **E1.3** reservar/criar subdomínios `traefik.`/`studio.`/`minio.`/`clickhouse.` quando expostos.
 - **E2** deprecar `setup/vps/` e `setup-vps.sh` (legado Nginx/Certbot); documentar rollback.
 - **E4** hardening (provision-tenant, validação JWT no boot, troca de senha, testes de API).
-- **E6/E7 em curso:** exportador→MinIO OK; `raw_<ibge>`/`sim_<ibge>` provisionados e RAW importado (Nova Londrina). **Falta:** coleta APICE (63 tab + 3 views levantadas, não no exportador) + AISE (tributos/RH); ETL `raw_<ibge>`→`sim_<ibge>`; sync→Postgres (E8).
+- **E6/E7 em curso:** exportador→MinIO OK; `raw_<ibge>`/`sim_<ibge>` provisionados, RAW siscop importado (Nova Londrina). **3 manifests prontos** (siscop/aise/apice, filtros DDL-derivados). **Falta:** rodar `aise`+`apice` no Windows → importar p/ `raw_<ibge>`; ETL `raw_<ibge>`→`sim_<ibge>` (reimplementar lógica das views); sync→Postgres (E8).
 - **Fix IP dinâmico** do allowlist SSH.
 - **Backups** Postgres (E10) — ainda não configurados.
 

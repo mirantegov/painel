@@ -1,0 +1,196 @@
+# Manifest Elotech `apice` — LICITAÇÕES + CONTRATOS (raw).
+# Tudo no schema `apice`. (Tributos/RH ficam em `aise`; contábil em `siscop`.)
+# Município = IBGE (path no MinIO). Fonte: docs/coleta-apice-tabelas.md.
+#
+# DECISÃO (b) — exportamos só TABELAS-BASE. As views da Elotech ficam FORA
+# (a derivação, ex.: valormaximototal, é reimplementada no ETL). REMOVIDAS deste
+# manifest por serem VIEWS (confirmado no dump): cllicitacao_andamento_prev,
+# cllicitacaoitem_calculado, view_nadarquivo e as 10 *arquivo (cllicitacaoarquivo,
+# clcontratoarquivo, clpedidoarquivo, cllistacompraarquivo, claditivoarquivo,
+# clhomologacaoarquivo, clsolicdiariaarquivo, cladjudicacaoarquivo, clminutaarquivo,
+# clsolicitacaoarquivo). O conteúdo de arquivos fica na base `apice.arquivo`.
+#
+# FILTROS DERIVADOS DOS DDLs reais (tmp/eloweb.dump):
+#   • `entidade`+exercicio → tabela tem ambas as colunas (transacional cl*).
+#   • `entidade`           → tem entidade, sem exercicio.
+#   • sem filtro           → dimensões/lookup sem entidade.
+# Distribuição: 34 entidade+exercicio · 5 entidade · 14 full (53 tabelas).
+#
+# ⚠️ PISO DE ANO = 2000 (não 2004 como a contabilidade): contratos em andamento
+#    daquela época referenciam licitações antigas. Passe EXERCICIOS começando em
+#    2000 (ex.: "2000, 2001, …, 2026"). O filtro de ano usa a coluna `exercicio`
+#    da própria licitação/contrato, então licitações 2000+ são preservadas.
+#
+# Tabelas compartilhadas de nome (pessoa, cidade, entidade, enderecopessoa)
+# também existem em `aise` — aqui são objetos SEPARADOS (apice.pessoa ≠ aise.pessoa);
+# no MinIO/ClickHouse viram apice_<tabela> vs aise_<tabela> (sem colisão).
+#
+# Rode com (EXERCICIOS a partir de 2000):
+#   go run . --municipio <ibge> --ano <qualquer> \
+#            --var ENTIDADES="1, 2, 3" \
+#            --var EXERCICIOS="2000, 2001, 2002, ... , 2025, 2026" \
+#            --manifest manifests/elotech-apice.yaml
+bucket: mirante-parquet
+tables:
+  # ── Licitação — núcleo ──
+  - source: apice.cllicitacao
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.cltipolicitacao
+    scope: tenant
+  - source: apice.cllicitacaoitem
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.cllicitacaopublicacao
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.cllicitacaorecurso
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__] }
+  - source: apice.cllicitacaofundamentolegal
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clmidiasonline
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.naturezaprocedimento
+    scope: tenant
+  - source: apice.tipoparticipacao
+    scope: tenant
+  - source: apice.parametro
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+
+  # ── Licitação — itens / centro de custo ──
+  - source: apice.cllicitacaocentrocusto
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.cllicitacaoitemcentrocusto
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.cltransferenciacc
+    scope: tenant
+  - source: apice.cltransferenciaitem
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clreqlicitacao
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clreqlicitacaoitem
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+
+  # ── Proposta / análise / homologação / realinhamento ──
+  - source: apice.clpropostacomercial
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clanalisevencedor
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clhomologacao
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clhistoricovencedor
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__] }
+  - source: apice.clrealinhaitem
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clrealinhamento
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+
+  # ── Cotação / anexo / parecer / minuta / pedido / solicitação ──
+  - source: apice.clcotacao
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clcotacaoitem
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clanexo
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clanexodespesa
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__] }
+  - source: apice.clparecer
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clminuta
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clpedido
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__] }
+  - source: apice.clsolicitacao
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clsolicitacaoitem
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.cllistaarquivos
+    scope: tenant
+
+  # ── Contrato + aditivos + documentação ──
+  - source: apice.clcontrato
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clcontratoatocontratual
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.claditivoitem
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.contratosuspenso
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clcontratodocumentacao
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.cldocumentacao
+    scope: tenant
+  - source: apice.clcontratopublicacao
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.claditivopublicacao
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clorgaopublicacao
+    scope: tenant
+  - source: apice.clregimeexecucao
+    scope: tenant
+
+  # ── NAD ──
+  - source: apice.clnad
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clnaditem
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+
+  # ── Arquivos (telas de upload) ──
+  - source: apice.arquivo
+    scope: tenant
+  - source: apice.cllicitacaofornecedor
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.clatapregao
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: apice.pessoadocumentacao
+    scope: tenant
+
+  # ── Pessoas / entidade / local ──
+  - source: apice.pessoa
+    scope: tenant
+  - source: apice.enderecopessoa
+    scope: tenant
+  - source: apice.cidade
+    scope: tenant
+  - source: apice.entidade
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__] }
+
+  # ── CNAE ──
+  - source: apice.cnaesubclasse
+    scope: tenant
