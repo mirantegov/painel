@@ -7,13 +7,38 @@ import (
 	"github.com/parquet-go/parquet-go"
 )
 
-// BuildSchema monta o schema Parquet dinâmico a partir das colunas de origem.
+// orderedGroup é um parquet.Group que PRESERVA a ordem das colunas. O
+// parquet.Group padrão é um map e o parquet-go ordena os campos alfabeticamente
+// em Fields(); aqui reordenamos para a ordem da origem (ordinal do Postgres).
+type orderedGroup struct {
+	parquet.Group
+	order []string // nomes na ordem desejada (ordem das colunas da origem)
+}
+
+func (g orderedGroup) Fields() []parquet.Field {
+	byName := make(map[string]parquet.Field, len(g.order))
+	for _, f := range g.Group.Fields() { // Fields() do Group entrega os Field corretos
+		byName[f.Name()] = f
+	}
+	out := make([]parquet.Field, 0, len(g.order))
+	for _, name := range g.order {
+		if f, ok := byName[name]; ok {
+			out = append(out, f)
+		}
+	}
+	return out
+}
+
+// BuildSchema monta o schema Parquet dinâmico a partir das colunas de origem,
+// preservando a ordem das colunas (igual à da base de origem).
 func BuildSchema(name string, cols []Column) *parquet.Schema {
 	g := parquet.Group{}
-	for _, c := range cols {
+	order := make([]string, len(cols))
+	for i, c := range cols {
 		g[c.Name] = nodeFor(c.OID)
+		order[i] = c.Name
 	}
-	return parquet.NewSchema(name, g)
+	return parquet.NewSchema(name, orderedGroup{Group: g, order: order})
 }
 
 // WriteParquet serializa as linhas (map[string]any) em um buffer Parquet.
