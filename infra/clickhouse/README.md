@@ -7,6 +7,8 @@ convertidas, espelhando o layout **SIM-AM 2026** do Tribunal de Contas do Paran�
 MinIO (Parquet)  ->  simam_raw (landing, tudo String)  ->  ETL  ->  simam (tratado, tipado)
 ```
 
+> **Deploy multi-tenant por IBGE (produção).** `simam`/`simam_raw` aqui são o **template** do schema. Em produção, cada município ganha **`raw_<ibge>`** (landing) e **`sim_<ibge>`** (canônico), criados por `bash scripts/provision-cliente.sh <ibge>` (tool `tools/provision_municipio.py`, substitui os nomes). O **RAW espelha a origem** (Eloweb): `import_raw.sh <ibge>` cria `raw_<ibge>.<schema>_<tabela>` (ex.: `siscop_empenho`, `aise_rhfichafinanceira`, `apice_cllicitacao`) por inferência do Parquet. Estado: Nova Londrina (4117107) provisionada, RAW siscop importado. Próximo: ETL `raw_<ibge>.*` → `sim_<ibge>.*`. Ver [`docs/HANDOFF-vps-deploy-2026-06-09.md`](../../docs/HANDOFF-vps-deploy-2026-06-09.md).
+
 ## Subir
 
 ```bash
