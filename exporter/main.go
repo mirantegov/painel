@@ -90,7 +90,8 @@ func writeLog(cfg exporter.Config, res *exporter.Result, start, end time.Time, r
 	if err := os.MkdirAll(logDir, 0o755); err != nil {
 		return "", err
 	}
-	path := filepath.Join(logDir, "exporter_"+start.Format("20060102_150405")+".log")
+	// log/export_<ibge>_<AAAAMMDD_HHMMSS>.log
+	path := filepath.Join(logDir, "export_"+cfg.Municipio+"_"+start.Format("20060102_150405")+".log")
 	f, err := os.Create(path)
 	if err != nil {
 		return "", err
