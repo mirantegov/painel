@@ -29,6 +29,7 @@ tables:
   # ── Dimensões por-ente ──────────────────────────────────────────
   - source: siscop.entidade
     scope: tenant
+    exclude_columns: [brasao]  # bytea (blob) — não exporta
     filters: { entidade: [__ENTIDADES__] }
   - source: siscop.exercicio
     scope: tenant
@@ -172,6 +173,7 @@ tables:
   # ── Contexto: convênio / contrato / dívida (refs do empenho) ────
   - source: siscop.cadastroconvenio # convênios (sem exercicio)
     scope: tenant
+    exclude_columns: [anexo]  # bytea (blob) — não exporta
     filters: { entidade: [__ENTIDADES__] }
   - source: siscop.contrato # contratos
     scope: tenant

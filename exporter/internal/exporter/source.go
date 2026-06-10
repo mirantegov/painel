@@ -45,10 +45,59 @@ func NewSource(ctx context.Context, dsn string) (*Source, error) {
 
 func (s *Source) Close() { s.pool.Close() }
 
+// tableColumns retorna as colunas da tabela na ordem da origem (ordinal),
+// via information_schema — usado p/ resolver exclude_columns em runtime.
+func (s *Source) tableColumns(ctx context.Context, schemaName, table string) ([]string, error) {
+	rows, err := s.pool.Query(ctx,
+		`select column_name from information_schema.columns
+		   where table_schema = $1 and table_name = $2
+		   order by ordinal_position`, schemaName, table)
+	if err != nil {
+		return nil, fmt.Errorf("listando colunas de %s.%s: %w", schemaName, table, err)
+	}
+	defer rows.Close()
+	var cols []string
+	for rows.Next() {
+		var c string
+		if err := rows.Scan(&c); err != nil {
+			return nil, fmt.Errorf("scan coluna %s.%s: %w", schemaName, table, err)
+		}
+		cols = append(cols, c)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	if len(cols) == 0 {
+		return nil, fmt.Errorf("%s.%s: nenhuma coluna encontrada (tabela existe?)", schemaName, table)
+	}
+	return cols, nil
+}
+
 // Dump lê uma tabela inteira (raw fiel). Retorna as colunas (nome+OID) e as
 // linhas como map[string]any já convertidas para tipos amigáveis ao Parquet.
 // schemaName é o schema físico (public ou mun_<ibge>). ano, se != nil, filtra.
-func (s *Source) Dump(ctx context.Context, schemaName, table string, columns []string, filters map[string]any, ano *int) ([]Column, []map[string]any, error) {
+// exclude: colunas a remover (ex.: blobs bytea); só vale quando columns vazio.
+func (s *Source) Dump(ctx context.Context, schemaName, table string, columns, exclude []string, filters map[string]any, ano *int) ([]Column, []map[string]any, error) {
+	// exclude_columns: sem lista explícita, busca as colunas reais (na ordem da
+	// origem) e remove as excluídas. Assim o dump não carrega blobs bytea.
+	if len(columns) == 0 && len(exclude) > 0 {
+		all, err := s.tableColumns(ctx, schemaName, table)
+		if err != nil {
+			return nil, nil, err
+		}
+		ex := make(map[string]bool, len(exclude))
+		for _, c := range exclude {
+			ex[c] = true
+		}
+		for _, c := range all {
+			if !ex[c] {
+				columns = append(columns, c)
+			}
+		}
+		if len(columns) == 0 {
+			return nil, nil, fmt.Errorf("%s.%s: todas as colunas foram excluídas", schemaName, table)
+		}
+	}
 	colExpr := "*"
 	if len(columns) > 0 {
 		quoted := make([]string, len(columns))

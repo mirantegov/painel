@@ -23,6 +23,10 @@ type Table struct {
 	Scope string `yaml:"scope"`
 	// Columns: subconjunto de campos; vazio = todas (raw fiel).
 	Columns []string `yaml:"columns,omitempty"`
+	// ExcludeColumns: colunas a NÃO exportar (ex.: blobs bytea, que só pesam o
+	// dump e não usamos). Resolvido em runtime via information_schema, preservando
+	// a ordem da origem. Só tem efeito quando Columns está vazio.
+	ExcludeColumns []string `yaml:"exclude_columns,omitempty"`
 	// PartitionByAno: filtra WHERE ano=$ano e particiona em ano=<ano>/.
 	PartitionByAno bool `yaml:"partition_by_ano,omitempty"`
 	// Filters: predicados de igualdade (coluna→valor), p/ recortar 1 cliente.
@@ -78,6 +82,11 @@ func LoadManifest(path string, vars map[string]string) (*Manifest, error) {
 		for _, c := range t.Columns {
 			if !identRe.MatchString(c) {
 				return nil, fmt.Errorf("manifest: coluna inválida %q em %q", c, t.Source)
+			}
+		}
+		for _, c := range t.ExcludeColumns {
+			if !identRe.MatchString(c) {
+				return nil, fmt.Errorf("manifest: coluna de exclusão inválida %q em %q", c, t.Source)
 			}
 		}
 		for c := range t.Filters {
