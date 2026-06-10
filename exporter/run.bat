@@ -15,14 +15,15 @@ set S3_SECRET_KEY=PREENCHA
 
 REM --- Alvo: IBGE + entidades + exercicios ---
 set IBGE=4117107
+set ANO=2026
 set ENTIDADES=1, 2, 3
 set EXERCICIOS=2024, 2025, 2026
 
 echo.
 echo === SMOKE (siscop.banco + siscop.entidade) ===
-exporter-windows-amd64.exe --municipio %IBGE% --schema siscop --manifest export-smoke.yaml --var ENTIDADES="%ENTIDADES%"
+exporter-windows-amd64.exe --municipio %IBGE% --ano %ANO% --schema siscop --manifest export-smoke.yaml --var ENTIDADES="%ENTIDADES%"
 if errorlevel 1 ( echo FALHOU no smoke & exit /b 1 )
 
 echo.
 echo Smoke OK. Para a exportacao COMPLETA, rode:
-echo   exporter-windows-amd64.exe --municipio %IBGE% --schema siscop --manifest elotech-eloweb.yaml --var ENTIDADES="%ENTIDADES%" --var EXERCICIOS="%EXERCICIOS%"
+echo   exporter-windows-amd64.exe --municipio %IBGE% --ano %ANO% --schema siscop --manifest elotech-eloweb.yaml --var ENTIDADES="%ENTIDADES%" --var EXERCICIOS="%EXERCICIOS%"
