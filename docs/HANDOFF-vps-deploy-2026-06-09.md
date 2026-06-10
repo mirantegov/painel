@@ -42,9 +42,9 @@ Status: **homologação no ar com HTTPS válido em produção** + **pipeline de 
 - Parquet **preserva a ordem das colunas da origem** (fix `orderedGroup` no parquet-go; teste em `writer_order_test.go`).
 - **3 manifests por schema** (decisão (b) — só tabelas-base; lógica das views vai pro ETL):
   - `manifests/elotech-eloweb.yaml` — **siscop** (59 tab, contábil). Já exportado p/ Nova Londrina.
-  - `manifests/elotech-aise.yaml` — **aise** (122 tab, RH + Tributos no mesmo schema).
+  - `manifests/elotech-aise.yaml` — **aise** (122 tab, RH + Tributos no mesmo schema). **Dump FULL** (sem filtro de `entidade`/`exercicio` — por decisão; recorte fica no ETL; dispensa `--var`).
   - `manifests/elotech-apice.yaml` — **apice** (53 tab, licitações/contratos).
-- **Filtros DERIVADOS dos DDLs reais** (`tmp/eloweb.dump`, gitignored): `entidade` onde a coluna existe; `+ano` (anocompetencia→exercicio→exerciciopagamento→exerciciobloqueto) onde existe; full nas demais. Filtro com coluna inexistente aborta o run, então todos foram conferidos contra a coluna real.
+- **Filtros (siscop + apice) DERIVADOS dos DDLs reais** (`tmp/eloweb.dump`, gitignored): `entidade` onde a coluna existe; `+ano` (anocompetencia→exercicio→exerciciopagamento→exerciciobloqueto) onde existe; full nas demais. Filtro com coluna inexistente aborta o run, então todos foram conferidos contra a coluna real. **`aise` não filtra** (full).
   - Views detectadas no dump foram REMOVIDAS dos manifests: `aise.endereco` (1) e as 10 `apice.*arquivo` + 3 views derivadas.
   - **APICE: piso de ano = 2000** (não 2004 como a contabilidade) — contratos antigos em andamento referenciam licitações antigas. Passar `--var EXERCICIOS` começando em 2000.
 - **Blobs `bytea` excluídos** via novo campo `exclude_columns:` no manifest (resolve as colunas reais por `information_schema` em runtime, preservando a ordem; só pesavam o dump). 12 tabelas afetadas (siscop 2, aise 4, apice 6 — ex.: `apice.arquivo.arquivo`, `aise.entidade.brasao`, `apice.cllicitacao.docedital`). Reconferido contra o dump (0 divergências).

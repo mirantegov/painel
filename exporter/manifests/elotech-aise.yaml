@@ -1,7 +1,6 @@
 # Manifest Elotech `aise` — TRIBUTOS + RECURSOS HUMANOS (raw).
 # Tudo no schema `aise`. (No `siscop` ficam despesa/receita/financeiro — ver
-# elotech-eloweb.yaml.) Município = IBGE (path no MinIO). Cada município tem
-# VÁRIAS entidades (coluna `entidade`); exporta-se todas via `entidade IN (...)`.
+# elotech-eloweb.yaml.) Município = IBGE (path no MinIO).
 #
 # DECISÃO (b) — exportamos só TABELAS-BASE. Toda a lógica das views da Elotech
 # (bi.fin_*, folharh.*, aise.v_*, aise.tribview*) é REIMPLEMENTADA no ETL do
@@ -9,31 +8,22 @@
 #   - docs/coleta-rh-tabelas.md        (35 tabelas RH)
 #   - docs/coleta-tributos-tabelas.md  (~90 tabelas Tributos)
 #
-# Rode com (resolve placeholders via --var):
-#   go run . --municipio <ibge> --ano <qualquer> \
-#            --var ENTIDADES="1, 2, 3" --var EXERCICIOS="2023, 2024, 2025, 2026" \
-#            --manifest manifests/elotech-aise.yaml
-#   (--ano e --schema são irrelevantes: o schema vem do prefixo `aise.` no source;
-#    o recorte de ano é o --var EXERCICIOS, aplicado na coluna de ano de cada tabela.)
+# SEM FILTRO (dump FULL de todas as tabelas): por decisão, o `aise` NÃO usa filtro
+# de `entidade` nem de `exercicio`/`anocompetencia` — exporta a tabela inteira. O
+# recorte (entidade/ano), se necessário, fica no ETL do ClickHouse. Logo este
+# manifest NÃO tem placeholders e dispensa `--var`.
 #
-# POLÍTICA DE FILTRO (DERIVADA DOS DDLs reais em tmp/eloweb.dump — filtro com
-# coluna inexistente ABORTA o run, então cada filtro foi confirmado contra a
-# coluna REAL da tabela):
-#   • `entidade`+ano  → tabela TEM `entidade` E coluna de ano. Coluna de ano
-#                       primária (nesta ordem): anocompetencia → exercicio →
-#                       exerciciopagamento → exerciciobloqueto. Valor=__EXERCICIOS__.
-#   • `entidade`      → tem `entidade`, sem coluna de ano.
-#   • sem filtro      → não tem `entidade` (lookups globais, pessoa/endereço/geo,
-#                       cadastro chaveado por tipocadastro+cadastrogeral).
-# Distribuição: 44 entidade+ano · 24 entidade · 54 full (122 tabelas).
+# Rode com:
+#   go run . --municipio <ibge> --ano <qualquer> --manifest manifests/elotech-aise.yaml
+#   (--ano e --schema são irrelevantes: o schema vem do prefixo `aise.` no source.)
+#
+# Único ajuste por tabela: `exclude_columns` para os blobs `bytea` (não exportamos
+# — só pesam o dump). Os rótulos de seção abaixo que mencionam "entidade"/"ano"
+# são HISTÓRICOS (da coleta) — não há mais filtro.
 #
 # Tabelas COMPARTILHADAS com RH↔Tributos (pessoa, cidade, endereço, entidade…)
 # aparecem UMA vez aqui (mesmo `aise_<tabela>` serve aos dois domínios).
 # `aise.endereco` foi REMOVIDA: é VIEW (base = `enderecopessoa`); decisão (b).
-#
-# ⚠️ Volume: `tribpagamentodebito` (linhas de pagamento) e `tribcadastrogeral`/
-#    `tribcadastroimobiliario` não têm `entidade`/ano → dump full. Estreitar via
-#    join no ETL se preciso (não há coluna de recorte direta na tabela).
 bucket: mirante-parquet
 tables:
   # ════════════════════════ RECURSOS HUMANOS ════════════════════════
@@ -41,91 +31,67 @@ tables:
   # ── Ficha financeira / histórico (PESADAS — entidade+anocompetencia) ──
   - source: aise.rhfichafinanceira
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
   - source: aise.rhhistoricofuncionario
     scope: tenant
     exclude_columns: [memoriacalculo]  # bytea (blob) — não exporta
-    filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
 
   # ── Cadastro funcional (entidade) ──
   - source: aise.rhfuncionario
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhfuncionarioincidenciaevento
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhcargo
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhcargoatividade
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhclasse
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhlotacao
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhexerciciomes
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
 
   # ── Eventos / tipo de folha (entidade; definições são globais) ──
   - source: aise.rhevento
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rheventocalculo
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhtipofolha
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rheventodefinicao
     scope: tenant
   - source: aise.parametroentidade
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhirrf
     scope: tenant
 
   # ── Movimentação de pessoal (entidade) ──
   - source: aise.rhmovimentacaopessoal
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhmovimentacaoafastamento
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhmovimentacaolegal
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhmovimentacaonomeacao
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.rhmovimentacaooutros
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.rhafastamento
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhtipomovimentacao
     scope: tenant
 
   # ── Programações temporais (entidade) ──
   - source: aise.rhprogramacaorescisao
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
   - source: aise.rhprogramacaopremio
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
   - source: aise.rhprogramacaofalta
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
   - source: aise.rhprogramacaoferias
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
   - source: aise.rhrescisao
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
 
   # ── Lookups RH globais / incertos (full) ──
   - source: aise.rhcbo
@@ -140,38 +106,28 @@ tables:
   # ── Débito / dívida (PESADAS — entidade+exercicio confirmados via DDL/view) ──
   - source: aise.tribdebito
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribdebitocalc
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribdebitoparcela
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribdebitoreceita
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribdebitoparcelareceita
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribdebitoobservacao
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
 
   # ── Movimentação / integração de receita (PESADAS — entidade+exercicio) ──
   - source: aise.tribmovimentacao
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribmovimentacaodetalhe
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
 
   # ── Receita (dimensões por-ente) ──
   - source: aise.tribreceita
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribreceitaconta
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribreceitatipo
     scope: tenant
   - source: aise.tribclassificacaoreceitatipo
@@ -180,10 +136,8 @@ tables:
     scope: tenant
   - source: aise.tribtipomovimentacaointeg
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribmotivodesconto
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribtipodeducao
     scope: tenant
   - source: aise.tribtipooperacaotce
@@ -194,91 +148,69 @@ tables:
   # ── Guia / situação / parcelamento / isenção / correção (dimensões) ──
   - source: aise.tribguiarecolhimento
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribsituacaoparcela
     scope: tenant
   - source: aise.tribparcelamento
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.tribcontencioso
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribcalculoanual
     scope: tenant
   - source: aise.formacorrecao
     scope: tenant
   - source: aise.tribprotesto
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribisencao
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.tribisencaotipo
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
 
   # ── Pagamento / arrecadação / baixa ──
   - source: aise.tribpagamento
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exerciciopagamento: [__EXERCICIOS__] }
   - source: aise.tribpagamentodebito
     scope: tenant
   - source: aise.tribpagamentobloqueto
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exerciciopagamento: [__EXERCICIOS__] }
   - source: aise.tribpagamentolote
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribbloquetodebito
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exerciciobloqueto: [__EXERCICIOS__] }
   - source: aise.tribbaixaautomaticadetalhe
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribcreditocontribuinte
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribcreditocontribuinteitem
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.contabancaria
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.banco
     scope: tenant
 
   # ── Dívida ativa / livro / documento / ajuizamento / auto de infração ──
   - source: aise.triblivro
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.triblivroregistro
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.triblivroparcelareceita
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribdocumento
     scope: tenant
     exclude_columns: [cabecalho, rodape]  # bytea (blob) — não exporta
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribdocumentoitemdividaativa
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribcartorioajuizamento
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.cartorio
     scope: tenant
   - source: aise.vinculacaodivida
     scope: tenant
   - source: aise.tribautoinfracaofiscal
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribfiscal
     scope: tenant
   - source: aise.ptcprocesso
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
 
   # ── Cadastro geral / imobiliário / mobiliário / ITBI ──
   # (chaveados por tipocadastro,cadastrogeral — SEM entidade: full)
@@ -288,19 +220,16 @@ tables:
     scope: tenant
   - source: aise.tribcadastromobiliario
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.tribcadastrogeralisencao
     scope: tenant
   - source: aise.tribmobiliarioatividade
     scope: tenant
   - source: aise.tribmobiliariosituacao
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.tribsituacaomobiliario
     scope: tenant
   - source: aise.tribmobiliarioservico
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribpessoamobiliario
     scope: tenant
   - source: aise.tribimobiliariosegmento
@@ -315,12 +244,10 @@ tables:
     scope: tenant
   - source: aise.tribimobiliarioitbi
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribproprietarioitbi
     scope: tenant
   - source: aise.tribproprietario
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.tribvinculo
     scope: tenant
   - source: aise.tribatividade
@@ -339,10 +266,8 @@ tables:
     scope: tenant
   - source: aise.tribloteamento
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribcondominio
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
 
   # ── Boletim cadastral / modelos ──
   - source: aise.tribboletimmobiliario
@@ -364,14 +289,11 @@ tables:
   - source: aise.entidade
     scope: tenant
     exclude_columns: [brasao, carimbocarnecorreios, codbarblob, brasaomenor]  # bytea (blob) — não exporta
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.tribentidadetributacao
     scope: tenant
-    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.cgato
     scope: tenant
     exclude_columns: [arquivo, modeloato]  # bytea (blob) — não exporta
-    filters: { entidade: [__ENTIDADES__] }
   - source: aise.pessoa
     scope: tenant
   - source: aise.rhpessoa
