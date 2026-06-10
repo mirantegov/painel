@@ -31,3 +31,7 @@ next-env.d.ts
 # dumps locais (não versionar — schema proprietário de cliente)
 tmp/
 *.dump
+
+# Acessos locais (segredos) — nunca versionar
+docs/ACESSOS.local.md
+docs/*.local.md
