@@ -102,7 +102,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		if err != nil {
 			return res, fmt.Errorf("parquet %s: %w", t.Source, err)
 		}
-		key := objectKey(t, cfg.Municipio, cfg.Ano)
+		key := objectKey(t, physSchema, cfg.Municipio, cfg.Ano)
 		if err := sink.Put(ctx, key, data); err != nil {
 			return res, fmt.Errorf("upload %s: %w", t.Source, err)
 		}
@@ -116,13 +116,16 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 }
 
 // objectKey monta o caminho do objeto no bucket (RAW landing).
-func objectKey(t Table, ibge string, ano int) string {
+// Inclui o schema físico de origem p/ evitar colisão entre schemas
+// (ex.: aise.entidade vs siscop.entidade) e nomeia o arquivo pela tabela
+// (facilita o ETL no ClickHouse).
+func objectKey(t Table, physSchema, ibge string, ano int) string {
 	table := t.TableName()
 	if t.Scope == "global" {
-		return fmt.Sprintf("_global/%s/part-0.parquet", table)
+		return fmt.Sprintf("_global/%s/%s.parquet", physSchema, table)
 	}
 	if t.PartitionByAno {
-		return fmt.Sprintf("%s/%s/ano=%d/part-0.parquet", ibge, table, ano)
+		return fmt.Sprintf("%s/%s/%s/ano=%d/%s.parquet", ibge, physSchema, table, ano, table)
 	}
-	return fmt.Sprintf("%s/%s/part-0.parquet", ibge, table)
+	return fmt.Sprintf("%s/%s/%s.parquet", ibge, physSchema, table)
 }

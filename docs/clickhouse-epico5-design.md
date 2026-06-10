@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS mun_4117107.mod_saneamento (
 
 ## Ingestão raw (exportador Go → Parquet → MinIO → CH)
 
-> **Convenção canônica de paths MinIO (Épico 6.0):** `s3://mirante-parquet/<ibge>/<tabela>/[ano=<ano>/]part-0.parquet` para dados tenant e `s3://mirante-parquet/_global/<tabela>/part-0.parquet` para dimensões globais. Mantido sincronizado com `exporter/README.md` e `infra/clickhouse/schema/etl/README-pipeline.sql`.
+> **Convenção canônica de paths MinIO (Épico 6.0):** `s3://mirante-parquet/<ibge>/<schema>/<tabela>.parquet` (ou `<ibge>/<schema>/<tabela>/ano=<ano>/<tabela>.parquet` quando particionado por ano) para dados tenant e `s3://mirante-parquet/_global/<schema>/<tabela>.parquet` para dimensões globais. O **schema físico** entra no path para evitar colisão entre schemas homônimos (ex.: `aise.entidade` vs `siscop.entidade`). Mantido sincronizado com `exporter/README.md` e `infra/clickhouse/schema/etl/README-pipeline.sql`.
 
 ```sql
 INSERT INTO mun_4117107.fato_despesa
