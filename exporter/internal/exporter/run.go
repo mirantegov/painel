@@ -23,30 +23,52 @@ type Config struct {
 
 var ibgeRe = regexp.MustCompile(`^\d{7}$`)
 
+// FileResult descreve um objeto exportado (uma tabela → um Parquet no MinIO).
+type FileResult struct {
+	Source string // schema.tabela de origem
+	Key    string // caminho do objeto no bucket
+	Rows   int
+	Cols   int
+	Bytes  int
+}
+
+// Result acumula o que a execução produziu (p/ log/monitoramento).
+type Result struct {
+	Municipio string
+	Ano       int
+	Schema    string // schema físico do tenant usado
+	Bucket    string
+	Files     []FileResult
+}
+
 // Run executa o dump raw de todas as tabelas do manifest pro MinIO.
-func Run(ctx context.Context, cfg Config) error {
+// Retorna sempre um *Result (parcial em caso de erro) para fins de log.
+func Run(ctx context.Context, cfg Config) (*Result, error) {
+	res := &Result{Municipio: cfg.Municipio, Ano: cfg.Ano}
+
 	if !ibgeRe.MatchString(cfg.Municipio) {
-		return fmt.Errorf("municipio inválido %q (esperado 7 dígitos IBGE)", cfg.Municipio)
+		return res, fmt.Errorf("municipio inválido %q (esperado 7 dígitos IBGE)", cfg.Municipio)
 	}
 
 	man, err := LoadManifest(cfg.Manifest, cfg.Vars)
 	if err != nil {
-		return err
+		return res, err
 	}
 	bucket := man.Bucket
 	if cfg.S3Bucket != "" {
 		bucket = cfg.S3Bucket
 	}
+	res.Bucket = bucket
 
 	src, err := NewSource(ctx, cfg.DSN)
 	if err != nil {
-		return err
+		return res, err
 	}
 	defer src.Close()
 
 	sink, err := NewSink(ctx, cfg.S3Endpoint, cfg.S3AccessKey, cfg.S3SecretKey, bucket)
 	if err != nil {
-		return err
+		return res, err
 	}
 
 	// Schema físico do tenant: --schema (ERP real, ex.: Elotech) ou mun_<ibge> (demo).
@@ -54,6 +76,7 @@ func Run(ctx context.Context, cfg Config) error {
 	if tenantSchema == "" {
 		tenantSchema = "mun_" + cfg.Municipio
 	}
+	res.Schema = tenantSchema
 	for _, t := range man.Tables {
 		// Schema físico: explícito no source (schema.tabela) sempre vence
 		// (permite ERP multi-schema, ex.: siscop.* + aise.*). Senão, segue o scope.
@@ -72,21 +95,24 @@ func Run(ctx context.Context, cfg Config) error {
 
 		cols, rows, err := src.Dump(ctx, physSchema, t.TableName(), t.Columns, t.Filters, ano)
 		if err != nil {
-			return err
+			return res, fmt.Errorf("dump %s: %w", t.Source, err)
 		}
 		schema := BuildSchema(t.TableName(), cols)
 		data, err := WriteParquet(schema, rows)
 		if err != nil {
-			return err
+			return res, fmt.Errorf("parquet %s: %w", t.Source, err)
 		}
 		key := objectKey(t, cfg.Municipio, cfg.Ano)
 		if err := sink.Put(ctx, key, data); err != nil {
-			return err
+			return res, fmt.Errorf("upload %s: %w", t.Source, err)
 		}
+		res.Files = append(res.Files, FileResult{
+			Source: t.Source, Key: key, Rows: len(rows), Cols: len(cols), Bytes: len(data),
+		})
 		log.Printf("ok  %-28s → %s  (%d linhas, %d colunas, %d bytes)",
 			t.Source, key, len(rows), len(cols), len(data))
 	}
-	return nil
+	return res, nil
 }
 
 // objectKey monta o caminho do objeto no bucket (RAW landing).

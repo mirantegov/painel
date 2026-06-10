@@ -12,9 +12,12 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/mirantegov/painel/exporter/internal/exporter"
 )
@@ -62,10 +65,64 @@ func main() {
 		S3Bucket:    os.Getenv("S3_BUCKET"),
 	}
 
-	if err := exporter.Run(context.Background(), cfg); err != nil {
-		log.Fatalf("falha: %v", err)
+	start := time.Now()
+	res, runErr := exporter.Run(context.Background(), cfg)
+	end := time.Now()
+	elapsed := end.Sub(start).Round(time.Millisecond)
+
+	// Grava log da execução (mesmo em falha) p/ monitoramento futuro.
+	if logPath, err := writeLog(cfg, res, start, end, runErr); err != nil {
+		log.Printf("aviso: não foi possível gravar o log: %v", err)
+	} else {
+		log.Printf("log: %s", logPath)
 	}
-	log.Println("concluído.")
+
+	if runErr != nil {
+		log.Fatalf("falha após %s: %v", elapsed, runErr)
+	}
+	log.Printf("concluído em %s (%d arquivos).", elapsed, len(res.Files))
+}
+
+// writeLog grava log/exporter_<data_hora>.log com início/fim, duração,
+// status e a lista de arquivos exportados. Cria a pasta log/ se não existir.
+func writeLog(cfg exporter.Config, res *exporter.Result, start, end time.Time, runErr error) (string, error) {
+	const logDir = "log"
+	if err := os.MkdirAll(logDir, 0o755); err != nil {
+		return "", err
+	}
+	path := filepath.Join(logDir, "exporter_"+start.Format("20060102_150405")+".log")
+	f, err := os.Create(path)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	status := "OK"
+	if runErr != nil {
+		status = "FALHA"
+	}
+	fmt.Fprintf(f, "Mirante — exportador\n")
+	fmt.Fprintf(f, "municipio: %s\n", cfg.Municipio)
+	fmt.Fprintf(f, "ano:       %d\n", cfg.Ano)
+	fmt.Fprintf(f, "schema:    %s\n", res.Schema)
+	fmt.Fprintf(f, "bucket:    %s\n", res.Bucket)
+	fmt.Fprintf(f, "inicio:    %s\n", start.Format("2006-01-02 15:04:05"))
+	fmt.Fprintf(f, "fim:       %s\n", end.Format("2006-01-02 15:04:05"))
+	fmt.Fprintf(f, "duracao:   %s\n", end.Sub(start).Round(time.Millisecond))
+	fmt.Fprintf(f, "status:    %s\n", status)
+	if runErr != nil {
+		fmt.Fprintf(f, "erro:      %v\n", runErr)
+	}
+
+	var totRows, totBytes int
+	fmt.Fprintf(f, "\narquivos exportados (%d):\n", len(res.Files))
+	for _, fr := range res.Files {
+		fmt.Fprintf(f, "  %-32s %-48s %8d linhas %10d bytes\n", fr.Source, fr.Key, fr.Rows, fr.Bytes)
+		totRows += fr.Rows
+		totBytes += fr.Bytes
+	}
+	fmt.Fprintf(f, "\ntotal: %d arquivos, %d linhas, %d bytes\n", len(res.Files), totRows, totBytes)
+	return path, nil
 }
 
 func env(key, def string) string {

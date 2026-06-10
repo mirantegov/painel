@@ -67,6 +67,17 @@ Esperado: linhas `ok ... → ... part-0.parquet` e `concluído.`
 - Conferir no MinIO (pela equipe da VPS): objetos em `mirante-parquet/4117107/...`.
 - Inspecionar um Parquet local (se baixado): `inspect-windows-amd64.exe arquivo.parquet`.
 
+## 6. Logs e tempo de execução
+
+Cada execução cria (se não existir) a pasta **`log/`** ao lado do exe e grava **`log/exporter_<AAAAMMDD_HHMMSS>.log`** com:
+
+- município, ano, schema, bucket
+- **início**, **fim** e **duração** da exportação
+- **status** (`OK` / `FALHA`; em falha, a tabela que quebrou)
+- lista de **arquivos exportados** (origem → objeto, linhas, bytes) + totais
+
+A duração também aparece no fim da saída (`concluído em 1m23s (45 arquivos).`). Use os logs p/ monitorar volume gerado e detectar falha/lentidão ao longo do tempo.
+
 ## Troubleshooting
 
 | Sintoma | Causa provável |
