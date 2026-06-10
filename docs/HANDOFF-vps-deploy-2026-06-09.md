@@ -1,6 +1,6 @@
 # HANDOFF — Situação do projeto (Deploy VPS + Pipeline de dados) — atualizado 2026-06-10
 
-Status: **homologação no ar com HTTPS válido em produção** + **pipeline de dados em curso**. `https://painel.mirantegov.cloud` responde, login demo OK end-to-end. Exportador Elotech→MinIO funcionando no Windows; ClickHouse multi-tenant (`raw_<ibge>`/`sim_<ibge>`) provisionado e RAW importado p/ Nova Londrina. Coletando APICE/AISE.
+Status: **homologação no ar com HTTPS válido em produção** + **pipeline de dados em curso**. `https://painel.mirantegov.cloud` responde, login demo OK end-to-end. Exportador Elotech→MinIO funcionando no Windows; ClickHouse multi-tenant (`raw_<ibge>`/`sim_<ibge>`) provisionado e RAW siscop importado p/ Nova Londrina. **Coleta concluída** (siscop+aise+apice): 3 manifests prontos com filtros DDL-derivados + gerador versionado. **Próximo:** rodar aise/apice no Windows → importar RAW → ETL `raw→sim`.
 
 > Arquivo de controle da situação do projeto. Acessos: `docs/ACESSOS.local.md` (gitignored).
 
@@ -36,7 +36,8 @@ Status: **homologação no ar com HTTPS válido em produção** + **pipeline de 
 ## Pipeline de dados (E6 exportador + E7 ClickHouse) — atualizado 2026-06-10
 
 **E6 — Exportador Go → MinIO (FUNCIONANDO em produção, no servidor Windows do cliente)**
-- Binário Windows (`exporter/dist/exporter-windows-amd64.exe`, build via `make windows`; pacote `exporter-win.zip`). Runbook: [`docs/runbook-exportador.md`](runbook-exportador.md).
+- Binário Windows (`exporter/dist/exporter-windows-amd64.exe`). **Pacote reprodutível via `make package`** → `dist/exporter-win.zip` (exe + inspect + os **3 manifests** + smoke + run.bat + RUNBOOK). `dist/` é gitignored (artefato fica local). Runbook: [`docs/runbook-exportador.md`](runbook-exportador.md).
+- Log de cada run: **`log/export_<ibge>_<AAAAMMDD_HHMMSS>.log`** (ao lado do exe).
 - MinIO exposto via Traefik: **`https://minio.mirantegov.cloud`** (router em `infra/traefik/dynamic/minio.yml`, DNS Cloudflare). Console segue por túnel SSH.
 - Layout MinIO: **`<ibge>/<schema>/<tabela>.parquet`** (ex.: `4117107/siscop/empenho.parquet`). **Sem `_global/`** — tudo sob o município (evita colisão entre municípios).
 - Parquet **preserva a ordem das colunas da origem** (fix `orderedGroup` no parquet-go; teste em `writer_order_test.go`).
@@ -47,7 +48,8 @@ Status: **homologação no ar com HTTPS válido em produção** + **pipeline de 
 - **Filtros (siscop + apice) DERIVADOS dos DDLs reais** (`tmp/eloweb.dump`, gitignored): `entidade` onde a coluna existe; `+ano` (anocompetencia→exercicio→exerciciopagamento→exerciciobloqueto) onde existe; full nas demais. Filtro com coluna inexistente aborta o run, então todos foram conferidos contra a coluna real. **`aise` não filtra** (full).
   - Views detectadas no dump foram REMOVIDAS dos manifests: `aise.endereco` (1) e as 10 `apice.*arquivo` + 3 views derivadas.
   - **APICE: piso de ano = 2000** (não 2004 como a contabilidade) — contratos antigos em andamento referenciam licitações antigas. Passar `--var EXERCICIOS` começando em 2000.
-- **Blobs `bytea` excluídos** via novo campo `exclude_columns:` no manifest (resolve as colunas reais por `information_schema` em runtime, preservando a ordem; só pesavam o dump). 12 tabelas afetadas (siscop 2, aise 4, apice 6 — ex.: `apice.arquivo.arquivo`, `aise.entidade.brasao`, `apice.cllicitacao.docedital`). Reconferido contra o dump (0 divergências).
+- **Blobs `bytea` excluídos** via campo `exclude_columns:` no manifest (resolve as colunas reais por `information_schema` em runtime, preservando a ordem; só pesavam o dump). 12 tabelas afetadas (siscop 2, aise 4, apice 6 — ex.: `apice.arquivo.arquivo`, `aise.entidade.brasao`, `apice.cllicitacao.docedital`). Reconferido contra o dump (0 divergências).
+- **Gerador versionado** [`exporter/tools/gen_manifests.py`](../exporter/tools/gen_manifests.py) (doc: [`docs/gerador-manifests.md`](gerador-manifests.md)): (re)gera `scope`/`exclude_columns`/`filters` dos DDLs. Política por schema (`POLICY` no topo): `siscop=keep`, `aise=none`, `apice=derive`. `make manifests-check DUMP=../tmp/eloweb.dump` (CI, exit 1 se drift) · `make manifests-gen` (aplica). Idempotente no estado atual.
 - Coleta documentada: [`docs/coleta-rh-tabelas.md`](coleta-rh-tabelas.md), [`docs/coleta-tributos-tabelas.md`](coleta-tributos-tabelas.md), [`docs/coleta-apice-tabelas.md`](coleta-apice-tabelas.md).
 
 **E7 — ClickHouse multi-tenant por IBGE**
@@ -59,10 +61,19 @@ Status: **homologação no ar com HTTPS válido em produção** + **pipeline de 
 
 **Coleta concluída (siscop + aise + apice)** — decisão (b) fechada (só tabelas-base; views = lógica de ETL). Manifests prontos e validados (parse + colunas reais). Backlog registrado: após coleta, gap analysis Marts × dados coletados (ver memória).
 
-**Próximo do pipeline:**
-1. **Rodar o exportador `aise` e `apice`** no Windows do cliente — precisa da lista de `entidades` do município (`--var ENTIDADES`) e `--var EXERCICIOS` (apice ≥ 2000). O 1º run valida os filtros na prática.
-2. Importar p/ `raw_<ibge>` (`aise_*`, `apice_*`) via `import_raw.sh`.
-3. **ETL `raw_<ibge>.{siscop,aise,apice}_*` → `sim_<ibge>.*`** (Elotech→SIM-AM; reimplementar a lógica das views da Elotech). Depois sync `sim_<ibge>` → Postgres `mun_<ibge>` (E8).
+**Próximo do pipeline (RETOMAR AQUI):**
+
+1. **Rodar `aise` e `apice` no Windows do cliente** (siscop já foi). Descobrir as entidades do município com o SQL do runbook §2; preencher `run.bat` (DB local + chaves MinIO + IBGE/ENTIDADES). Comandos:
+   ```
+   # aise — dump full, SEM --var
+   exporter-windows-amd64.exe --municipio <ibge> --ano 2026 --manifest elotech-aise.yaml
+   # apice — EXERCICIOS a partir de 2000 (run.bat já traz EXERCICIOS_LIC pronto)
+   exporter-windows-amd64.exe --municipio <ibge> --ano 2026 --manifest elotech-apice.yaml --var ENTIDADES="1, 2, 3" --var EXERCICIOS="2000, ... , 2026"
+   ```
+   O 1º run valida os filtros na prática (se uma tabela abortar por coluna, ajustar o manifest e reconferir com `make manifests-check`).
+2. **Importar p/ `raw_<ibge>`** (`aise_*`, `apice_*`): no mac, `export CLICKHOUSE_URL/USER/PASSWORD + S3_ACCESS_KEY/SECRET` (ver `docs/ACESSOS.local.md`) e `bash infra/clickhouse/tools/import_raw.sh <ibge>`.
+3. **ETL `raw_<ibge>.{siscop,aise,apice}_*` → `sim_<ibge>.*`** (Elotech→SIM-AM; **reimplementar a lógica das views** da Elotech — referência em `docs/coleta-*.md` + `docs/epico5-elotech-queries.md`). Depois sync `sim_<ibge>` → Postgres `mun_<ibge>` (E8).
+4. **Gap analysis** Marts (componentes visuais) × dados coletados (backlog na memória) — antes/junto do ETL.
 
 ## Segredos
 
@@ -76,7 +87,7 @@ Status: **homologação no ar com HTTPS válido em produção** + **pipeline de 
 - **E1.3** reservar/criar subdomínios `traefik.`/`studio.`/`minio.`/`clickhouse.` quando expostos.
 - **E2** deprecar `setup/vps/` e `setup-vps.sh` (legado Nginx/Certbot); documentar rollback.
 - **E4** hardening (provision-tenant, validação JWT no boot, troca de senha, testes de API).
-- **E6/E7 em curso:** exportador→MinIO OK; `raw_<ibge>`/`sim_<ibge>` provisionados, RAW siscop importado (Nova Londrina). **3 manifests prontos** (siscop/aise/apice, filtros DDL-derivados). **Falta:** rodar `aise`+`apice` no Windows → importar p/ `raw_<ibge>`; ETL `raw_<ibge>`→`sim_<ibge>` (reimplementar lógica das views); sync→Postgres (E8).
+- **E6/E7 em curso:** exportador→MinIO OK; `raw_<ibge>`/`sim_<ibge>` provisionados, RAW siscop importado (Nova Londrina). **Coleta concluída** — 3 manifests (siscop/aise/apice, filtros DDL-derivados; aise=full; bytea excluído) + gerador versionado (`gen_manifests.py`) + pacote `make package`. **Falta:** rodar `aise`+`apice` no Windows → importar p/ `raw_<ibge>`; ETL `raw_<ibge>`→`sim_<ibge>` (reimplementar lógica das views); sync→Postgres (E8); gap analysis Marts×dados.
 - **Fix IP dinâmico** do allowlist SSH.
 - **Backups** Postgres (E10) — ainda não configurados.
 
