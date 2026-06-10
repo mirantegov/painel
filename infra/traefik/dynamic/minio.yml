@@ -1,0 +1,20 @@
+# Traefik dynamic — expõe a API S3 do MinIO em https://minio.mirantegov.cloud
+# (Traefik fala com o container minio pela rede interna; porta 9000 não é
+#  publicada no host.) Console (9001) segue privado/túnel.
+# Path-style (host/bucket/key) — compatível com minio-go (default não-AWS).
+
+http:
+  routers:
+    minio-api:
+      rule: "Host(`minio.mirantegov.cloud`)"
+      entryPoints:
+        - websecure
+      service: minio-api
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    minio-api:
+      loadBalancer:
+        servers:
+          - url: "http://minio:9000"
