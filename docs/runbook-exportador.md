@@ -2,7 +2,7 @@
 
 Roda nos **servidores Windows** onde está o Postgres do ERP (Elotech eloweb, schema `siscop`). Dumpa as tabelas RAW em Parquet e sobe pro MinIO da VPS via HTTPS.
 
-> Binário: `exporter-windows-amd64.exe` (sem dependências, não precisa instalar nada). Pacote: `exporter-win.zip` (exe + inspect + manifests + run.bat).
+> Binário: `exporter-windows-amd64.exe` (sem dependências, não precisa instalar nada). Pacote: `exporter-win.zip` (exe + inspect + os 3 manifests `siscop`/`aise`/`apice` + smoke + run.bat + este runbook). Gerado por `make package`.
 
 ## Pré-requisitos
 
@@ -50,15 +50,30 @@ Usa `export-smoke.yaml` (só `siscop.banco` global + `siscop.entidade` filtrada)
 ```
 Esperado: linhas `ok ... → ... part-0.parquet` e `concluído.`
 
-## 4. Exportação completa (Elotech)
+## 4. Exportação completa (Elotech) — 3 schemas
+
+Rode os 3 manifests (o `--schema` não é preciso: cada manifest traz o schema no `source`):
 
 ```powershell
-.\exporter-windows-amd64.exe --municipio 4117107 --ano 2026 --schema siscop `
+# 1) Contábil (siscop)
+.\exporter-windows-amd64.exe --municipio 4117107 --ano 2026 `
   --manifest elotech-eloweb.yaml `
   --var ENTIDADES="1, 2, 3" --var EXERCICIOS="2024, 2025, 2026"
+
+# 2) Tributos + RH (aise)
+.\exporter-windows-amd64.exe --municipio 4117107 --ano 2026 `
+  --manifest elotech-aise.yaml `
+  --var ENTIDADES="1, 2, 3" --var EXERCICIOS="2024, 2025, 2026"
+
+# 3) Licitações + Contratos (apice) — EXERCICIOS a partir de 2000
+.\exporter-windows-amd64.exe --municipio 4117107 --ano 2026 `
+  --manifest elotech-apice.yaml `
+  --var ENTIDADES="1, 2, 3" --var EXERCICIOS="2000, 2001, ... , 2025, 2026"
 ```
-- `--municipio` = IBGE (só path no MinIO). `--schema siscop` = schema de origem.
+- `--municipio` = IBGE (só path no MinIO). O schema vem do `source` de cada manifest.
 - `--var ENTIDADES` = todas as entidades do município. `--var EXERCICIOS` = anos.
+- **APICE: EXERCICIOS começa em 2000** (não 2004) — contratos antigos em andamento referenciam licitações antigas. (`run.bat` já traz a lista pronta em `EXERCICIOS_LIC`.)
+- Blobs `bytea` (editais, brasões, anexos, atas) **não são exportados** (`exclude_columns` no manifest) — só os metadados.
 - `--ano` é irrelevante p/ Elotech (o filtro de ano é `EXERCICIOS`).
 
 ## 5. Verificar
