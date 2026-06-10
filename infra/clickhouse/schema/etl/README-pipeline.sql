@@ -14,9 +14,9 @@
 -- alinhada ao exportador Go em exporter/README.md):
 --
 --   bucket: mirante-parquet
---   tenant: s3://mirante-parquet/<ibge>/<schema>/<tabela>.parquet
---           (ou <ibge>/<schema>/<tabela>/ano=<ano>/<tabela>.parquet se partition_by_ano)
---   global: s3://mirante-parquet/_global/<schema>/<tabela>.parquet
+--   path:  s3://mirante-parquet/<ibge>/<schema>/<tabela>.parquet
+--          (ou <ibge>/<schema>/<tabela>/ano=<ano>/<tabela>.parquet se partition_by_ano)
+--   TUDO sob o município (<ibge>/) -- não há _global/; referência também por IBGE.
 --   (schema físico no path evita colisão entre schemas homônimos, ex.: aise.entidade vs siscop.entidade)
 --
 -- Em todos os ERPs (Elotech eloweb, Betha, IPM, etc.) o path do MinIO usa

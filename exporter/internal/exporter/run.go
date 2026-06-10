@@ -116,14 +116,13 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 }
 
 // objectKey monta o caminho do objeto no bucket (RAW landing).
-// Inclui o schema físico de origem p/ evitar colisão entre schemas
-// (ex.: aise.entidade vs siscop.entidade) e nomeia o arquivo pela tabela
-// (facilita o ETL no ClickHouse).
+// TUDO fica sob o município (<ibge>/), com o schema físico no path p/ evitar
+// colisão entre schemas homônimos (ex.: aise.entidade vs siscop.entidade) e o
+// arquivo nomeado pela tabela (facilita o ETL no ClickHouse).
+// Não há mais _global/: mesmo tabelas de referência (scope:global) ficam sob
+// <ibge>/ — cada município tem sua própria cópia, sem risco de sobrescrita.
 func objectKey(t Table, physSchema, ibge string, ano int) string {
 	table := t.TableName()
-	if t.Scope == "global" {
-		return fmt.Sprintf("_global/%s/%s.parquet", physSchema, table)
-	}
 	if t.PartitionByAno {
 		return fmt.Sprintf("%s/%s/%s/ano=%d/%s.parquet", ibge, physSchema, table, ano, table)
 	}
