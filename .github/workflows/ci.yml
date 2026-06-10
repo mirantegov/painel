@@ -1,0 +1,45 @@
+name: CI
+
+# Gate de qualidade (E0.7): bloqueia o merge se app ou exportador quebrarem.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: App · typecheck · lint · build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+
+  exporter:
+    name: Exportador Go · build · test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.26.x
+          cache-dependency-path: exporter/go.sum
+      - name: go build
+        working-directory: exporter
+        run: go build ./...
+      - name: go vet
+        working-directory: exporter
+        run: go vet ./...
+      - name: go test
+        working-directory: exporter
+        run: go test ./...
