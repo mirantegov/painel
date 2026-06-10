@@ -45,7 +45,7 @@ Anote a lista de `entidade` (ex.: `1, 2, 3`) e os exercícios (anos) a exportar.
 
 Usa `export-smoke.yaml` (só `siscop.banco` global + `siscop.entidade` filtrada):
 ```powershell
-.\exporter-windows-amd64.exe --municipio 4117107 --schema siscop `
+.\exporter-windows-amd64.exe --municipio 4117107 --ano 2026 --schema siscop `
   --manifest export-smoke.yaml --var ENTIDADES="1, 2, 3"
 ```
 Esperado: linhas `ok ... → ... part-0.parquet` e `concluído.`
@@ -53,7 +53,7 @@ Esperado: linhas `ok ... → ... part-0.parquet` e `concluído.`
 ## 4. Exportação completa (Elotech)
 
 ```powershell
-.\exporter-windows-amd64.exe --municipio 4117107 --schema siscop `
+.\exporter-windows-amd64.exe --municipio 4117107 --ano 2026 --schema siscop `
   --manifest elotech-eloweb.yaml `
   --var ENTIDADES="1, 2, 3" --var EXERCICIOS="2024, 2025, 2026"
 ```
