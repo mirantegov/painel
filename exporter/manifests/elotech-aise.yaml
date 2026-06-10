@@ -16,29 +16,33 @@
 #   (--ano e --schema são irrelevantes: o schema vem do prefixo `aise.` no source;
 #    o recorte de ano é o --var EXERCICIOS, aplicado na coluna de ano de cada tabela.)
 #
-# POLÍTICA DE FILTRO (correção primeiro — filtro com coluna inexistente ABORTA o run):
-#   • `entidade`+ano  → só nas PESADAS com colunas CONFIRMADas (DDL/FK/alias na view).
-#                       A coluna de ano VARIA: RH=anocompetencia; tributos=exercicio
-#                       /exerciciopagamento. Todas alimentadas por __EXERCICIOS__.
-#   • `entidade`      → onde só `entidade` é confirmada (FK/alias).
-#   • sem filtro      → referência/lookup (pequenas) e tabelas onde a coluna de
-#                       recorte NÃO é certa — dump full agora, afina depois.
+# POLÍTICA DE FILTRO (DERIVADA DOS DDLs reais em tmp/eloweb.dump — filtro com
+# coluna inexistente ABORTA o run, então cada filtro foi confirmado contra a
+# coluna REAL da tabela):
+#   • `entidade`+ano  → tabela TEM `entidade` E coluna de ano. Coluna de ano
+#                       primária (nesta ordem): anocompetencia → exercicio →
+#                       exerciciopagamento → exerciciobloqueto. Valor=__EXERCICIOS__.
+#   • `entidade`      → tem `entidade`, sem coluna de ano.
+#   • sem filtro      → não tem `entidade` (lookups globais, pessoa/endereço/geo,
+#                       cadastro chaveado por tipocadastro+cadastrogeral).
+# Distribuição: 44 entidade+ano · 24 entidade · 54 full (122 tabelas).
 #
 # Tabelas COMPARTILHADAS com RH↔Tributos (pessoa, cidade, endereço, entidade…)
 # aparecem UMA vez aqui (mesmo `aise_<tabela>` serve aos dois domínios).
+# `aise.endereco` foi REMOVIDA: é VIEW (base = `enderecopessoa`); decisão (b).
 #
-# ⚠️ Pendências de volume: `tribpagamentodebito` e `tribdebitoparcelareceita`
-#    (linhas de pagamento/receita) são grandes; a 1ª tem PK sem `entidade`,
-#    fica sem filtro (full). Conferir colunas reais e estreitar quando rodar.
+# ⚠️ Volume: `tribpagamentodebito` (linhas de pagamento) e `tribcadastrogeral`/
+#    `tribcadastroimobiliario` não têm `entidade`/ano → dump full. Estreitar via
+#    join no ETL se preciso (não há coluna de recorte direta na tabela).
 bucket: mirante-parquet
 tables:
   # ════════════════════════ RECURSOS HUMANOS ════════════════════════
 
   # ── Ficha financeira / histórico (PESADAS — entidade+anocompetencia) ──
-  - source: aise.rhfichafinanceira # fato da folha por evento (CONFIRM: entidade, anocompetencia)
+  - source: aise.rhfichafinanceira
     scope: tenant
     filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
-  - source: aise.rhhistoricofuncionario # histórico mensal do funcionário (CONFIRM: entidade, anocompetencia)
+  - source: aise.rhhistoricofuncionario
     scope: tenant
     filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
 
@@ -63,7 +67,7 @@ tables:
     filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhexerciciomes
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
 
   # ── Eventos / tipo de folha (entidade; definições são globais) ──
   - source: aise.rhevento
@@ -75,12 +79,12 @@ tables:
   - source: aise.rhtipofolha
     scope: tenant
     filters: { entidade: [__ENTIDADES__] }
-  - source: aise.rheventodefinicao # lookup global (definicao→descricao/tipo)
+  - source: aise.rheventodefinicao
     scope: tenant
   - source: aise.parametroentidade
     scope: tenant
     filters: { entidade: [__ENTIDADES__] }
-  - source: aise.rhirrf # tabela IRRF (validade) — sem entidade certa: full
+  - source: aise.rhirrf
     scope: tenant
 
   # ── Movimentação de pessoal (entidade) ──
@@ -95,176 +99,184 @@ tables:
     filters: { entidade: [__ENTIDADES__] }
   - source: aise.rhmovimentacaonomeacao
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.rhmovimentacaooutros
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.rhafastamento
     scope: tenant
     filters: { entidade: [__ENTIDADES__] }
-  - source: aise.rhtipomovimentacao # lookup global
+  - source: aise.rhtipomovimentacao
     scope: tenant
 
   # ── Programações temporais (entidade) ──
   - source: aise.rhprogramacaorescisao
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
+    filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
   - source: aise.rhprogramacaopremio
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
+    filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
   - source: aise.rhprogramacaofalta
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
+    filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
   - source: aise.rhprogramacaoferias
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
+    filters: { entidade: [__ENTIDADES__], anocompetencia: [__EXERCICIOS__] }
   - source: aise.rhrescisao
     scope: tenant
     filters: { entidade: [__ENTIDADES__] }
 
   # ── Lookups RH globais / incertos (full) ──
-  - source: aise.rhcbo # CBO (sequenciacbo→cbo) — global
+  - source: aise.rhcbo
     scope: tenant
-  - source: aise.rhatividade # atividade do cargo — sem entidade certa: full
+  - source: aise.rhatividade
     scope: tenant
-  - source: aise.rhmodelolotacao # modelo de lotação — sem entidade certa: full
+  - source: aise.rhmodelolotacao
     scope: tenant
 
   # ════════════════════════ TRIBUTOS ════════════════════════
 
   # ── Débito / dívida (PESADAS — entidade+exercicio confirmados via DDL/view) ──
-  - source: aise.tribdebito # DDL: entidade, exercicio
+  - source: aise.tribdebito
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
-  - source: aise.tribdebitocalc # DDL: entidade, exercicio (versão de cálculo)
+  - source: aise.tribdebitocalc
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
-  - source: aise.tribdebitoparcela # DDL: entidade, exercicio
+  - source: aise.tribdebitoparcela
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
-  - source: aise.tribdebitoreceita # DDL: entidade, exercicio
+  - source: aise.tribdebitoreceita
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
-  - source: aise.tribdebitoparcelareceita # view: rec.entidade, rec.exercicio (PESADA)
+  - source: aise.tribdebitoparcelareceita
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
-  - source: aise.tribdebitoobservacao # obs de débito — sem coluna certa: full
+  - source: aise.tribdebitoobservacao
     scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
 
   # ── Movimentação / integração de receita (PESADAS — entidade+exercicio) ──
-  - source: aise.tribmovimentacao # tmov.entidade, tmov.exercicio
+  - source: aise.tribmovimentacao
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
-  - source: aise.tribmovimentacaodetalhe # tmd.entidade, tmd.exercicio (PESADA)
+  - source: aise.tribmovimentacaodetalhe
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
 
   # ── Receita (dimensões por-ente) ──
-  - source: aise.tribreceita # FK: entidade, exercicio, receita
+  - source: aise.tribreceita
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribreceitaconta # trc.entidade, trc.exercicio
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribreceitaconta
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribreceitatipo # lookup global (tiporeceita)
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribreceitatipo
     scope: tenant
-  - source: aise.tribclassificacaoreceitatipo # lookup global (classif. TCE)
+  - source: aise.tribclassificacaoreceitatipo
     scope: tenant
-  - source: aise.tribtipomovimentacao # lookup global
+  - source: aise.tribtipomovimentacao
     scope: tenant
-  - source: aise.tribtipomovimentacaointeg # entidade, exercicio
+  - source: aise.tribtipomovimentacaointeg
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribmotivodesconto # lookup global
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribmotivodesconto
     scope: tenant
-  - source: aise.tribtipodeducao # lookup global
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribtipodeducao
     scope: tenant
-  - source: aise.tribtipooperacaotce # lookup global
+  - source: aise.tribtipooperacaotce
     scope: tenant
-  - source: aise.tribdevolucaocreditomov # devolução de crédito — sem coluna certa: full
+  - source: aise.tribdevolucaocreditomov
     scope: tenant
 
   # ── Guia / situação / parcelamento / isenção / correção (dimensões) ──
-  - source: aise.tribguiarecolhimento # FK: entidade, exercicio, guiarecolhimento
+  - source: aise.tribguiarecolhimento
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribsituacaoparcela
+    scope: tenant
+  - source: aise.tribparcelamento
     scope: tenant
     filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribsituacaoparcela # lookup global
+  - source: aise.tribcontencioso
     scope: tenant
-  - source: aise.tribparcelamento # global (idparcelamento)
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribcalculoanual
     scope: tenant
-  - source: aise.tribcontencioso # global (idcontencioso)
+  - source: aise.formacorrecao
     scope: tenant
-  - source: aise.tribcalculoanual # global (idcalculo)
+  - source: aise.tribprotesto
     scope: tenant
-  - source: aise.formacorrecao # lookup global
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribisencao
     scope: tenant
-  - source: aise.tribprotesto # global (idprotesto)
+    filters: { entidade: [__ENTIDADES__] }
+  - source: aise.tribisencaotipo
     scope: tenant
-  - source: aise.tribisencao # lookup global (isencao)
-    scope: tenant
-  - source: aise.tribisencaotipo # lookup global (tipoisencao)
-    scope: tenant
+    filters: { entidade: [__ENTIDADES__] }
 
   # ── Pagamento / arrecadação / baixa ──
-  - source: aise.tribpagamento # DDL: entidade, exerciciopagamento (PESADA)
+  - source: aise.tribpagamento
     scope: tenant
     filters: { entidade: [__ENTIDADES__], exerciciopagamento: [__EXERCICIOS__] }
-  - source: aise.tribpagamentodebito # PK sem entidade (idpagamentobloqueto,…): full ⚠️ PESADA
+  - source: aise.tribpagamentodebito
     scope: tenant
-  - source: aise.tribpagamentobloqueto # entidade, exerciciopagamento, pagamento
+  - source: aise.tribpagamentobloqueto
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exerciciopagamento: [__EXERCICIOS__] }
+  - source: aise.tribpagamentolote
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribbloquetodebito
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exerciciobloqueto: [__EXERCICIOS__] }
+  - source: aise.tribbaixaautomaticadetalhe
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribcreditocontribuinte
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribcreditocontribuinteitem
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.contabancaria
     scope: tenant
     filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribpagamentolote # FK: entidade, exercicio, lote
-    scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribbloquetodebito # a.entidade, a.exerciciobloqueto
-    scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribbaixaautomaticadetalhe # bde.entidade, bde.exercicio
-    scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribcreditocontribuinte # cred.entidade, cred.exercicio
-    scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribcreditocontribuinteitem # exercicio,creditocontribuinte — sem entidade: full
-    scope: tenant
-  - source: aise.contabancaria # FK: entidade, contabancaria
-    scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.banco # lookup global
+  - source: aise.banco
     scope: tenant
 
   # ── Dívida ativa / livro / documento / ajuizamento / auto de infração ──
-  - source: aise.triblivro # FK: entidade, exercicio, livro
+  - source: aise.triblivro
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.triblivroregistro # a.entidade, a.exercicio
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.triblivroregistro
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.triblivroparcelareceita # c.entidade, c.exercicio
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.triblivroparcelareceita
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribdocumento # td.entidade, td.exercicio
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribdocumento
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribdocumentoitemdividaativa # tdida.entidade
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribdocumentoitemdividaativa
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribcartorioajuizamento # a.entidade, a.exercicio
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribcartorioajuizamento
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.cartorio # lookup global (idcartorio)
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.cartorio
     scope: tenant
-  - source: aise.vinculacaodivida # de-para divida — sem entidade certa: full
+  - source: aise.vinculacaodivida
     scope: tenant
-  - source: aise.tribautoinfracaofiscal # taif.entidade, taif.exercicio
+  - source: aise.tribautoinfracaofiscal
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribfiscal # lookup global (fiscal)
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribfiscal
     scope: tenant
-  - source: aise.ptcprocesso # ptc.entidade, ptc.exercicio
+  - source: aise.ptcprocesso
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
 
   # ── Cadastro geral / imobiliário / mobiliário / ITBI ──
   # (chaveados por tipocadastro,cadastrogeral — SEM entidade: full)
@@ -274,40 +286,44 @@ tables:
     scope: tenant
   - source: aise.tribcadastromobiliario
     scope: tenant
+    filters: { entidade: [__ENTIDADES__] }
   - source: aise.tribcadastrogeralisencao
     scope: tenant
   - source: aise.tribmobiliarioatividade
     scope: tenant
   - source: aise.tribmobiliariosituacao
     scope: tenant
-  - source: aise.tribsituacaomobiliario # lookup global
-    scope: tenant
-  - source: aise.tribmobiliarioservico # tms.entidade, tms.exercicio
-    scope: tenant
     filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribpessoamobiliario # lookup global
+  - source: aise.tribsituacaomobiliario
+    scope: tenant
+  - source: aise.tribmobiliarioservico
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.tribpessoamobiliario
     scope: tenant
   - source: aise.tribimobiliariosegmento
     scope: tenant
   - source: aise.tribimobiliarioareaverde
     scope: tenant
-  - source: aise.tribtipoareaverde # lookup global
+  - source: aise.tribtipoareaverde
     scope: tenant
   - source: aise.tribimobiliaria
     scope: tenant
   - source: aise.tribimobiliariacadastro
     scope: tenant
-  - source: aise.tribimobiliarioitbi # ITBI (idsequencia)
+  - source: aise.tribimobiliarioitbi
     scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribproprietarioitbi
     scope: tenant
   - source: aise.tribproprietario
     scope: tenant
-  - source: aise.tribvinculo # lookup global
+    filters: { entidade: [__ENTIDADES__] }
+  - source: aise.tribvinculo
     scope: tenant
-  - source: aise.tribatividade # atividade econômica (atividade,cnae)
+  - source: aise.tribatividade
     scope: tenant
-  - source: aise.cnae # lookup global
+  - source: aise.cnae
     scope: tenant
 
   # ── Localização fiscal (distrito/setor/quadra/loteamento/condomínio) ──
@@ -321,8 +337,10 @@ tables:
     scope: tenant
   - source: aise.tribloteamento
     scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
   - source: aise.tribcondominio
     scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
 
   # ── Boletim cadastral / modelos ──
   - source: aise.tribboletimmobiliario
@@ -335,38 +353,36 @@ tables:
     scope: tenant
   - source: aise.tribmodelocampo
     scope: tenant
-  - source: aise.tribtiposegmento # lookup global
+  - source: aise.tribtiposegmento
     scope: tenant
 
   # ── Débito: observação extra de arrematação já incluída acima ──
 
   # ════════════════════════ COMPARTILHADAS (RH ↔ Tributos) ════════════════════════
-  - source: aise.entidade # entidades do município
+  - source: aise.entidade
     scope: tenant
     filters: { entidade: [__ENTIDADES__] }
-  - source: aise.tribentidadetributacao # entidade, exercicio
+  - source: aise.tribentidadetributacao
+    scope: tenant
+    filters: { entidade: [__ENTIDADES__], exercicio: [__EXERCICIOS__] }
+  - source: aise.cgato
     scope: tenant
     filters: { entidade: [__ENTIDADES__] }
-  - source: aise.cgato # atos (FK: entidade, idato) — usado por RH e débito
+  - source: aise.pessoa
     scope: tenant
-    filters: { entidade: [__ENTIDADES__] }
-  - source: aise.pessoa # registro de pessoas — sem entidade: full
+  - source: aise.rhpessoa
     scope: tenant
-  - source: aise.rhpessoa # dados pessoais RH (pessoa) — sem entidade: full
+  - source: aise.enderecopessoa
     scope: tenant
-  - source: aise.enderecopessoa # endereço da pessoa — sem entidade: full
+  - source: aise.contatopessoa
     scope: tenant
-  - source: aise.endereco # endereço — sem entidade: full
+  - source: aise.cidade
     scope: tenant
-  - source: aise.contatopessoa # contato da pessoa — sem entidade: full
+  - source: aise.unidadefederacao
     scope: tenant
-  - source: aise.cidade # lookup global
+  - source: aise.logradouro
     scope: tenant
-  - source: aise.unidadefederacao # lookup global
+  - source: aise.tipologradouro
     scope: tenant
-  - source: aise.logradouro # lookup (por cidade)
-    scope: tenant
-  - source: aise.tipologradouro # lookup global
-    scope: tenant
-  - source: aise.bairro # lookup (por cidade)
+  - source: aise.bairro
     scope: tenant
