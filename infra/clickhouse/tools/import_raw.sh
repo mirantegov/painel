@@ -32,6 +32,25 @@ S3_INTERNAL="${S3_INTERNAL:-http://minio:9000}"
 ch() { curl -s --max-time 600 "$CH_URL" -H "X-ClickHouse-User: $CH_USER" -H "X-ClickHouse-Key: $CH_PASS" --data-binary "$1"; }
 
 echo "[import] raw_${IBGE} <- ${MC_ALIAS}/${BUCKET}/${IBGE}/"
+echo "[import] CLICKHOUSE_URL=${CH_URL}  user=${CH_USER}  minio(via CH)=${S3_INTERNAL}"
+
+# Preflight ClickHouse — falha CEDO e com mensagem clara (em vez de morrer calado).
+pong="$(ch 'SELECT 1' 2>/dev/null || true)"
+if [ "$pong" != "1" ]; then
+  echo "ERRO: não conectei ao ClickHouse em ${CH_URL} (resposta: ${pong:-<vazia>})." >&2
+  echo "  Defina o destino, ex.:" >&2
+  echo "    export CLICKHOUSE_URL=http://52.55.147.97:8123/" >&2
+  echo "    export CLICKHOUSE_USER=default CLICKHOUSE_PASSWORD=<senha>" >&2
+  exit 1
+fi
+
+# Preflight MinIO/mc — confirma que o alias lê o bucket.
+if ! mc ls "${MC_ALIAS}/${BUCKET}/" >/dev/null 2>&1; then
+  echo "ERRO: mc não acessou ${MC_ALIAS}/${BUCKET}/." >&2
+  echo "  Configure o alias: mc alias set ${MC_ALIAS} <endpoint> <ACCESS_KEY> <SECRET_KEY>" >&2
+  exit 1
+fi
+
 ch "CREATE DATABASE IF NOT EXISTS raw_${IBGE}" >/dev/null
 
 # --- Coleta a lista de objetos num array, de forma portável entre SOs ---
