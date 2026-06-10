@@ -60,10 +60,9 @@ Rode os 3 manifests (o `--schema` não é preciso: cada manifest traz o schema n
   --manifest elotech-eloweb.yaml `
   --var ENTIDADES="1, 2, 3" --var EXERCICIOS="2024, 2025, 2026"
 
-# 2) Tributos + RH (aise)
+# 2) Tributos + RH (aise) — dump full (sem --var: não filtra entidade nem ano)
 .\exporter-windows-amd64.exe --municipio 4117107 --ano 2026 `
-  --manifest elotech-aise.yaml `
-  --var ENTIDADES="1, 2, 3" --var EXERCICIOS="2024, 2025, 2026"
+  --manifest elotech-aise.yaml
 
 # 3) Licitações + Contratos (apice) — EXERCICIOS a partir de 2000
 .\exporter-windows-amd64.exe --municipio 4117107 --ano 2026 `

@@ -35,8 +35,8 @@ echo.
 echo   REM 1) Contabil (siscop)
 echo   exporter-windows-amd64.exe --municipio %IBGE% --ano %ANO% --manifest elotech-eloweb.yaml --var ENTIDADES="%ENTIDADES%" --var EXERCICIOS="%EXERCICIOS%"
 echo.
-echo   REM 2) Tributos + RH (aise)
-echo   exporter-windows-amd64.exe --municipio %IBGE% --ano %ANO% --manifest elotech-aise.yaml --var ENTIDADES="%ENTIDADES%" --var EXERCICIOS="%EXERCICIOS%"
+echo   REM 2) Tributos + RH (aise) -- dump full, sem --var
+echo   exporter-windows-amd64.exe --municipio %IBGE% --ano %ANO% --manifest elotech-aise.yaml
 echo.
 echo   REM 3) Licitacoes + Contratos (apice) -- EXERCICIOS a partir de 2000
 echo   exporter-windows-amd64.exe --municipio %IBGE% --ano %ANO% --manifest elotech-apice.yaml --var ENTIDADES="%ENTIDADES%" --var EXERCICIOS="%EXERCICIOS_LIC%"
