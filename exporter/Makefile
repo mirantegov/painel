@@ -1,11 +1,12 @@
 # Build do exportador. Sem cgo → cross-compile limpo.
-# Uso: make windows | linux | mac | dist | build | clean
+# Uso: make windows | linux | mac | dist | package | build | clean
 BINARY := exporter
 DIST   := dist
+PKG    := $(DIST)/exporter-win
 GOFLAGS := -trimpath
 LDFLAGS := -s -w
 
-.PHONY: build windows linux mac dist clean
+.PHONY: build windows linux mac dist package clean
 
 # binário para o host atual
 build:
@@ -24,6 +25,20 @@ mac:
 # todos os alvos de distribuição
 dist: windows linux mac
 	@ls -lh $(DIST)
+
+# pacote do cliente (Windows): exe + inspect + os 3 manifests + smoke + run.bat
+# + runbook → dist/exporter-win.zip. Reprodutível (não montar zip à mão).
+package: windows
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build $(GOFLAGS) -ldflags "$(LDFLAGS)" -o $(DIST)/inspect-windows-amd64.exe ./cmd/inspect
+	rm -rf $(PKG) && mkdir -p $(PKG)
+	cp $(DIST)/$(BINARY)-windows-amd64.exe $(PKG)/
+	cp $(DIST)/inspect-windows-amd64.exe $(PKG)/
+	cp run.bat $(PKG)/
+	cp ../docs/runbook-exportador.md $(PKG)/RUNBOOK.md
+	cp manifests/export-smoke.yaml $(PKG)/
+	cp manifests/elotech-eloweb.yaml manifests/elotech-aise.yaml manifests/elotech-apice.yaml $(PKG)/
+	cd $(DIST) && rm -f exporter-win.zip && zip -rq exporter-win.zip exporter-win
+	@echo "--- pacote: $(DIST)/exporter-win.zip ---" && unzip -l $(DIST)/exporter-win.zip
 
 clean:
 	rm -rf $(DIST) $(BINARY) inspect
