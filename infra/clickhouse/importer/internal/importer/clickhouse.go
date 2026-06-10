@@ -140,9 +140,8 @@ func (c *CH) DescribeS3(ctx context.Context, s3url, ak, sk string) (map[string]b
 // nas demais. Os casts são `*OrNull` (valor sujo vira NULL, não derruba a tabela).
 // Sempre DROP antes (reload idempotente).
 func (c *CH) CreateRawTable(ctx context.Context, db, tbl, s3url, ak, sk string, types map[string]string, tries int) error {
-	if _, err := c.execRetry(ctx, fmt.Sprintf("DROP TABLE IF EXISTS `%s`.`%s` SYNC", db, tbl), tries); err != nil {
-		return err
-	}
+	// Monta o REPLACE (e faz o DESCRIBE do Parquet) ANTES do DROP: se algo falhar
+	// aqui, a tabela atual permanece intacta (em vez de ficar dropada até o próximo run).
 	replace := ""
 	if len(types) > 0 {
 		have, err := c.DescribeS3(ctx, s3url, ak, sk)
@@ -160,6 +159,9 @@ func (c *CH) CreateRawTable(ctx context.Context, db, tbl, s3url, ak, sk string, 
 		if len(parts) > 0 {
 			replace = " REPLACE (" + strings.Join(parts, ", ") + ")"
 		}
+	}
+	if _, err := c.execRetry(ctx, fmt.Sprintf("DROP TABLE IF EXISTS `%s`.`%s` SYNC", db, tbl), tries); err != nil {
+		return err
 	}
 	create := fmt.Sprintf("CREATE TABLE `%s`.`%s` ENGINE=MergeTree ORDER BY tuple() AS SELECT *%s FROM %s",
 		db, tbl, replace, s3Expr(s3url, ak, sk))
