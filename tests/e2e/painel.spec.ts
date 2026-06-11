@@ -1,4 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { login, abrirModulo } from "./helpers";
 
 /**
  * Regressão do painel implantado: login (com máscara de CPF) + módulos do grupo A
@@ -16,39 +17,12 @@ const CLIENTES = (process.env.E2E_CLIENTES || "4117107,4117909,4126256")
 
 const MODULOS = ["Despesas", "Receitas", "Planejamento"] as const;
 
-async function login(page: Page, cliente: string) {
-  await page.goto("/login", { waitUntil: "networkidle" });
-  await page.waitForTimeout(2000); // hidratação do React (máscara/onSubmit)
-  await page.locator("#municipio").fill(cliente);
-  await page.locator("#cpf").pressSequentially(CPF, { delay: 20 });
-  // máscara aplicada = app hidratado
-  await expect(page.locator("#cpf")).toHaveValue(/\d{3}\.\d{3}\.\d{3}-\d{2}/);
-  await page.locator("#senha").fill(SENHA!);
-  await page.locator('button[type="submit"]').click();
-  await expect(page).toHaveURL(/\/$|\/(?!login)/, { timeout: 30_000 });
-  await expect(page.getByRole("tab").first()).toBeVisible();
-}
-
-async function abrirModulo(page: Page, nome: string) {
-  const tab = page.getByRole("tab", { name: new RegExp(`^${nome}$`, "i") });
-  await tab.click();
-  const panelId = (await tab.getAttribute("aria-controls")) ?? "";
-  const panel = page.locator(`[id="${panelId}"]`);
-  await expect(panel).toHaveAttribute("data-state", "active");
-  await page.waitForFunction(
-    (id) => (document.getElementById(id)?.innerText.length ?? 0) > 300,
-    panelId,
-    { timeout: 20_000 },
-  );
-  return panel;
-}
-
 test.describe("painel — grupo A (dados reais)", () => {
   test.skip(!SENHA, "defina E2E_SENHA para rodar o E2E contra o ambiente implantado");
 
   for (const cliente of CLIENTES) {
     test(`cliente ${cliente}: login + Despesas/Receitas/Planejamento`, async ({ page }) => {
-      await login(page, cliente);
+      await login(page, cliente, CPF, SENHA!);
 
       for (const nome of MODULOS) {
         const panel = await abrirModulo(page, nome);

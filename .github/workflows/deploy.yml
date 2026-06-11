@@ -54,3 +54,31 @@ jobs:
             sleep 6
           done
           echo "app não respondeu 200 a tempo"; exit 1
+
+  # E2E pós-deploy contra produção. Runner HOSPEDADO (não self-hosted): o alvo é a
+  # URL pública via Traefik (443), que não depende da allowlist de IP. Sem E2E_SENHA,
+  # os specs se auto-pulam (não falham).
+  e2e:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: E2E contra produção (cliente com dados)
+        env:
+          E2E_BASE_URL: https://painel.mirantegov.cloud
+          E2E_SENHA: ${{ secrets.E2E_SENHA }}
+          E2E_CLIENTES: "4117107"
+          E2E_CLIENTE_DADOS: "4117107"
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

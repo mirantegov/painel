@@ -8,6 +8,7 @@
 //
 // Uso:  node build_mod_receita.mjs <ibge> <ano…>  · Env: CLICKHOUSE_URL/USER/PASSWORD · DATABASE_URL
 import pg from "pg";
+import { bucketReceita as bucket } from "./lib/classificacao.mjs";
 
 const IBGE = process.argv[2];
 const ANOS = process.argv.slice(3).map(Number);
@@ -25,14 +26,6 @@ async function ch(sql) {
 }
 const n = (v) => Math.round(Number(v) * 100) / 100;
 const MESES = ["", "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-
-function bucket(cod) {
-  const cat = cod[0], ori = cod[1], esp = cod[2];
-  if (cat === "1" && ["1", "2", "3", "4", "5", "6"].includes(ori)) return "proprias";
-  if (ori === "7" && esp === "1") return "federais";
-  if (ori === "7" && esp === "2") return "estaduais";
-  return "outras";
-}
 
 async function buildAno(ano, nomes) {
   // prevista por receita (orçamento) + arrecadada por receita (movimento)
