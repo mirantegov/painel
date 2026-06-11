@@ -5,7 +5,6 @@ import { useSnapshot } from "@/components/use-snapshot";
 import { useYear } from "@/components/year-provider";
 import { RECEITA_SNAPSHOT } from "@/lib/demo-receita";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -33,19 +32,10 @@ import {
   ChartPieValueLegend,
   type ChartConfig,
 } from "@/components/ui/chart";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+
+
+
 import { Separator } from "@/components/ui/separator";
 import {
   Area,
@@ -59,39 +49,28 @@ import {
   PieChart,
   XAxis,
   YAxis,
-  Cell,
 } from "recharts";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowUp01Icon,
   ArrowDown01Icon,
   Wallet01Icon,
-  MoneyReceiveSquareIcon,
-  Invoice01Icon,
   Calendar01Icon,
   Building06Icon,
-  FilterIcon,
-  Download01Icon,
-  RefreshIcon,
-  AlertCircleIcon,
   CheckmarkCircle02Icon,
   Target01Icon,
   ChartLineData02Icon,
   PieChart02Icon,
   Clock01Icon,
-  Flag01Icon,
   StarIcon,
   Alert02Icon,
   MoneyAdd01Icon,
-  MoneySend01Icon,
   BankIcon,
   Building04Icon,
   Home01Icon,
   Store04Icon,
-  Invoice02Icon,
 } from "@hugeicons/core-free-icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 import { KpiCard } from "@/components/ui/kpi-card";
 
 // Formatadores
@@ -148,7 +127,6 @@ export function ReceitaMunicipal() {
     projecaoReceita,
     totalProjetado,
     benchmarkMunicipios,
-    benchmarkChart,
   } = useSnapshot("receita", RECEITA_SNAPSHOT);
 
   return (

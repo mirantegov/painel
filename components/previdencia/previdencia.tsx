@@ -5,7 +5,6 @@ import { useSnapshot } from "@/components/use-snapshot";
 import { PREVIDENCIA_SNAPSHOT } from "@/lib/demo-previdencia";
 import { PrevidenciaSnapshotContext } from "./snapshot-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { GestaoBeneficios } from "./gestao-beneficios";
 import { AnaliseFinanceira } from "./analise-financeira";
 import { ControleBeneficios } from "./controle-beneficios";

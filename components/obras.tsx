@@ -3,7 +3,6 @@
 import * as React from "react";
 import { fmtBRL } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -30,43 +29,25 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+
+
+
 import {
   Area,
   AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
-  Line,
-  LineChart,
   Pie,
   PieChart,
   XAxis,
   YAxis,
-  Cell,
 } from "recharts";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  ArrowUp01Icon,
-  ArrowDown01Icon,
   ConstructionIcon,
-  Calendar01Icon,
   Building04Icon,
-  FilterIcon,
-  Download01Icon,
-  RefreshIcon,
   AlertCircleIcon,
   CheckmarkCircle02Icon,
   Target01Icon,
@@ -75,10 +56,8 @@ import {
   Clock01Icon,
   Flag01Icon,
   CoinsDollarIcon,
-  MoneySend01Icon,
   FileValidationIcon,
   SecurityCheckIcon,
-  UserMultipleIcon,
 } from "@hugeicons/core-free-icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -105,25 +84,6 @@ type StatusObra =
   | "nao_iniciada"
   | "atrasada";
 
-type Obra = {
-  id: string;
-  nome: string;
-  tipo: string;
-  secretaria: string;
-  construtora: string;
-  contrato: string;
-  valorContratado: number;
-  valorMedido: number;
-  valorPago: number;
-  execucaoFisica: number;
-  execucaoFinanceira: number;
-  prazoInicial: string;
-  prazoAtual: string;
-  status: StatusObra;
-  fonte: string;
-  bairro: string;
-  aditivos: number;
-};
 
 // Status helpers
 function statusLabel(s: StatusObra) {
@@ -165,13 +125,11 @@ export function Obras() {
   const {
     obras,
     totalContratado,
-    totalMedido,
     totalPago,
     obrasAndamento,
     obrasConcluidas,
     obrasParalisadas,
     obrasAtrasadas,
-    obrasNaoIniciadas,
     execucaoFisicaMedia,
     obrasPorTipo,
     chartConfigTipo,
@@ -188,7 +146,6 @@ export function Obras() {
     eventosRecentes,
     rankingConstrutoras,
   } = useSnapshot("obras", OBRAS_SNAPSHOT);
-  const [periodoSelecionado, setPeriodoSelecionado] = React.useState("2024");
   const [abaSelecionada, setAbaSelecionada] = React.useState("portfolio");
 
   return (

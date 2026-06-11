@@ -5,7 +5,6 @@ import { useSnapshot } from "@/components/use-snapshot";
 import { SANEAMENTO_SNAPSHOT } from "@/lib/demo-saneamento";
 import { SaneamentoSnapshotContext } from "./snapshot-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { AbastecimentoAgua } from "./abastecimento-agua";
 import { Esgoto } from "./esgoto";
 import { FinanceiroSaneamento } from "./financeiro-saneamento";

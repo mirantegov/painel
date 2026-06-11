@@ -94,7 +94,6 @@ import {
   RadialBarChart,
   XAxis,
   YAxis,
-  Cell,
 } from "recharts"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { 
@@ -117,12 +116,8 @@ import {
   ArrowUp01Icon,
   Mail01Icon,
   Notification02Icon,
-  Home01Icon,
   UserIcon,
-  Calendar01Icon,
-  FolderOpenIcon,
   StarIcon,
-  HeartAddIcon,
   TextBoldIcon,
   TextItalicIcon,
   TextUnderlineIcon,

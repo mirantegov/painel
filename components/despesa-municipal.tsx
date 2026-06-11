@@ -5,7 +5,6 @@ import { useSnapshot } from "@/components/use-snapshot";
 import { DESPESA_SNAPSHOT } from "@/lib/demo-despesa";
 import { fmtBRL } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -33,19 +32,10 @@ import {
   ChartPieValueLegend,
   type ChartConfig,
 } from "@/components/ui/chart";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+
+
+
 import { Separator } from "@/components/ui/separator";
 import {
   Area,
@@ -57,11 +47,8 @@ import {
   LineChart,
   Pie,
   PieChart,
-  ResponsiveContainer,
-  Treemap,
   XAxis,
   YAxis,
-  Cell,
 } from "recharts";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -71,11 +58,6 @@ import {
   Invoice01Icon,
   Calendar01Icon,
   Building06Icon,
-  GridViewIcon,
-  Analytics01Icon,
-  FilterIcon,
-  Download01Icon,
-  RefreshIcon,
   Target01Icon,
   ChartLineData02Icon,
   PieChart02Icon,
@@ -113,7 +95,7 @@ function calcPercent(value: number, total: number): number {
 }
 
 export function DespesaMunicipal() {
-  const [viewMode, setViewMode] = React.useState("orgao");
+  const [, setViewMode] = React.useState("orgao");
   const {
     dadosÓrgãos,
     dadosUnidades,
@@ -127,7 +109,6 @@ export function DespesaMunicipal() {
     treemapData,
     modalidadeLicitacao,
     topFornecedores,
-    metasExecucao,
     metasODS,
     rigidezOrcamentaria,
     totalObrigatoria,

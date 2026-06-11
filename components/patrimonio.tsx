@@ -6,7 +6,6 @@ import { useSnapshot } from "@/components/use-snapshot";
 import { PATRIMONIO_SNAPSHOT } from "@/lib/demo-patrimonio";
 import {
   Archive02Icon,
-  ArrowDown01Icon,
   ArrowUp01Icon,
   Building04Icon,
   Calendar01Icon,
@@ -21,8 +20,6 @@ import {
   Chair01Icon,
   Recycle01Icon,
   ArrowMoveDownLeftIcon,
-  FilterIcon,
-  RefreshIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -39,14 +36,8 @@ import {
 } from "recharts";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+
 import {
   Card,
   CardContent,
@@ -61,7 +52,6 @@ import {
   ChartPieValueLegend,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { Progress } from "@/components/ui/progress";
@@ -125,9 +115,6 @@ export function Patrimonio() {
     resumoMovimentacoes,
     termosResponsabilidade,
   } = useSnapshot("patrimonio", PATRIMONIO_SNAPSHOT);
-  const [periodoSelecionado, setPeriodoSelecionado] = React.useState("2024");
-  const [categoriaSelecionada, setCategoriaSelecionada] =
-    React.useState("todas");
 
   return (
     <div className="space-y-8">

@@ -5,7 +5,6 @@ import {
   Alert02Icon,
   AlertCircleIcon,
   Activity01Icon,
-  Clock01Icon,
   DeliveryTruck01Icon,
   DropletIcon,
   FirstAidKitIcon,
@@ -15,13 +14,11 @@ import {
   InformationCircleIcon,
   SecurityCheckIcon,
   ShoppingCart01Icon,
-  Target01Icon,
   UserMultipleIcon,
   BulbIcon,
   MedicineBottle02Icon,
   Archive02Icon,
   ArrowUp01Icon,
-  ArrowDown01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -31,8 +28,6 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
-  Line,
-  LineChart,
   ReferenceLine,
   XAxis,
   YAxis,
@@ -45,7 +40,6 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { useSnapshot } from "@/components/use-snapshot";

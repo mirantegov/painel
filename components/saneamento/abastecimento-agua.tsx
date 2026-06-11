@@ -550,7 +550,6 @@ export function AbastecimentoAgua() {
     INDICE_PERDA_AGUA_PCT,
     ETA_CAPACIDADE_LS,
     ETA_PRODUCAO_ATUAL_LS,
-    LIGACOES_ATIVAS_AGUA,
   } = useSaneamentoSnapshot();
 
   const etaPct = (ETA_PRODUCAO_ATUAL_LS / ETA_CAPACIDADE_LS) * 100;
