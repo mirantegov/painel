@@ -38,8 +38,9 @@ reusável; cada cliente é uma linha no crontab chamando `export-cliente.sh <ibg
 | 4121000 | Querência do Norte | | | |
 | 4100905 | Amaporã | | | |
 
-> ⚠️ **`ENTIDADES` em cada `.conf` está com default `"1, 2, 3"` — CONFIRMAR** no ERP de
-> cada cliente (query do [runbook §2](../../docs/runbook-exportador.md)) antes de ligar no cron.
+> **`ENTIDADES` em cada `.conf` está com default `"1, 2, 3, 4"`** (cobre prefeitura/câmara/
+> RPPS/autarquia/fundo da maioria). Entidades inexistentes no ERP simplesmente não retornam
+> linhas — sem erro. Para recortar, ajuste no `.conf` (query do [runbook §2](../../docs/runbook-exportador.md)).
 > Os `.secret.env` (DATABASE_URL do ERP + chaves MinIO) ainda precisam ser preenchidos por cliente.
 
 ## Adicionar um cliente
