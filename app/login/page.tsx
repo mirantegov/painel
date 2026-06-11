@@ -10,6 +10,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+/** Formata dígitos do CPF como 000.000.000-00 (parcial enquanto digita). */
+function formatCpf(digits: string) {
+  const d = digits.slice(0, 11)
+  let out = d.slice(0, 3)
+  if (d.length > 3) out += "." + d.slice(3, 6)
+  if (d.length > 6) out += "." + d.slice(6, 9)
+  if (d.length > 9) out += "-" + d.slice(9, 11)
+  return out
+}
+
 export default function LoginPage() {
   const router = useRouter()
   const [municipio, setMunicipio] = React.useState("")
@@ -87,8 +97,9 @@ export default function LoginPage() {
                 name="cpf"
                 inputMode="numeric"
                 autoComplete="username"
-                value={cpf}
-                onChange={(event) => setCpf(event.target.value)}
+                maxLength={14}
+                value={formatCpf(cpf)}
+                onChange={(event) => setCpf(event.target.value.replace(/\D/g, "").slice(0, 11))}
                 placeholder="000.000.000-00"
                 required
               />
