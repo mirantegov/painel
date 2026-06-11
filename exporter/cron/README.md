@@ -25,6 +25,23 @@ exporter/cron/
 **"Um por cliente"** = um par `<ibge>.conf` + `<ibge>.secret.env`. O engine é único e
 reusável; cada cliente é uma linha no crontab chamando `export-cliente.sh <ibge>`.
 
+### Clientes (IBGE oficial — API IBGE/UF 41)
+
+| IBGE | Município | | IBGE | Município |
+|---|---|---|---|---|
+| 4117107 | Nova Londrina | | 4118808 | Peabiru |
+| 4126256 | Sarandi | | 4106555 | Corumbataí do Sul |
+| 4117909 | Palotina | | 4103909 | Campina da Lagoa |
+| 4113007 | Jussara | | 4104808 | Cascavel |
+| 4107108 | Diamante do Norte | | 4127700 | Toledo |
+| 4123709 | Santa Isabel do Ivaí | | | |
+| 4121000 | Querência do Norte | | | |
+| 4100905 | Amaporã | | | |
+
+> ⚠️ **`ENTIDADES` em cada `.conf` está com default `"1, 2, 3"` — CONFIRMAR** no ERP de
+> cada cliente (query do [runbook §2](../../docs/runbook-exportador.md)) antes de ligar no cron.
+> Os `.secret.env` (DATABASE_URL do ERP + chaves MinIO) ainda precisam ser preenchidos por cliente.
+
 ## Adicionar um cliente
 
 ```bash

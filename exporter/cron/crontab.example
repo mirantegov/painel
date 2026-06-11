@@ -3,17 +3,28 @@
 # Ajuste REPO p/ o caminho real do checkout. Horários escalonados p/ não competir
 # por banda/CPU. O engine tem lock por cliente (não sobrepõe a execução anterior).
 #
-# Pré-requisitos por cliente:
-#   exporter/cron/clientes/<ibge>.conf         (versionado)
+# Pré-requisitos por cliente (ANTES de habilitar):
+#   exporter/cron/clientes/<ibge>.conf         (versionado — CONFIRMAR ENTIDADES reais!)
 #   exporter/cron/clientes/<ibge>.secret.env   (preenchido, chmod 600)
-#   binário: exporter/exporter  (make build) OU exporter/dist/exporter-linux-amd64 (make linux)
+#   binário: exporter/exporter (make build) OU exporter/dist/exporter-linux-amd64 (make linux)
 #
 # Saída: exporter/cron/log/cron_<ibge>_<ts>.log (engine) + exporter/log/export_* (exportador).
+# Comece habilitando 1–2 clientes, valide o MinIO, depois ligue o resto.
 
 SHELL=/bin/bash
 REPO=/opt/mirante/painel
 
 # m  h  dom mon dow   comando
-30  2  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4117107 >> exporter/cron/log/4117107.cronlog 2>&1
-# 45  2  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4117909 >> exporter/cron/log/4117909.cronlog 2>&1
-# 00  3  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4126256 >> exporter/cron/log/4126256.cronlog 2>&1
+00  2  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4117107 >> exporter/cron/log/4117107.cronlog 2>&1   # Nova Londrina
+10  2  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4126256 >> exporter/cron/log/4126256.cronlog 2>&1   # Sarandi
+20  2  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4117909 >> exporter/cron/log/4117909.cronlog 2>&1   # Palotina
+30  2  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4113007 >> exporter/cron/log/4113007.cronlog 2>&1   # Jussara
+40  2  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4107108 >> exporter/cron/log/4107108.cronlog 2>&1   # Diamante do Norte
+50  2  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4123709 >> exporter/cron/log/4123709.cronlog 2>&1   # Santa Isabel do Ivaí
+00  3  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4121000 >> exporter/cron/log/4121000.cronlog 2>&1   # Querência do Norte
+10  3  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4100905 >> exporter/cron/log/4100905.cronlog 2>&1   # Amaporã
+20  3  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4118808 >> exporter/cron/log/4118808.cronlog 2>&1   # Peabiru
+30  3  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4106555 >> exporter/cron/log/4106555.cronlog 2>&1   # Corumbataí do Sul
+40  3  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4103909 >> exporter/cron/log/4103909.cronlog 2>&1   # Campina da Lagoa
+00  4  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4104808 >> exporter/cron/log/4104808.cronlog 2>&1   # Cascavel (maior — janela própria)
+30  4  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4127700 >> exporter/cron/log/4127700.cronlog 2>&1   # Toledo (maior — janela própria)
