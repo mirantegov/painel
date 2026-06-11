@@ -42,6 +42,9 @@ export const rigidezPessoalSobreOrcado = pctShare(despesaPessoalOrcado, despesaO
  * (mod_orcamento.dados) e o que o componente busca por ano. Os derivados
  * são recalculados por computeOrcamento().
  */
+export type OrcRow = { nome: string; orcado: number; atualizado: number; categoria?: string }
+export type OrcEvo = { ano: string; orcada: number; atualizada: number }
+
 export type OrcamentoBase = {
   receitaPrevista: number
   receitaDeduzida: number
@@ -53,6 +56,18 @@ export type OrcamentoBase = {
   despesaEmpenhada: number
   metaRealizacaoReceitaPct: number
   despesaPessoalOrcado: number
+  // Tabelas/evolução (opcionais) — data-driven via mod_orcamento por chave; o
+  // componente cai no fallback demo quando ausentes (município sem pipeline).
+  receitaPorOrigemNatureza?: OrcRow[]
+  receitaPorFonte?: OrcRow[]
+  receitaPorEntidade?: OrcRow[]
+  receitaPorOrigem?: OrcRow[]
+  despesaPorSecretaria?: OrcRow[]
+  despesaPorFuncao?: OrcRow[]
+  despesaPorFonte?: OrcRow[]
+  despesaPorNatureza?: OrcRow[]
+  evolucaoReceita?: OrcEvo[]
+  evolucaoDespesa?: OrcEvo[]
 }
 
 export const ORCAMENTO_BASE: OrcamentoBase = {

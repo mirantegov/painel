@@ -76,7 +76,7 @@ const pctDiff = (atual: number, anterior: number) => {
 // DADOS DA RECEITA
 // =============================================
 
-const evolucaoReceitaAnual = [
+const evolucaoReceitaAnual_DEMO = [
   { ano: "2020", orcada: 420_000_000, atualizada: 435_000_000 },
   { ano: "2021", orcada: 455_000_000, atualizada: 468_000_000 },
   { ano: "2022", orcada: 480_000_000, atualizada: 498_000_000 },
@@ -84,7 +84,7 @@ const evolucaoReceitaAnual = [
   { ano: "2024", orcada: 535_000_000, atualizada: 547_000_000 },
 ];
 
-const receitaOrigemNatureza = [
+const receitaOrigemNatureza_DEMO = [
   { nome: "Impostos", orcado: 125_000_000, atualizado: 132_500_000 },
   { nome: "Taxas", orcado: 18_500_000, atualizado: 19_200_000 },
   { nome: "Contribuições", orcado: 42_000_000, atualizado: 43_800_000 },
@@ -106,7 +106,7 @@ const receitaOrigemNatureza = [
   },
 ];
 
-const receitaFonteRecursos = [
+const receitaFonteRecursos_DEMO = [
   {
     nome: "Recursos Ordinários (Livre)",
     orcado: 185_000_000,
@@ -119,7 +119,7 @@ const receitaFonteRecursos = [
   { nome: "Outros Vinculados", orcado: 80_000_000, atualizado: 78_000_000 },
 ];
 
-const receitaEntidade = [
+const receitaEntidade_DEMO = [
   {
     nome: "Prefeitura Municipal",
     orcado: 395_000_000,
@@ -134,7 +134,7 @@ const receitaEntidade = [
   { nome: "Saneamento Municipal", orcado: 50_000_000, atualizado: 49_300_000 },
 ];
 
-const receitaOrigem = [
+const receitaOrigem_DEMO = [
   { nome: "Receitas Próprias", orcado: 165_000_000, atualizado: 172_800_000 },
   {
     nome: "Transferências Estaduais",
@@ -153,7 +153,7 @@ const receitaOrigem = [
 // DADOS DA DESPESA
 // =============================================
 
-const evolucaoDespesaAnual = [
+const evolucaoDespesaAnual_DEMO = [
   { ano: "2020", orcada: 418_000_000, atualizada: 430_000_000 },
   { ano: "2021", orcada: 452_000_000, atualizada: 470_000_000 },
   { ano: "2022", orcada: 478_000_000, atualizada: 502_000_000 },
@@ -161,7 +161,7 @@ const evolucaoDespesaAnual = [
   { ano: "2024", orcada: 535_000_000, atualizada: 549_000_000 },
 ];
 
-const despesaSecretaria = [
+const despesaSecretaria_DEMO = [
   { nome: "Sec. de Educação", orcado: 142_000_000, atualizado: 148_500_000 },
   { nome: "Sec. de Saúde", orcado: 118_000_000, atualizado: 122_300_000 },
   { nome: "Sec. de Administração", orcado: 65_000_000, atualizado: 63_800_000 },
@@ -185,7 +185,7 @@ const despesaSecretaria = [
   { nome: "Saneamento Municipal", orcado: 34_000_000, atualizado: 32_700_000 },
 ];
 
-const despesaFuncao = [
+const despesaFuncao_DEMO = [
   { nome: "Educação", orcado: 142_000_000, atualizado: 148_500_000 },
   { nome: "Saúde", orcado: 118_000_000, atualizado: 122_300_000 },
   { nome: "Administração", orcado: 68_000_000, atualizado: 66_500_000 },
@@ -197,7 +197,7 @@ const despesaFuncao = [
   { nome: "Encargos Especiais", orcado: 22_000_000, atualizado: 22_500_000 },
 ];
 
-const despesaFonteRecursos = [
+const despesaFonteRecursos_DEMO = [
   {
     nome: "Recursos Ordinários (Livre)",
     orcado: 180_000_000,
@@ -210,7 +210,7 @@ const despesaFonteRecursos = [
   { nome: "Outros Vinculados", orcado: 85_000_000, atualizado: 83_500_000 },
 ];
 
-const despesaNatureza = [
+const despesaNatureza_DEMO = [
   {
     nome: "Pessoal e Encargos Sociais",
     orcado: 265_000_000,
@@ -249,15 +249,8 @@ const despesaNatureza = [
   },
 ];
 
-const receitaTopAltas = [...receitaOrigemNatureza]
-  .map((item) => ({ ...item, diff: item.atualizado - item.orcado }))
-  .sort((a, b) => b.diff - a.diff)
-  .slice(0, 4);
-
-const despesaTopAltas = [...despesaNatureza]
-  .map((item) => ({ ...item, diff: item.atualizado - item.orcado }))
-  .sort((a, b) => b.diff - a.diff)
-  .slice(0, 4);
+// receitaTopAltas / despesaTopAltas são derivados dos arrays data-driven dentro
+// do componente (ver OrcamentoMunicipal), para refletir o snapshot por ano.
 
 // =============================================
 // COMPONENTE
@@ -431,6 +424,26 @@ function MixBreakdownCard({
 
 export function OrcamentoMunicipal() {
   const base = useSnapshot<OrcamentoBase>("orcamento", ORCAMENTO_BASE);
+
+  // Tabelas/evolução: data-driven (mod_orcamento por chave) com fallback demo.
+  const evolucaoReceitaAnual = base.evolucaoReceita ?? evolucaoReceitaAnual_DEMO;
+  const receitaOrigemNatureza = base.receitaPorOrigemNatureza ?? receitaOrigemNatureza_DEMO;
+  const receitaFonteRecursos = base.receitaPorFonte ?? receitaFonteRecursos_DEMO;
+  const receitaEntidade = base.receitaPorEntidade ?? receitaEntidade_DEMO;
+  const receitaOrigem = base.receitaPorOrigem ?? receitaOrigem_DEMO;
+  const evolucaoDespesaAnual = base.evolucaoDespesa ?? evolucaoDespesaAnual_DEMO;
+  const despesaSecretaria = base.despesaPorSecretaria ?? despesaSecretaria_DEMO;
+  const despesaFuncao = base.despesaPorFuncao ?? despesaFuncao_DEMO;
+  const despesaFonteRecursos = base.despesaPorFonte ?? despesaFonteRecursos_DEMO;
+  const despesaNatureza = base.despesaPorNatureza ?? despesaNatureza_DEMO;
+  const receitaTopAltas = [...receitaOrigemNatureza]
+    .map((item) => ({ ...item, diff: item.atualizado - item.orcado }))
+    .sort((a, b) => b.diff - a.diff)
+    .slice(0, 4);
+  const despesaTopAltas = [...despesaNatureza]
+    .map((item) => ({ ...item, diff: item.atualizado - item.orcado }))
+    .sort((a, b) => b.diff - a.diff)
+    .slice(0, 4);
 
   const {
     receitaPrevista,

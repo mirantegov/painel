@@ -34,7 +34,14 @@ const MODULE_TABLES: Record<string, string> = {
 
 /**
  * Retorna o snapshot `dados` (jsonb) do módulo para (municipio, ano).
- * `chave` filtra um sub-dataset específico. Retorna null se não houver linha.
+ *
+ * - Com `chave`: devolve o sub-dataset daquela chave (uma linha) ou null.
+ * - Sem `chave`: **funde** todas as linhas do ano num objeto só. O snapshot é
+ *   particionado por `chave` (cada uma vira real quando sua fonte chega no
+ *   pipeline); os key-sets são disjuntos, então o merge é seguro. Linhas mais
+ *   recentes (`criado_em`) ganham em caso de empate — pipeline sobrepõe mock.
+ *
+ * Retorna null se não houver linha (o cliente cai no fallback demo).
  */
 export async function getModuloDados<T = unknown>(
   slug: string,
@@ -46,14 +53,20 @@ export async function getModuloDados<T = unknown>(
   if (!table) throw new Error(`Módulo desconhecido: ${slug}`);
 
   // Tabela resolve no schema do tenant (search_path); nome vem da allowlist.
-  const params: unknown[] = [ano];
-  let sql = `select dados from ${table} where ano = $1`;
   if (chave !== undefined) {
-    params.push(chave);
-    sql += ` and chave = $2`;
+    const rows = await tenantQuery<{ dados: T }>(
+      municipio,
+      `select dados from ${table} where ano = $1 and chave = $2 order by mes nulls first limit 1`,
+      [ano, chave],
+    );
+    return rows[0]?.dados ?? null;
   }
-  sql += ` order by mes nulls first limit 1`;
 
-  const rows = await tenantQuery<{ dados: T }>(municipio, sql, params);
-  return rows[0]?.dados ?? null;
+  const rows = await tenantQuery<{ dados: Record<string, unknown> }>(
+    municipio,
+    `select dados from ${table} where ano = $1 order by mes nulls first, criado_em`,
+    [ano],
+  );
+  if (rows.length === 0) return null;
+  return Object.assign({}, ...rows.map((r) => r.dados)) as T;
 }
