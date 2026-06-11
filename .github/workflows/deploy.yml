@@ -1,0 +1,56 @@
+name: Deploy (VPS)
+
+# CD para a VPS de produção. Roda APÓS o CI ("App · typecheck · lint · build")
+# concluir com sucesso em `main` — assim só implanta build verde.
+#
+# Executa em um SELF-HOSTED RUNNER instalado na própria VPS (label `vps`).
+# Motivo: o SSH/security-group da VPS é allowlisted por IP fixo; runners hospedados
+# no GitHub têm IP dinâmico e seriam bloqueados. O runner self-hosted puxa o job
+# por saída (sem SSH de entrada) e implanta localmente em /opt/mirante/painel.
+# Provisionamento do runner: docs/HANDOFF-vps-deploy-2026-06-09.md (seção CD).
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # só implanta se o CI passou (ou se acionado manualmente)
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: [self-hosted, vps]
+    steps:
+      - name: Pull main + rebuild do serviço app
+        working-directory: /opt/mirante/painel
+        run: |
+          set -euo pipefail
+          echo "== git =="
+          git fetch --all --prune
+          git checkout main
+          git pull --ff-only origin main
+          git --no-pager log --oneline -1
+          echo "== rebuild (app) =="
+          docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build app
+          echo "== prune imagens órfãs =="
+          docker image prune -f >/dev/null 2>&1 || true
+          echo "== status =="
+          docker compose --env-file .env.production -f docker-compose.prod.yml ps
+
+      - name: Healthcheck (app responde)
+        run: |
+          set -e
+          for i in $(seq 1 20); do
+            code=$(curl -sk -o /dev/null -w '%{http_code}' https://painel.mirantegov.cloud/login || true)
+            echo "tentativa $i: HTTP $code"
+            if [ "$code" = "200" ]; then echo "app OK"; exit 0; fi
+            sleep 6
+          done
+          echo "app não respondeu 200 a tempo"; exit 1
