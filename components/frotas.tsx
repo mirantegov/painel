@@ -33,15 +33,9 @@ import {
   ChartLegend,
   ChartLegendContent,
   ChartPieValueLegend,
-  type ChartConfig,
 } from "@/components/ui/chart";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+
 import {
   Area,
   AreaChart,
@@ -71,10 +65,8 @@ import {
   ConstructionIcon,
   Download01Icon,
   FileValidationIcon,
-  FilterIcon,
   MoneySend01Icon,
   PieChart02Icon,
-  RefreshIcon,
   SecurityCheckIcon,
   Target01Icon,
   AlertCircleIcon,
@@ -307,9 +299,7 @@ export function Frotas() {
     frotaResumo,
     checklistConformidade,
   } = snapshot;
-  const [periodo, setPeriodo] = React.useState("12m");
-  const [secretariaFiltro, setSecretariaFiltro] =
-    React.useState<string>("todas");
+  const [secretariaFiltro] = React.useState<string>("todas");
   const [buscaPlaca, setBuscaPlaca] = React.useState("");
   const [somenteProprios, setSomenteProprios] = React.useState(false);
 
@@ -341,9 +331,6 @@ export function Frotas() {
     return true;
   });
 
-  const secretarias = Array.from(
-    new Set(veiculos.map((v) => v.secretaria)),
-  ).sort();
 
   return (
     <FrotasSnapshotContext.Provider value={snapshot}>

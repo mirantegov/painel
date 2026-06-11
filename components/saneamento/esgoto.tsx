@@ -59,7 +59,6 @@ import {
 import {
   formatNumber,
   formatPercent,
-  formatCurrencyCompact,
 } from "@/lib/demo-saneamento";
 import { cn } from "@/lib/utils";
 
@@ -512,7 +511,6 @@ function SistemasTratamentoDetalhada() {
 
 export function Esgoto() {
   const {
-    POPULACAO_TOTAL,
     POPULACAO_ATENDIDA_ESGOTO,
     COBERTURA_ESGOTO_PCT,
     LIGACOES_ATIVAS_ESGOTO,

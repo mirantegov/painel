@@ -35,7 +35,6 @@ import {
   YAxis,
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -50,17 +49,11 @@ import {
   ChartPieValueLegend,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+
 import {
   Table,
   TableBody,
@@ -89,7 +82,6 @@ function badgeVariant(status: string) {
 
 export function AssistenciaSocial() {
   const {
-    greenPalette,
     resumo,
     execucaoMensal,
     chartExecucao,
@@ -152,7 +144,6 @@ export function AssistenciaSocial() {
     acolhimentoInstitucional,
     piaResumo,
   } = useSnapshot("assistencia-social", ASSISTENCIA_SOCIAL_SNAPSHOT);
-  const [periodoSelecionado, setPeriodoSelecionado] = React.useState("2024");
 
   return (
     <div className="space-y-8">

@@ -5,7 +5,6 @@ import { useSnapshot } from "@/components/use-snapshot";
 import { LEGISLATIVO_SNAPSHOT } from "@/lib/demo-legislativo";
 import { LegislativoSnapshotContext } from "./snapshot-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Vereadores } from "./vereadores";
 import { Sessoes } from "./sessoes";
 import { Proposituras } from "./proposituras";

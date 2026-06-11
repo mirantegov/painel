@@ -40,14 +40,11 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
-  Line,
-  LineChart,
   Pie,
   PieChart,
   XAxis,
   YAxis,
 } from "recharts";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   CloudIcon,
   AlertCircleIcon,

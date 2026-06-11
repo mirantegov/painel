@@ -1011,7 +1011,7 @@ export function formatDate(dateStr: string): string {
 }
 
 export function formatDateShort(dateStr: string): string {
-  const [year, month, day] = dateStr.split("-");
+  const [, month, day] = dateStr.split("-");
   return `${day}/${month}`;
 }
 

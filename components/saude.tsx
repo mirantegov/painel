@@ -16,9 +16,6 @@ import {
   BankIcon,
   Invoice01Icon,
   ArrowUp01Icon,
-  ArrowDown01Icon,
-  FilterIcon,
-  RefreshIcon,
   Alert02Icon,
   Target01Icon,
   AlertCircleIcon,
@@ -51,14 +48,8 @@ import {
 } from "recharts";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+
 import {
   Card,
   CardContent,
@@ -73,7 +64,6 @@ import {
   ChartPieValueLegend,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { Progress } from "@/components/ui/progress";
@@ -135,8 +125,6 @@ export function Saude() {
     atendimentosTendencia,
     chartConfigAtendimentos,
   } = useSnapshot("saude", SAUDE_SNAPSHOT);
-  const [periodoSelecionado, setPeriodoSelecionado] = React.useState("2024");
-  const [unidadeSelecionada, setUnidadeSelecionada] = React.useState("todas");
 
   return (
     <div className="space-y-8">

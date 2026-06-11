@@ -7,17 +7,14 @@ import { EDUCACAO_SNAPSHOT } from "@/lib/demo-educacao";
 import {
   Alert02Icon,
   ArrowUp01Icon,
-  ArrowDown01Icon,
   BankIcon,
   BookOpen02Icon,
   Calendar01Icon,
   ChartLineData02Icon,
-  FilterIcon,
   Flag01Icon,
   AlertCircleIcon,
   Invoice01Icon,
   MoneyReceiveSquareIcon,
-  RefreshIcon,
   Target01Icon,
   UserMultipleIcon,
   Wallet01Icon,
@@ -42,14 +39,8 @@ import {
 } from "recharts";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+
 import {
   Card,
   CardContent,
@@ -64,7 +55,6 @@ import {
   ChartPieValueLegend,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { Progress } from "@/components/ui/progress";
@@ -122,9 +112,6 @@ export function Educacao() {
     infraestruturaEscolar,
     formacaoContinuada,
   } = useSnapshot("educacao", EDUCACAO_SNAPSHOT);
-  const [periodoSelecionado, setPeriodoSelecionado] = React.useState("2024");
-  const [modalidadeSelecionada, setModalidadeSelecionada] =
-    React.useState("todas");
 
   return (
     <div className="space-y-8">
