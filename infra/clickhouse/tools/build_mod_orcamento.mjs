@@ -7,6 +7,7 @@
 // Uso:  node build_mod_orcamento.mjs <ibge> [ano1 ano2 ...]
 // Env:  CLICKHOUSE_URL/USER/PASSWORD (origem)  ·  DATABASE_URL (destino Postgres)
 import pg from "pg";
+import { bucketReceita as bucket, GRUPO_ORIGEM_LABEL } from "./lib/classificacao.mjs";
 
 const IBGE = process.argv[2];
 const ANOS = process.argv.slice(3).map(Number);
@@ -58,15 +59,7 @@ async function entidadeNomes() {
      FROM ${RAW}.siscop_entidade GROUP BY cod FORMAT TSV`);
   return Object.fromEntries(rows.map(([c, nm]) => [c, nm]));
 }
-// classificação de origem da receita pelo código PCASP (igual build_mod_receita.mjs)
-function bucket(cod) {
-  const cat = cod[0], ori = cod[1], esp = cod[2];
-  if (cat === "1" && ["1", "2", "3", "4", "5", "6"].includes(ori)) return "proprias";
-  if (ori === "7" && esp === "1") return "federais";
-  if (ori === "7" && esp === "2") return "estaduais";
-  return "outras";
-}
-const GRUPO_ORIGEM_LABEL = { proprias: "Receitas Próprias", estaduais: "Transferências Estaduais", federais: "Transferências Federais", outras: "Outras Receitas" };
+// classificação de origem da receita: bucketReceita + GRUPO_ORIGEM_LABEL (lib/classificacao.mjs)
 
 // rótulos padrão (PCASP / Portaria) — fixos nacionalmente
 const NAT_GRUPO = { "31": "Pessoal e Encargos", "32": "Juros e Encargos da Dívida",

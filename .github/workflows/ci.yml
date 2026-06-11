@@ -24,6 +24,10 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
+      - name: testes unitários (lógica grupo A)
+        run: npm run test:unit
+      - name: teste do engine de extração (exporter cron)
+        run: bash tests/exporter/export-cliente.test.sh
       - name: audit-modules (invariante - todo módulo ativo tem snapshot)
         run: node scripts/audit-modules.mjs --check
 
