@@ -131,6 +131,23 @@ export function DespesaMunicipal() {
     eventosRecentes,
   } = useSnapshot("despesa", DESPESA_SNAPSHOT);
 
+  // Pie "Despesa por Secretaria": derivado de dadosSecretarias (empenhada),
+  // top 4 + rollup "Outros" — sem valores hardcoded.
+  const secretariaPieChart = React.useMemo(() => {
+    const ordenadas = [...(dadosSecretarias ?? [])].sort(
+      (a, b) => b.empenhada - a.empenhada,
+    );
+    const top = ordenadas.slice(0, 4).map((s, i) => ({
+      name: s.sigla || s.nome,
+      value: s.empenhada,
+      fill: `var(--chart-${i + 1})`,
+    }));
+    const restante = ordenadas.slice(4).reduce((acc, s) => acc + s.empenhada, 0);
+    return restante > 0
+      ? [...top, { name: "Outros", value: restante, fill: "var(--chart-5)" }]
+      : top;
+  }, [dadosSecretarias]);
+
   return (
     <div className="space-y-8">
       {/* KPIs Principais */}
@@ -281,18 +298,7 @@ export function DespesaMunicipal() {
           </CardHeader>
           <CardContent>
             <ChartContainer
-              config={
-                {
-                  SEMSA: { label: "Saúde", color: "var(--chart-1)" },
-                  SEMED: { label: "Educação", color: "var(--chart-2)" },
-                  SEMINF: { label: "Infraestrutura", color: "var(--chart-3)" },
-                  SEMAS: {
-                    label: "Assistência Social",
-                    color: "var(--chart-4)",
-                  },
-                  outros: { label: "Outros", color: "var(--chart-5)" },
-                } satisfies ChartConfig
-              }
+              config={{} satisfies ChartConfig}
               className="mx-auto aspect-auto h-[300px] w-full"
             >
               <PieChart>
@@ -305,33 +311,7 @@ export function DespesaMunicipal() {
                   }
                 />
                 <Pie
-                  data={[
-                    {
-                      name: "SEMSA",
-                      value: 49800000,
-                      fill: "var(--color-SEMSA)",
-                    },
-                    {
-                      name: "SEMED",
-                      value: 42300000,
-                      fill: "var(--color-SEMED)",
-                    },
-                    {
-                      name: "SEMINF",
-                      value: 16200000,
-                      fill: "var(--color-SEMINF)",
-                    },
-                    {
-                      name: "SEMAS",
-                      value: 7890000,
-                      fill: "var(--color-SEMAS)",
-                    },
-                    {
-                      name: "outros",
-                      value: 12054500,
-                      fill: "var(--color-outros)",
-                    },
-                  ]}
+                  data={secretariaPieChart}
                   dataKey="value"
                   nameKey="name"
                   cx="50%"

@@ -51,6 +51,22 @@ async function fonteNomes() {
      FROM ${RAW}.siscop_fonterecurso FORMAT TSV`);
   return Object.fromEntries(rows.map(([c, nm]) => [c, nm]));
 }
+// entidade (consolidação multi-ente): cod numérico -> nome
+async function entidadeNomes() {
+  const rows = await ch(
+    `SELECT toString(toUInt32(entidade)) cod, upperUTF8(convertCharset(anyLast(nome),'Latin1','UTF-8')) nm
+     FROM ${RAW}.siscop_entidade GROUP BY cod FORMAT TSV`);
+  return Object.fromEntries(rows.map(([c, nm]) => [c, nm]));
+}
+// classificação de origem da receita pelo código PCASP (igual build_mod_receita.mjs)
+function bucket(cod) {
+  const cat = cod[0], ori = cod[1], esp = cod[2];
+  if (cat === "1" && ["1", "2", "3", "4", "5", "6"].includes(ori)) return "proprias";
+  if (ori === "7" && esp === "1") return "federais";
+  if (ori === "7" && esp === "2") return "estaduais";
+  return "outras";
+}
+const GRUPO_ORIGEM_LABEL = { proprias: "Receitas Próprias", estaduais: "Transferências Estaduais", federais: "Transferências Federais", outras: "Outras Receitas" };
 
 // rótulos padrão (PCASP / Portaria) — fixos nacionalmente
 const NAT_GRUPO = { "31": "Pessoal e Encargos", "32": "Juros e Encargos da Dívida",
@@ -63,7 +79,7 @@ const REC_ORIGEM = { // (categoria+origem) -> rótulo
   "21": "Operações de Crédito", "22": "Alienação de Bens", "23": "Amortização de Empréstimos",
   "24": "Transferências de Capital", "29": "Outras Receitas de Capital" };
 
-async function buildAno(ano, fontes, orgaoNm, funcaoNm) {
+async function buildAno(ano, fontes, orgaoNm, funcaoNm, entNm) {
   // ── DESPESA orçamento (estágio 10) ──
   const dEsc = (await ch(
     `SELECT round(sumIf(vlMovimento,cdProcedimento=111),2), round(sumIf(vlMovimento,cdProcedimento=112),2),
@@ -92,6 +108,13 @@ async function buildAno(ano, fontes, orgaoNm, funcaoNm) {
     .map(([k, o, a]) => ({ nome: NAT_GRUPO[k] || `Natureza ${k}`, categoria: CAT_DESP[k[0]] || "Outras", orcado: n(o), atualizado: n(a) }));
   const recOrigemNat = (await breakdownRec("concat(categoria,origem)")).map(([k, o, a]) => ({ nome: REC_ORIGEM[k] || `Origem ${k}`, orcado: n(o), atualizado: n(a) }));
   const recFonte = (await breakdownRec("fonteRecurso")).map(([k, o, a]) => ({ nome: fontes[k] || `Fonte ${k}`, orcado: n(o), atualizado: n(a) }));
+  // receita por entidade (consolidação multi-ente)
+  const recEntidade = (await breakdownRec("toString(cdEntidade)")).map(([k, o, a]) => ({ nome: entNm[k] || `Entidade ${k}`, orcado: n(o), atualizado: n(a) }));
+  // receita por grupo de origem (Próprias/Estaduais/Federais/Outras) — classifica cada cdReceita
+  const recCods = await ch(`SELECT cdReceita, round(sumIf(vlMovimento,cdProcedimento=101),2) o, round(sum(vlMovimento),2) a FROM ${SIM}.fato_receita_orcamento WHERE nrAno=${ano} GROUP BY cdReceita FORMAT TSV`);
+  const gAgg = { proprias: { o: 0, a: 0 }, estaduais: { o: 0, a: 0 }, federais: { o: 0, a: 0 }, outras: { o: 0, a: 0 } };
+  for (const [cod, o, a] of recCods) { const b = bucket(cod); gAgg[b].o += Number(o); gAgg[b].a += Number(a); }
+  const recOrigem = Object.entries(gAgg).filter(([, v]) => v.a || v.o).map(([k, v]) => ({ nome: GRUPO_ORIGEM_LABEL[k], orcado: n(v.o), atualizado: n(v.a) }));
 
   // evolução (todos os anos, recalculada igual em cada linha de ano)
   const evoD = (await ch(`SELECT nrAno, round(sumIf(vlMovimento,cdProcedimento=111),2), round(sum(vlMovimento),2) FROM ${SIM}.fato_despesa_orcamento GROUP BY nrAno ORDER BY nrAno FORMAT TSV`)).map(([y, o, a]) => ({ ano: y, orcada: n(o), atualizada: n(a) }));
@@ -109,6 +132,8 @@ async function buildAno(ano, fontes, orgaoNm, funcaoNm) {
     "desp-natureza": { despesaPorNatureza: despNatureza },
     "rec-origem-natureza": { receitaPorOrigemNatureza: recOrigemNat },
     "rec-fonte": { receitaPorFonte: recFonte },
+    "rec-entidade": { receitaPorEntidade: recEntidade },
+    "rec-origem": { receitaPorOrigem: recOrigem },
     "desp-evolucao": { evolucaoDespesa: evoD },
     "rec-evolucao": { evolucaoReceita: evoR },
   };
@@ -118,9 +143,10 @@ const client = new pg.Client({ connectionString: PG });
 await client.connect();
 await client.query(`set search_path to mun_${IBGE}, public`);
 const fontes = await fonteNomes();
+const entNm = await entidadeNomes();
 for (const ano of ANOS) {
   const orgaoNm = await dimNomes("O", ano), funcaoNm = await dimNomes("F", ano);
-  const chaves = await buildAno(ano, fontes, orgaoNm, funcaoNm);
+  const chaves = await buildAno(ano, fontes, orgaoNm, funcaoNm, entNm);
   await client.query(`delete from mod_orcamento where ano=$1`, [ano]);
   for (const [chave, dados] of Object.entries(chaves)) {
     await client.query(

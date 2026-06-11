@@ -44,7 +44,7 @@ async function breakdown(ano, dim) {
     .filter((r) => r.atualizada || r.empenhada).sort((a, b) => b.atualizada - a.atualizada);
 }
 
-async function buildAno(ano, nomes) {
+async function buildAno(ano, nomes, fornMap) {
   const { orgao, unidade, funcao, subfuncao, programa, acao } = nomes;
   const linha = (r, extra) => ({ ...extra, atualizada: r.atualizada, empenhada: r.empenhada, aEmpenhar: r.aEmpenhar, pago: r.pago, aPagar: r.aPagar });
 
@@ -86,17 +86,25 @@ async function buildAno(ano, nomes) {
     { nome: "Capital", valor: capital, fill: "var(--chart-2)" },
   ];
 
+  // top fornecedores: empenhado (estágio 16) por idFornecedor ⋈ nome/cnpj do raw
+  const topF = await ch(`SELECT toString(idFornecedor) id, round(sumIf(vlMovimento,cdEstagio=16),2) v FROM ${SIM}.fato_despesa_movimento WHERE nrAno=${ano} AND idFornecedor>0 GROUP BY id ORDER BY v DESC LIMIT 10 FORMAT TSV`);
+  const denomF = totais.empenhada || 1;
+  const topFornecedores = topF.map(([id, v]) => { const f = fornMap.get(id) || {}; return { nome: f.nome || `Fornecedor ${id}`, cnpj: f.cnpj || "", valor: n(v), percentual: n((Number(v) / denomF) * 100) }; });
+
   return {
-    execucao: { totais, evolucaoMensal, comparativoAnual, dadosÓrgãos, dadosUnidades, dadosFuncaoSubfuncao, dadosProgramas, dadosAcoes, dadosSecretarias, treemapData, despesaCorrenteCapital, despesaCorrenteCapitalChart },
+    execucao: { totais, evolucaoMensal, comparativoAnual, dadosÓrgãos, dadosUnidades, dadosFuncaoSubfuncao, dadosProgramas, dadosAcoes, dadosSecretarias, treemapData, despesaCorrenteCapital, despesaCorrenteCapitalChart, topFornecedores },
   };
 }
 
 const client = new pg.Client({ connectionString: PG });
 await client.connect();
 await client.query(`set search_path to mun_${IBGE}, public`);
+// fornecedor é global (sem entidade) — lookup id -> {nome, cnpj} uma vez
+const fornRows = await ch(`SELECT toString(toUInt32(fornecedor)) id, upperUTF8(convertCharset(anyLast(nome),'Latin1','UTF-8')) nm, anyLast(cnpj) cnpj FROM ${RAW}.siscop_fornecedor GROUP BY id FORMAT TSV`);
+const fornMap = new Map(fornRows.map(([id, nm, cnpj]) => [id, { nome: nm, cnpj }]));
 for (const ano of ANOS) {
   const nomes = { orgao: await dimNomes("O", ano), unidade: await dimNomes("U", ano), funcao: await dimNomes("F", ano), subfuncao: await dimNomes("SF", ano), programa: await dimNomes("P", ano), acao: await dimNomes("PA", ano) };
-  const chaves = await buildAno(ano, nomes);
+  const chaves = await buildAno(ano, nomes, fornMap);
   await client.query(`delete from mod_despesa where ano=$1`, [ano]);
   for (const [chave, dados] of Object.entries(chaves))
     await client.query(`insert into mod_despesa (entidade_id, ano, chave, dados) values (NULL,$1,$2,$3::jsonb)`, [ano, chave, JSON.stringify(dados)]);

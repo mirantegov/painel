@@ -597,7 +597,7 @@ export function OrcamentoMunicipal() {
           <KpiCard
             title="Entidade Líder em Receita"
             icon={MoneyAdd01Icon}
-            value="Prefeitura Municipal"
+            value={receitaEntidade[0]?.nome ?? "—"}
             borderColor="border-l-indigo-500"
             footer={
               <p className="text-xs text-muted-foreground">
@@ -959,7 +959,7 @@ export function OrcamentoMunicipal() {
           <KpiCard
             title="Despesa Líder por Natureza"
             icon={MoneySend01Icon}
-            value="Pessoal e Encargos"
+            value={despesaNatureza[0]?.nome ?? "—"}
             borderColor="border-l-indigo-500"
             footer={
               <p className="text-xs text-muted-foreground">
