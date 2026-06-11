@@ -1,0 +1,19 @@
+# Crontab de extração ERP -> MinIO (um cliente por linha).
+# Instale com:  crontab -e   (ou:  crontab exporter/cron/crontab.example)
+# Ajuste REPO p/ o caminho real do checkout. Horários escalonados p/ não competir
+# por banda/CPU. O engine tem lock por cliente (não sobrepõe a execução anterior).
+#
+# Pré-requisitos por cliente:
+#   exporter/cron/clientes/<ibge>.conf         (versionado)
+#   exporter/cron/clientes/<ibge>.secret.env   (preenchido, chmod 600)
+#   binário: exporter/exporter  (make build) OU exporter/dist/exporter-linux-amd64 (make linux)
+#
+# Saída: exporter/cron/log/cron_<ibge>_<ts>.log (engine) + exporter/log/export_* (exportador).
+
+SHELL=/bin/bash
+REPO=/opt/mirante/painel
+
+# m  h  dom mon dow   comando
+30  2  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4117107 >> exporter/cron/log/4117107.cronlog 2>&1
+# 45  2  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4117909 >> exporter/cron/log/4117909.cronlog 2>&1
+# 00  3  *   *   *   cd $REPO && exporter/cron/export-cliente.sh 4126256 >> exporter/cron/log/4126256.cronlog 2>&1
