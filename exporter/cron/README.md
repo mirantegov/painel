@@ -4,16 +4,31 @@ Wrapper Linux/cron do exportador (equivalente ao `run.bat` do Windows). Roda os 
 manifests Elotech (`siscop`, `aise`, `apice`) para **um cliente**, com os parâmetros
 dele, e é seguro para colocar no `crontab`.
 
-> O exportador roda na máquina que tem acesso ao **Postgres do ERP** do cliente
-> (normalmente local). É **raw, sem transformação** — a canonicalização é no ClickHouse.
+> O exportador roda na máquina que tem acesso ao **Postgres do ERP** do cliente.
+> É **raw, sem transformação** — a canonicalização é no ClickHouse.
 > Detalhes do exportador: [`../README.md`](../README.md) · operação manual: [`../../docs/runbook-exportador.md`](../../docs/runbook-exportador.md).
+
+## Onde cada cliente roda
+
+| ERP do cliente | Onde executa | Como agenda | Clientes |
+|---|---|---|---|
+| **Linux** | **na VPS** (cron) | `crontab.example` (este dir) | **Palotina (4117909)**, **Sarandi (4126256)** |
+| **Windows** | **na máquina do cliente** | `run.bat` + Agendador de Tarefas do Windows | todos os demais |
+
+- **VPS (Linux):** cron às **03:00** (e **12:00** depois — 2 sincronizações/dia). A VPS conecta ao
+  Postgres **remoto** desses clientes (DATABASE_URL no `.secret.env`). Só Palotina e Sarandi.
+- **Cliente (Windows):** o exportador roda **localmente** no servidor do ERP via [`run.bat`](../run.bat)
+  agendado no Windows. Esses clientes **não** entram no `crontab.example` da VPS.
+
+> Os `.conf` por cliente neste dir servem aos dois casos: na VPS o engine os lê direto; no Windows
+> são a referência dos valores (entidades/anos) a preencher no `run.bat`.
 
 ## Estrutura
 
 ```
 exporter/cron/
   export-cliente.sh        # engine (recebe <ibge>, roda smoke + 3 manifests)
-  crontab.example          # uma linha por cliente
+  crontab.example          # cron da VPS (só clientes Linux: Palotina, Sarandi)
   clientes/
     <ibge>.conf            # versionado: entidades, janela de anos, manifests (SEM segredo)
     <ibge>.secret.env      # gitignored: DATABASE_URL do ERP + chaves MinIO
@@ -63,10 +78,13 @@ exporter/cron/export-cliente.sh 4117107                # smoke + siscop + aise +
 exporter/cron/export-cliente.sh 4117107 --no-smoke --manifests=siscop   # só contábil
 ```
 
-## Agendar (cron)
+## Agendar (cron) — só na VPS, clientes Linux
+
+Aplica-se **apenas** a Palotina e Sarandi (ERP Linux). Os demais (Windows) agendam pelo
+Agendador de Tarefas do Windows na máquina do cliente (ver `run.bat`).
 
 ```bash
-crontab -e   # cole/edite as linhas de crontab.example, uma por cliente
+crontab exporter/cron/crontab.example   # na VPS, usuário deploy
 ```
 - O engine tem **lock por cliente** (`flock`): se a execução anterior ainda roda, a nova sai sem duplicar.
 - A **janela de anos auto-rola** (`ANOS_BACK`/`LIC_START` + ano atual) — não precisa editar a cada virada de ano.
