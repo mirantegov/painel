@@ -447,26 +447,6 @@ export function OrcamentoMunicipal() {
     .sort((a, b) => b.diff - a.diff)
     .slice(0, 4);
 
-  // Tabelas/evolução: data-driven (mod_orcamento por chave) com fallback demo.
-  const evolucaoReceitaAnual = base.evolucaoReceita ?? evolucaoReceitaAnual_DEMO;
-  const receitaOrigemNatureza = base.receitaPorOrigemNatureza ?? receitaOrigemNatureza_DEMO;
-  const receitaFonteRecursos = base.receitaPorFonte ?? receitaFonteRecursos_DEMO;
-  const receitaEntidade = base.receitaPorEntidade ?? receitaEntidade_DEMO;
-  const receitaOrigem = base.receitaPorOrigem ?? receitaOrigem_DEMO;
-  const evolucaoDespesaAnual = base.evolucaoDespesa ?? evolucaoDespesaAnual_DEMO;
-  const despesaSecretaria = base.despesaPorSecretaria ?? despesaSecretaria_DEMO;
-  const despesaFuncao = base.despesaPorFuncao ?? despesaFuncao_DEMO;
-  const despesaFonteRecursos = base.despesaPorFonte ?? despesaFonteRecursos_DEMO;
-  const despesaNatureza = base.despesaPorNatureza ?? despesaNatureza_DEMO;
-  const receitaTopAltas = [...receitaOrigemNatureza]
-    .map((item) => ({ ...item, diff: item.atualizado - item.orcado }))
-    .sort((a, b) => b.diff - a.diff)
-    .slice(0, 4);
-  const despesaTopAltas = [...despesaNatureza]
-    .map((item) => ({ ...item, diff: item.atualizado - item.orcado }))
-    .sort((a, b) => b.diff - a.diff)
-    .slice(0, 4);
-
   const {
     receitaPrevista,
     receitaDeduzida,
