@@ -54,6 +54,10 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3000"
+      # Next.js standalone faz bind no HOSTNAME; sem isto o Docker seta HOSTNAME=<id do
+      # container> e o app não escuta em 127.0.0.1 (healthcheck falha). 0.0.0.0 = todas
+      # as interfaces (Traefik continua alcançando via IP do container).
+      HOSTNAME: "0.0.0.0"
     depends_on:
       postgres:
         condition: service_healthy

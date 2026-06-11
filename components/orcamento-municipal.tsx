@@ -1,5 +1,6 @@
 "use client";
 
+import { useYear } from "@/components/year-provider";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -424,6 +425,7 @@ function MixBreakdownCard({
 
 export function OrcamentoMunicipal() {
   const base = useSnapshot<OrcamentoBase>("orcamento", ORCAMENTO_BASE);
+  const { ano } = useYear();
 
   // Tabelas/evolução: data-driven (mod_orcamento por chave) com fallback demo.
   const evolucaoReceitaAnual = base.evolucaoReceita ?? evolucaoReceitaAnual_DEMO;
@@ -502,7 +504,7 @@ export function OrcamentoMunicipal() {
             icon={Target01Icon}
             value={fmtMillions(receitaPrevista)}
             borderColor="border-l-blue-500"
-            footer={<p className="text-xs text-muted-foreground">LOA 2024</p>}
+            footer={<p className="text-xs text-muted-foreground">LOA {ano}</p>}
           />
           <KpiCard
             title="Deduzida"
@@ -871,7 +873,7 @@ export function OrcamentoMunicipal() {
             icon={Target01Icon}
             value={fmtMillions(despesaOrcada)}
             borderColor="border-l-blue-500"
-            footer={<p className="text-xs text-muted-foreground">LOA 2024</p>}
+            footer={<p className="text-xs text-muted-foreground">LOA {ano}</p>}
           />
           <KpiCard
             title="Suplementado"
