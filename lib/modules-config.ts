@@ -53,6 +53,16 @@ export type ModuleConfig = {
   component: ComponentType;
 };
 
+/**
+ * Módulos habilitados na UI. Os demais (registrados em MODULES) ficam ocultos
+ * nas tabs e no submenu "Módulos". Reabilitar = adicionar o id aqui.
+ */
+export const ENABLED_MODULE_IDS = new Set<string>([
+  "despesa",
+  "receita",
+  "orcamento",
+]);
+
 /** Registro central dos módulos. A ordem define a ordem do menu e do scroll automático. */
 export const MODULES: ModuleConfig[] = [
   {

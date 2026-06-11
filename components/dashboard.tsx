@@ -20,12 +20,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Analytics01Icon,
-  UserIcon,
   Cancel01Icon,
   Settings01Icon,
   GridIcon,
 } from "@hugeicons/core-free-icons";
-import { MODULES, MODULE_HEADERS } from "@/lib/modules-config";
+import { MODULES, MODULE_HEADERS, ENABLED_MODULE_IDS } from "@/lib/modules-config";
 import { useModuleVisibility } from "@/components/module-visibility-provider";
 import { SubmoduleAccessProvider } from "@/components/submodule-access";
 import { YearProvider } from "@/components/year-provider";
@@ -59,19 +58,25 @@ export function Dashboard({
 
   const { visibleModules, isVisible, toggle } = useModuleVisibility();
 
-  // Módulos que o usuário pode acessar (ACL), na ordem do menu.
+  // Módulos que o usuário pode acessar (ACL) ∩ habilitados na UI.
   const menuModules = React.useMemo(
-    () => MODULES.filter((m) => allowedSet.has(m.id)),
+    () => MODULES.filter((m) => allowedSet.has(m.id) && ENABLED_MODULE_IDS.has(m.id)),
     [allowedSet],
   );
-  // Módulos efetivamente renderizados = permitidos ∩ não ocultos localmente.
+  // Módulos renderizados = permitidos ∩ habilitados ∩ não ocultos localmente.
   const modules = React.useMemo(
-    () => visibleModules.filter((m) => allowedSet.has(m.id)),
+    () =>
+      visibleModules.filter(
+        (m) => allowedSet.has(m.id) && ENABLED_MODULE_IDS.has(m.id),
+      ),
     [visibleModules, allowedSet],
   );
 
   const [activeTab, setActiveTab] = React.useState(
-    () => allowedModuleIds[0] ?? "",
+    () =>
+      allowedModuleIds.find((id) => ENABLED_MODULE_IDS.has(id)) ??
+      allowedModuleIds[0] ??
+      "",
   );
   const [autoScrollEnabled, setAutoScrollEnabled] = React.useState(false);
 
@@ -178,6 +183,7 @@ export function Dashboard({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <ThemeSelector />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -187,7 +193,7 @@ export function Dashboard({
                   aria-label="Menu do usuário"
                 >
                   <HugeiconsIcon
-                    icon={UserIcon}
+                    icon={Settings01Icon}
                     strokeWidth={2}
                     className="size-5"
                   />
@@ -258,7 +264,6 @@ export function Dashboard({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <ThemeSelector />
           </div>
         </div>
 

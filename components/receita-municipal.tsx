@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useSnapshot } from "@/components/use-snapshot";
+import { useYear } from "@/components/year-provider";
 import { RECEITA_SNAPSHOT } from "@/lib/demo-receita";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -120,7 +121,7 @@ const calcPercent = (value: number, total: number) => {
 // Dados de receitas proprias
 
 export function ReceitaMunicipal() {
-  const [periodoSelecionado, setPeriodoSelecionado] = React.useState("2024");
+  const { ano } = useYear();
   const {
     receitasProprias,
     receitasEstaduais,
@@ -148,7 +149,6 @@ export function ReceitaMunicipal() {
     totalProjetado,
     benchmarkMunicipios,
     benchmarkChart,
-    dadosPorPeriodo,
   } = useSnapshot("receita", RECEITA_SNAPSHOT);
 
   return (
@@ -168,7 +168,7 @@ export function ReceitaMunicipal() {
                 className="size-3 text-green-600"
               />
               <span className="text-green-600">+4.9%</span>
-              <span>vs {Number(periodoSelecionado) - 1}</span>
+              <span>vs {ano - 1}</span>
             </div>
           }
         />
