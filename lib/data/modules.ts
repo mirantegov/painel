@@ -70,3 +70,19 @@ export async function getModuloDados<T = unknown>(
   if (rows.length === 0) return null;
   return Object.assign({}, ...rows.map((r) => r.dados)) as T;
 }
+
+/**
+ * Anos com dados no município (união dos módulos do grupo A), desc. Alimenta o
+ * seletor de ano (data-driven); vazio = município ainda sem dados (cai no fallback).
+ */
+export async function getAnosDisponiveis(municipio: string): Promise<number[]> {
+  const rows = await tenantQuery<{ ano: number }>(
+    municipio,
+    `select distinct ano from (
+       select ano from mod_despesa
+       union select ano from mod_receita
+       union select ano from mod_orcamento
+     ) t order by ano desc`,
+  );
+  return rows.map((r) => Number(r.ano));
+}

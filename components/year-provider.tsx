@@ -13,32 +13,37 @@ type YearContextValue = {
 
 const YearContext = React.createContext<YearContextValue | null>(null);
 
-/**
- * Quantos anos para trás oferecer no seletor (além do corrente). A base tem os
- * exercícios exportados do SIM-AM (atualmente 2024-2026), então `corrente + 2`.
- * (Ideal futuro: derivar os anos disponíveis dos dados, por município.)
- */
+/** Fallback (município ainda sem dados): corrente + N anos para trás. */
 const ANOS_RETROATIVOS = 2;
 
 export function YearProvider({
   children,
   anoInicial,
+  anosDisponiveis,
 }: {
   children: React.ReactNode;
   anoInicial?: number;
+  /** Anos com dados (do servidor); quando presente, dirige o seletor. */
+  anosDisponiveis?: number[];
 }) {
-  const anoCorrente = anoInicial ?? new Date().getFullYear();
-  const [ano, setAno] = React.useState(anoCorrente);
   const [refreshNonce, setRefreshNonce] = React.useState(0);
   const refresh = React.useCallback(() => setRefreshNonce((n) => n + 1), []);
 
+  // Seletor dirigido pelos anos que realmente têm dados; senão, fallback calculado.
   const anos = React.useMemo(() => {
-    const lista: number[] = [];
-    for (let a = anoCorrente; a >= anoCorrente - ANOS_RETROATIVOS; a--) {
-      lista.push(a);
+    if (anosDisponiveis && anosDisponiveis.length > 0) {
+      return [...anosDisponiveis].sort((a, b) => b - a);
     }
+    const corrente = anoInicial ?? new Date().getFullYear();
+    const lista: number[] = [];
+    for (let a = corrente; a >= corrente - ANOS_RETROATIVOS; a--) lista.push(a);
     return lista;
-  }, [anoCorrente]);
+  }, [anosDisponiveis, anoInicial]);
+
+  // Ano inicial = mais recente com dados (ou o explícito / corrente).
+  const [ano, setAno] = React.useState(
+    () => anoInicial ?? anos[0] ?? new Date().getFullYear(),
+  );
 
   const value = React.useMemo(
     () => ({ ano, setAno, anos, refreshNonce, refresh }),

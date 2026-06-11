@@ -36,12 +36,14 @@ const SCROLL_SPEED_PX = 0.75;
 type DashboardProps = {
   allowedModuleIds: string[];
   allowedSubmodules: Record<string, string[]>;
+  anosDisponiveis: number[];
   userName: string;
 };
 
 export function Dashboard({
   allowedModuleIds,
   allowedSubmodules,
+  anosDisponiveis,
   userName,
 }: DashboardProps) {
   const router = useRouter();
@@ -160,7 +162,7 @@ export function Dashboard({
   }, [autoScrollEnabled, activeTab, modules]);
 
   return (
-    <YearProvider>
+    <YearProvider anosDisponiveis={anosDisponiveis}>
     <div className="flex min-h-screen w-full flex-col items-stretch justify-start bg-muted px-[5%] py-4 sm:py-6 dark:bg-background">
       <div className="w-full space-y-8">
         {/* Header */}
