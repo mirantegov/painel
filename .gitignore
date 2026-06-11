@@ -35,3 +35,7 @@ tmp/
 # Acessos locais (segredos) — nunca versionar
 docs/ACESSOS.local.md
 docs/*.local.md
+
+# playwright
+/test-results/
+/playwright-report/
