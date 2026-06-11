@@ -80,11 +80,43 @@ async function buildAno(ano, nomes) {
   const ca = new Map((await ch(`SELECT nrAno, round(sum(vlMovimento),2) v FROM ${SIM}.fato_receita_movimento GROUP BY nrAno FORMAT TSV`)).map(([y, v]) => [y, Number(v)]));
   const comparativoAnual = [...new Set([...cp.keys(), ...ca.keys()])].sort().map((y) => ({ ano: y, prevista: n(cp.get(y) || 0), arrecadada: n(ca.get(y) || 0) }));
 
+  // sazonalidade: arrecadada por mês × grupo de origem (mesma classificação bucket())
+  const sazRows = await ch(`SELECT nrMes, cdReceita, round(sum(vlMovimento),2) v FROM ${SIM}.fato_receita_movimento WHERE nrAno=${ano} AND nrMes BETWEEN 1 AND 12 GROUP BY nrMes, cdReceita FORMAT TSV`);
+  const saz = {};
+  for (const [m, cod, v] of sazRows) { const mi = Number(m); (saz[mi] ||= { proprias: 0, estaduais: 0, federais: 0, outras: 0 }); saz[mi][bucket(cod)] += Number(v); }
+  const sazonalidadeData = Object.keys(saz).map(Number).sort((a, b) => a - b)
+    .map((mi) => ({ mes: MESES[mi], proprias: n(saz[mi].proprias), estaduais: n(saz[mi].estaduais), federais: n(saz[mi].federais), outras: n(saz[mi].outras) }));
+
+  // corrente × capital: arrecadada por categoria(1)=Corrente/2=Capital; subcategorias por origem(2)
+  const ccRows = await ch(`SELECT substring(cdReceita,1,1) c, substring(cdReceita,2,1) o, round(sum(vlMovimento),2) v FROM ${SIM}.fato_receita_movimento WHERE nrAno=${ano} GROUP BY c, o FORMAT TSV`);
+  const SUBCAT = {
+    "1": { "1": "Tributária", "2": "Contribuições", "3": "Patrimonial", "6": "Serviços", "7": "Transferências Correntes" },
+    "2": { "1": "Operações de Crédito", "2": "Alienação de Bens", "4": "Transferências de Capital" },
+  };
+  const ccAgg = { "1": { total: 0, sub: {} }, "2": { total: 0, sub: {} } };
+  for (const [c, o, v] of ccRows) {
+    if (c !== "1" && c !== "2") continue;
+    const val = Number(v); ccAgg[c].total += val;
+    const lbl = (SUBCAT[c] && SUBCAT[c][o]) || (c === "1" ? "Outras Correntes" : "Outras de Capital");
+    ccAgg[c].sub[lbl] = (ccAgg[c].sub[lbl] || 0) + val;
+  }
+  const totalCCr = ccAgg["1"].total + ccAgg["2"].total || 1;
+  const subList = (c) => Object.entries(ccAgg[c].sub).map(([nome, valor]) => ({ nome, valor: n(valor) })).sort((a, b) => b.valor - a.valor);
+  const receitaCorrenteCapital = [
+    { tipo: "Receitas Correntes", valor: n(ccAgg["1"].total), percentual: n((ccAgg["1"].total / totalCCr) * 100), subcategorias: subList("1") },
+    { tipo: "Receitas de Capital", valor: n(ccAgg["2"].total), percentual: n((ccAgg["2"].total / totalCCr) * 100), subcategorias: subList("2") },
+  ];
+  const receitaCorrenteCapitalChart = [
+    { nome: "Correntes", valor: n(ccAgg["1"].total), fill: "var(--chart-1)" },
+    { nome: "Capital", valor: n(ccAgg["2"].total), fill: "var(--chart-3)" },
+  ];
+
   return {
     execucao: {
       totaisGerais, totaisProprias, totaisEstaduais, totaisFederais, totaisOutras,
       receitasProprias, receitasEstaduais, receitasFederais, outrasReceitas,
       distribuicaoOrigem, evolucaoMensal, comparativoAnual,
+      sazonalidadeData, receitaCorrenteCapital, receitaCorrenteCapitalChart,
     },
   };
 }

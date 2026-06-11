@@ -129,6 +129,16 @@ export function ReceitaMunicipal() {
     benchmarkMunicipios,
   } = useSnapshot("receita", RECEITA_SNAPSHOT);
 
+  // Variação ano-a-ano (derivada de comparativoAnual) — substitui % hardcoded.
+  const yoyPct = (campo: "prevista" | "arrecadada") => {
+    const cur = comparativoAnual?.find((e) => Number(e.ano) === ano)?.[campo];
+    const prev = comparativoAnual?.find((e) => Number(e.ano) === ano - 1)?.[campo];
+    if (!cur || !prev) return null;
+    return ((cur - prev) / prev) * 100;
+  };
+  const varPrevista = yoyPct("prevista");
+  const varArrecadada = yoyPct("arrecadada");
+
   return (
     <div className="space-y-8">
       {/* KPIs Principais */}
@@ -139,15 +149,22 @@ export function ReceitaMunicipal() {
           value={formatMillions(totaisGerais.prevista)}
           borderColor="border-l-blue-500"
           footer={
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <HugeiconsIcon
-                icon={ArrowUp01Icon}
-                strokeWidth={2}
-                className="size-3 text-green-600"
-              />
-              <span className="text-green-600">+4.9%</span>
-              <span>vs {ano - 1}</span>
-            </div>
+            varPrevista === null ? (
+              <p className="text-xs text-muted-foreground">vs {ano - 1}</p>
+            ) : (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <HugeiconsIcon
+                  icon={varPrevista >= 0 ? ArrowUp01Icon : ArrowDown01Icon}
+                  strokeWidth={2}
+                  className={`size-3 ${varPrevista >= 0 ? "text-green-600" : "text-red-600"}`}
+                />
+                <span className={varPrevista >= 0 ? "text-green-600" : "text-red-600"}>
+                  {varPrevista >= 0 ? "+" : ""}
+                  {varPrevista.toFixed(1)}%
+                </span>
+                <span>vs {ano - 1}</span>
+              </div>
+            )
           }
         />
         <KpiCard
@@ -161,12 +178,19 @@ export function ReceitaMunicipal() {
                 {calcPercent(totaisGerais.arrecadada, totaisGerais.prevista)}%
               </span>
               <span>da previsão</span>
-              <HugeiconsIcon
-                icon={ArrowUp01Icon}
-                strokeWidth={2}
-                className="size-3 text-green-600 ml-1"
-              />
-              <span className="text-green-600">+2.1%</span>
+              {varArrecadada !== null && (
+                <>
+                  <HugeiconsIcon
+                    icon={varArrecadada >= 0 ? ArrowUp01Icon : ArrowDown01Icon}
+                    strokeWidth={2}
+                    className={`size-3 ml-1 ${varArrecadada >= 0 ? "text-green-600" : "text-red-600"}`}
+                  />
+                  <span className={varArrecadada >= 0 ? "text-green-600" : "text-red-600"}>
+                    {varArrecadada >= 0 ? "+" : ""}
+                    {varArrecadada.toFixed(1)}%
+                  </span>
+                </>
+              )}
             </div>
           }
         />
