@@ -4,3 +4,8 @@
 /dist/
 # Artefatos locais
 *.parquet
+
+# cron (extração por cliente)
+cron/clientes/*.secret.env
+cron/log/
+!cron/clientes/_TEMPLATE.secret.env
