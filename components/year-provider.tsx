@@ -13,8 +13,12 @@ type YearContextValue = {
 
 const YearContext = React.createContext<YearContextValue | null>(null);
 
-/** Quantos anos para trás oferecer no seletor (além do corrente). */
-const ANOS_RETROATIVOS = 3;
+/**
+ * Quantos anos para trás oferecer no seletor (além do corrente). A base tem os
+ * exercícios exportados do SIM-AM (atualmente 2024-2026), então `corrente + 2`.
+ * (Ideal futuro: derivar os anos disponíveis dos dados, por município.)
+ */
+const ANOS_RETROATIVOS = 2;
 
 export function YearProvider({
   children,
