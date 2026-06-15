@@ -13,6 +13,7 @@ export type SessionClaims = {
 
 const ISSUER = "mirante-painel";
 const MAX_AGE_SECONDS = 8 * 60 * 60; // 8h
+const KIOSK_MAX_AGE_SECONDS = 365 * 24 * 60 * 60; // 1 ano (dispositivos dedicados / kiosk)
 
 function getSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET;
@@ -20,12 +21,15 @@ function getSecret(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-export async function signSession(claims: SessionClaims): Promise<string> {
+export async function signSession(
+  claims: SessionClaims,
+  maxAgeSeconds: number = MAX_AGE_SECONDS,
+): Promise<string> {
   return new SignJWT({ ...claims })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuer(ISSUER)
     .setIssuedAt()
-    .setExpirationTime(`${MAX_AGE_SECONDS}s`)
+    .setExpirationTime(`${maxAgeSeconds}s`)
     .sign(getSecret());
 }
 
@@ -56,3 +60,4 @@ export async function verifySession(
 }
 
 export const SESSION_MAX_AGE_SECONDS = MAX_AGE_SECONDS;
+export const SESSION_KIOSK_MAX_AGE_SECONDS = KIOSK_MAX_AGE_SECONDS;

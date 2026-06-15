@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { verifyPassword } from "@/lib/auth/password";
-import { signSession, SESSION_MAX_AGE_SECONDS } from "@/lib/auth/jwt";
+import {
+  signSession,
+  SESSION_MAX_AGE_SECONDS,
+  SESSION_KIOSK_MAX_AGE_SECONDS,
+} from "@/lib/auth/jwt";
 
 export const runtime = "nodejs";
 
@@ -15,11 +19,19 @@ type UsuarioRow = {
 };
 
 export async function POST(req: Request) {
-  let body: { municipio?: string; cpf?: string; senha?: string };
+  let body: {
+    municipio?: string;
+    cpf?: string;
+    senha?: string;
+    lembrar?: boolean;
+  };
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Requisição inválida." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Requisição inválida." },
+      { status: 400 },
+    );
   }
 
   const municipio = body.municipio?.trim();
@@ -53,12 +65,20 @@ export async function POST(req: Request) {
   const ok = await verifyPassword(senha, user.senha_hash);
   if (!ok) return invalid;
 
-  const token = await signSession({
-    id_user: user.id_user,
-    municipio,
-    nome: user.nome,
-    cargo: user.cargo,
-  });
+  // Sessão longa para dispositivos dedicados (kiosk em Google TV etc.).
+  const maxAge = body.lembrar
+    ? SESSION_KIOSK_MAX_AGE_SECONDS
+    : SESSION_MAX_AGE_SECONDS;
+
+  const token = await signSession(
+    {
+      id_user: user.id_user,
+      municipio,
+      nome: user.nome,
+      cargo: user.cargo,
+    },
+    maxAge,
+  );
 
   const res = NextResponse.json({ ok: true });
   res.cookies.set(COOKIE_NAME, token, {
@@ -66,7 +86,7 @@ export async function POST(req: Request) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: SESSION_MAX_AGE_SECONDS,
+    maxAge,
   });
   return res;
 }

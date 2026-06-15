@@ -1,58 +1,73 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useRouter } from "next/navigation"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { Analytics01Icon, City01Icon, LockIcon, UserIcon } from "@hugeicons/core-free-icons"
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Analytics01Icon,
+  City01Icon,
+  LockIcon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 /** Formata dígitos do CPF como 000.000.000-00 (parcial enquanto digita). */
 function formatCpf(digits: string) {
-  const d = digits.slice(0, 11)
-  let out = d.slice(0, 3)
-  if (d.length > 3) out += "." + d.slice(3, 6)
-  if (d.length > 6) out += "." + d.slice(6, 9)
-  if (d.length > 9) out += "-" + d.slice(9, 11)
-  return out
+  const d = digits.slice(0, 11);
+  let out = d.slice(0, 3);
+  if (d.length > 3) out += "." + d.slice(3, 6);
+  if (d.length > 6) out += "." + d.slice(6, 9);
+  if (d.length > 9) out += "-" + d.slice(9, 11);
+  return out;
 }
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [municipio, setMunicipio] = React.useState("")
-  const [cpf, setCpf] = React.useState("")
-  const [senha, setSenha] = React.useState("")
-  const [error, setError] = React.useState("")
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const router = useRouter();
+  const [municipio, setMunicipio] = React.useState("");
+  const [cpf, setCpf] = React.useState("");
+  const [senha, setSenha] = React.useState("");
+  const [lembrar, setLembrar] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setError("")
-    setIsSubmitting(true)
+    event.preventDefault();
+    setError("");
+    setIsSubmitting(true);
 
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ municipio, cpf, senha }),
-      })
+        body: JSON.stringify({ municipio, cpf, senha, lembrar }),
+      });
 
       if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as { error?: string } | null
-        setError(data?.error ?? "Não foi possível entrar.")
-        setIsSubmitting(false)
-        return
+        const data = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        setError(data?.error ?? "Não foi possível entrar.");
+        setIsSubmitting(false);
+        return;
       }
 
-      router.replace("/")
+      router.replace("/");
     } catch {
-      setError("Falha de conexão. Tente novamente.")
-      setIsSubmitting(false)
+      setError("Falha de conexão. Tente novamente.");
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-muted p-4 dark:bg-background">
@@ -60,11 +75,17 @@ export default function LoginPage() {
         <CardHeader className="space-y-3">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <HugeiconsIcon icon={Analytics01Icon} strokeWidth={2} className="size-5" />
+              <HugeiconsIcon
+                icon={Analytics01Icon}
+                strokeWidth={2}
+                className="size-5"
+              />
             </div>
             <div>
               <CardTitle className="text-2xl">Mirante Painel</CardTitle>
-              <CardDescription>Portal de Gestão Pública Municipal</CardDescription>
+              <CardDescription>
+                Portal de Gestão Pública Municipal
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -72,8 +93,15 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="municipio" className="inline-flex items-center gap-2">
-                <HugeiconsIcon icon={City01Icon} strokeWidth={2} className="size-4" />
+              <Label
+                htmlFor="municipio"
+                className="inline-flex items-center gap-2"
+              >
+                <HugeiconsIcon
+                  icon={City01Icon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
                 Cliente
               </Label>
               <Input
@@ -81,7 +109,9 @@ export default function LoginPage() {
                 name="municipio"
                 inputMode="numeric"
                 value={municipio}
-                onChange={(event) => setMunicipio(event.target.value.replace(/\D/g, ""))}
+                onChange={(event) =>
+                  setMunicipio(event.target.value.replace(/\D/g, ""))
+                }
                 placeholder="Código IBGE do município"
                 required
               />
@@ -89,7 +119,11 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <Label htmlFor="cpf" className="inline-flex items-center gap-2">
-                <HugeiconsIcon icon={UserIcon} strokeWidth={2} className="size-4" />
+                <HugeiconsIcon
+                  icon={UserIcon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
                 Usuário (CPF)
               </Label>
               <Input
@@ -99,7 +133,9 @@ export default function LoginPage() {
                 autoComplete="username"
                 maxLength={14}
                 value={formatCpf(cpf)}
-                onChange={(event) => setCpf(event.target.value.replace(/\D/g, "").slice(0, 11))}
+                onChange={(event) =>
+                  setCpf(event.target.value.replace(/\D/g, "").slice(0, 11))
+                }
                 placeholder="000.000.000-00"
                 required
               />
@@ -107,7 +143,11 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <Label htmlFor="senha" className="inline-flex items-center gap-2">
-                <HugeiconsIcon icon={LockIcon} strokeWidth={2} className="size-4" />
+                <HugeiconsIcon
+                  icon={LockIcon}
+                  strokeWidth={2}
+                  className="size-4"
+                />
                 Senha
               </Label>
               <Input
@@ -121,6 +161,25 @@ export default function LoginPage() {
               />
             </div>
 
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="lembrar"
+                checked={lembrar}
+                onCheckedChange={(checked) => setLembrar(checked === true)}
+                className="mt-0.5"
+              />
+              <Label
+                htmlFor="lembrar"
+                className="text-sm font-normal leading-snug"
+              >
+                Manter conectado neste dispositivo
+                <span className="block text-xs text-muted-foreground">
+                  Use apenas em equipamentos dedicados (ex.: painel em
+                  TV/kiosk).
+                </span>
+              </Label>
+            </div>
+
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -130,5 +189,5 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
