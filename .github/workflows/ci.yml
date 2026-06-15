@@ -31,6 +31,44 @@ jobs:
       - name: audit-modules (invariante - todo módulo ativo tem snapshot)
         run: node scripts/audit-modules.mjs --check
 
+  data:
+    name: Dados · migrations · seed · test:data
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Postgres puro (sem Supabase CLI): as migrations não usam roles/extensões
+      # específicas do Supabase; o superusuário ignora o RLS habilitado nas tabelas.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      - name: aplica migrations (ordem cronológica)
+        run: |
+          for f in supabase/migrations/*.sql; do
+            echo "→ $f"
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"
+          done
+      - name: seed demo (provisiona tenant + popula snapshots/fatos)
+        run: npm run db:seed-demo
+      - name: testes de dados (integridade do seed)
+        run: npm run test:data
+
   exporter:
     name: Exportador Go · build · test
     runs-on: ubuntu-latest
